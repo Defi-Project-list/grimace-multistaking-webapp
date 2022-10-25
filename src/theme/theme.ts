@@ -6,7 +6,7 @@ const theme = createTheme({
   // @ts-ignore
   shadows: ["none"],
   palette: {
-    mode: "dark",
+    mode: "light",
     background: {
       default: "#FFFFFF",
     },

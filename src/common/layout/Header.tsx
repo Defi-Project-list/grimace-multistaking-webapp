@@ -1,6 +1,6 @@
 import { Portal } from "@mui/base"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Wallet from "../Wallet"
 import { useRouter } from "next/router"
 import {
@@ -18,7 +18,8 @@ export default function Header() {
   const router = useRouter()
   // const matchesDesktop = useMediaQuery(`(min-width: 1024px)`)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-
+  const wrapperRef = useRef(null)
+  
   const routeMatch = (path: string) => {
     return router.pathname === path
   }
@@ -51,6 +52,20 @@ export default function Header() {
     setIsMenuOpen(false)
   }
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setIsMenuOpen(false)
+      }
+    }
+    // Bind the event listener
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener("mousedown", handleClickOutside)
+    };
+  }, [wrapperRef])
+
   return (
     <div className="w-full bg-[#341461]/[.3] fixed" style={{ zIndex: 2 }}>
       <div className="w-full flex justify-center md:justify-end py-2 px-4">
@@ -62,7 +77,9 @@ export default function Header() {
             <span className="text-white text-[18px] md:text-[20px]">BSC</span>
           </div>
           <Wallet />
-          <div className="relative text-white text-[18px] md:text-[20px] flex gap-1 cursor-pointer items-center" onClick={() => setIsMenuOpen((val: boolean) => !val)}>
+          <div className="relative text-white text-[18px] md:text-[20px] flex gap-1 cursor-pointer items-center"
+            onClick={() => setIsMenuOpen((val: boolean) => !val)}
+            ref={wrapperRef}>
             <span>MENU</span>
             {isMenuOpen ?
               <svg width="22" height="12" viewBox="0 0 26 15" fill="none" xmlns="http://www.w3.org/2000/svg">

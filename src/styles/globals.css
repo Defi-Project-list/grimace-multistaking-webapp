@@ -27,6 +27,10 @@ code {
   background-color: #987DF9;
 }
 
+.bg-app-yellow {
+  background-color: #F3BA2F;
+}
+
 .text-app-yellow {
   color: #F3BA2F;
 }

@@ -45,10 +45,10 @@ function MyApp({
       <DAppProvider config={config}>
         <RefreshContextProvider>
           <ThemeProvider theme={theme}>
-                  <CssBaseline />
-                  <Layout>
-                    <Component {...pageProps} />
-                  </Layout>
+            <CssBaseline />
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
           </ThemeProvider>
         </RefreshContextProvider>
       </DAppProvider>

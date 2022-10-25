@@ -59,7 +59,7 @@ export default function Wallet() {
                     variant="contained"
                     color="primary"
                     onClick={activateProvider}
-                    sx={{ borderRadius: "12px", width: '180px', height: '36px' }}
+                    sx={{ borderRadius: "12px", fontFamily: 'Inter', width: '180px', height: '36px' }}
                 >
                     <span className="text-[16px] md:text-[18px] text-app-primary">Connect</span>
                 </Button>

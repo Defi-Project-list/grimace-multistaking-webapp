@@ -6,7 +6,7 @@ const Wolf404Page = (props) => {
     const router = useRouter()
 
     useEffect(() => {
-        router.replace("/wolfeye")
+        router.replace("/pools")
     })
     
     return (
