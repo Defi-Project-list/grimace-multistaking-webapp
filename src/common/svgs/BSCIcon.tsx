@@ -2,6 +2,8 @@ import createSvg from "./createSvg";
 
 export default createSvg((props) => (
   <svg
+    width={props.width}
+    height={props.height}
     viewBox="0 0 500 501"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

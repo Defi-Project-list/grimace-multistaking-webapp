@@ -21,8 +21,7 @@ const Home: NextPage = () => {
       <Head>
         <title>Grimace</title>
         <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Wallet isMobile = {false} />
+      </Head>      
     </>
   )
 }

@@ -1,7 +1,6 @@
 import { ChainId } from "@usedapp/core"
 import { ethers } from "ethers"
 import { JsonRpcProvider } from "@ethersproject/providers"
-import { parseEther } from "ethers/lib/utils"
 
 export const BITQUERY_HEADERS = {
     "Content-Type": "application/json",

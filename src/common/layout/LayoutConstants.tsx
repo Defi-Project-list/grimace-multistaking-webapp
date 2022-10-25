@@ -1,17 +1,14 @@
 export enum SidebarItem {
-  // WOLFPLAY,
-  WOLFSWAP,
-  WOLFEYE
+  POOLS,
+  REGISTER
 }
 
-export const SIDEBAR_ROUTES = {
-  // [SidebarItem.WOLFPLAY]: "/wolfplay",
-  [SidebarItem.WOLFSWAP]: "/wolfswap",
-  [SidebarItem.WOLFEYE]: "/wolfeye"
+export const SIDEBAR_ROUTES = {  
+  [SidebarItem.POOLS]: "/pools",
+  [SidebarItem.REGISTER]: "/register"
 }
 
-export const SIDEBAR_ITEMS = {
-  // [SidebarItem.WOLFPLAY]: "WolfPlay",
-  [SidebarItem.WOLFSWAP]: "WolfSwap",
-  [SidebarItem.WOLFEYE]: "WolfEye"
+export const SIDEBAR_ITEMS = {  
+  [SidebarItem.POOLS]: "pools",
+  [SidebarItem.REGISTER]: "register"
 }

@@ -8,7 +8,7 @@ const theme = createTheme({
   palette: {
     mode: "dark",
     background: {
-      default: "#131723",
+      default: "#FFFFFF",
     },
     primary: {
       main: colors.app.primary,
@@ -21,7 +21,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: "Satoshi",
+    fontFamily: "Inter",
   },
   components: {
     MuiAppBar: {

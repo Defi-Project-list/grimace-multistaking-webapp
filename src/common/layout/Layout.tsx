@@ -1,22 +1,19 @@
-import React, { PropsWithChildren, useEffect, useState } from "react"
-import { SIDEBAR_ITEMS } from "./LayoutConstants"
+// eslint-disable-next-line react/jsx-pascal-case
+import { PropsWithChildren } from "react"
+import Header from "./Header"
 
 export default function Layout({ children }: PropsWithChildren<{}>) {
-  const [title, setTitle] = useState(SIDEBAR_ITEMS[0])
-
-  const changeTitle = (t: string) => {
-    setTitle(t)
-  }
 
   return (
-    <>      
-      <div className="w-full flex justify-center">
-        <div className="px-4 sm:px-6 lg:px-10 bg-[#131723] desktop-layout">
-          <div className="flex w-full items-center justify-between">
+    <>
+      <div className='' style={{ minHeight: '100vh' }}>
+        <div className="w-full min-h-screen pt-[100px] md:pt-[124px] lg:pt-[92px] bg-[#FFFFFF] flex justify-center relative" style={{display:'flex', flexFlow:'column'}}>
+          <div className="flex w-full h-full justify-center bg-[#FFFFFF]" style={{flex: '1 1 auto'}}>
+            <Header />
             {children}
           </div>
         </div>
       </div>
     </>
-  )
+  );
 }

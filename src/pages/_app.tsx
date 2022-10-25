@@ -21,13 +21,15 @@ interface WolfAppProps extends AppProps {
 const clientSideEmotionCache = createEmotionCache()
 // mainet
 const config: Config = {
-  readOnlyChainId: BSC.chainId,
+  // readOnlyChainId: BSC.chainId,
   readOnlyUrls: {
     [BSC.chainId]: Rpc_URLS[ChainId.BSC] ?? '',
+    [BSCTestnet.chainId]: Rpc_URLS[ChainId.BSCTestnet] ?? ''
   },
-  networks: [BSC, Mainnet, BSCTestnet],
+  // networks: [BSC, Mainnet, BSCTestnet],
   autoConnect: false
 }
+
 
 function createEmotionCache() {
   return createCache({ key: "css" })

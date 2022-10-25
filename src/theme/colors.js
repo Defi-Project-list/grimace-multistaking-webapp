@@ -1,8 +1,8 @@
 const colors = {
     app: {
-        primary: '#5BDEF8',
-        secondary: '#FF59B7',
-        dark: { primary: '#0C2A2E', secondary: '#244249', tertiary: '#0C0E15' },
+        primary: '#F3BA2F',
+        secondary: '#987DF9',
+        dark: { primary: '#F3BA2F', secondary: '#987DF9', tertiary: '#0C0E15' },
         black: '#1d1e22',
         alternative: {
             blue: '#3ED0EB',

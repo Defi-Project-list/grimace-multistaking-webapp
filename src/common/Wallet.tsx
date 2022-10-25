@@ -4,7 +4,7 @@ import { useTokenBalance, useEthers } from "@usedapp/core"
 import localforage from "localforage"
 import { AppTokenAddress } from '@app/constants/AppConstants'
 import { Web3ModalButton } from "./WalletConnect/Web3Modal"
-import { formatEther } from '@app/utils/utils'
+import { formatEther, shortenAddress } from '@app/utils/utils'
 import { useRouter } from "next/router"
 import { parseUnits } from '@ethersproject/units'
 import { SidebarItem, SIDEBAR_ROUTES } from './layout/LayoutConstants'
@@ -22,12 +22,9 @@ function BalanceAmount() {
     )
 }
 
-function BalanceAndDisconnect({ isMobile }: { isMobile: boolean }) {
-    const { deactivate, connector } = useEthers()
+function AccountAndDisconnect() {
+    const { account, deactivate, connector } = useEthers()
     const router = useRouter()
-    const routeMatch = (path: string) => {
-        return router.pathname === path
-    }
 
     const handleDisconnect = async () => {
         await localforage.setItem("connectionStatus", false)
@@ -40,26 +37,17 @@ function BalanceAndDisconnect({ isMobile }: { isMobile: boolean }) {
     return (
         <>
 
-            <div className="w-full flex flex-col md:flex-row gap-4 justify-center items-center">
-                <div className="flex flex-col text-gray-400 w-full md:min-w-[170px] border border-[#112b40] p-1 rounded-md">
-                    <div className="flex justify-center text-xs text-center">Available Balance</div>
-                    <BalanceAmount />
-                </div>
-                <div className="w-full">
-                    <Button
-                        variant="outlined"
-                        onClick={handleDisconnect}
-                        sx={{ borderRadius: "12px", borderColor: "#4BCEE8", width: isMobile ? '100%' : '130px', height: '40px' }}
-                        className="relative">
-                        <span className="text-[14px] md:text-[16px] text-white">Disconnect</span>
-                    </Button>
-                </div>
+            <div className="w-full flex gap-2 items-center cursor-pointer" onClick={handleDisconnect}>
+                <img src='./images/wallet.png' width={'30px'} />
+                <span className="text-white text-[18px] md:text-[20px]">
+                    {shortenAddress(account, 4)}
+                </span>
             </div>
         </>
     )
 }
 
-export default function Wallet({ isMobile }: { isMobile: boolean }) {
+export default function Wallet() {
     const { account } = useEthers()
     const activateProvider = Web3ModalButton()
     const isConnected = !!account
@@ -68,15 +56,15 @@ export default function Wallet({ isMobile }: { isMobile: boolean }) {
         <div className="flex justify-center">
             {!isConnected && (
                 <Button
-                    variant="outlined"
+                    variant="contained"
                     color="primary"
                     onClick={activateProvider}
-                    sx={{ borderRadius: "12px", borderColor: "#4BCEE8", width: isMobile ? '100%' : '180px', height: '40px' }}
+                    sx={{ borderRadius: "12px", width: '180px', height: '36px' }}
                 >
-                    <span className="text-[14px] md:text-[16px] text-white">Connect</span>
+                    <span className="text-[16px] md:text-[18px] text-app-primary">Connect</span>
                 </Button>
             )}
-            {isConnected && <BalanceAndDisconnect isMobile={isMobile} />}
+            {isConnected && <AccountAndDisconnect />}
         </div>
     )
 }
