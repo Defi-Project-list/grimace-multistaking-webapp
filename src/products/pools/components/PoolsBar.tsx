@@ -23,7 +23,7 @@ export default function PoolsBar({ isSelectedLivePools, handleSelectShowPools }:
 
     return (
         <div className='w-full flex flex-col justify-end gap-4 sm:gap-6 sm:flex-row py-2 mb-4'>
-            <FormControl sx={{ width: '100%', boxShadow: '2px 2px 4px #333', borderRadius: '5px' }} variant="outlined">
+            <FormControl sx={{ width: '100%', boxShadow: '2px 2px 4px #888', borderRadius: '5px', backgroundColor: '#FFFFFF' }} variant="outlined">
                 <OutlinedInput
                     id="outlined-search-pool"
                     type={'text'}

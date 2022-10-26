@@ -67,7 +67,7 @@ export default function Header() {
   }, [wrapperRef])
 
   return (
-    <div className="w-full bg-[#341461]/[.3] fixed" style={{ zIndex: 2 }}>
+    <div className="w-full bg-[#341461]/[.8] fixed" style={{ zIndex: 2 }}>
       <div className="w-full flex justify-center md:justify-between py-2 px-4">
         <div className="hidden md:block w-full max-w-[220px]">
           <img src='./images/Logo_GrimaceCoin_White.png' width="100%" />
@@ -91,11 +91,11 @@ export default function Header() {
               <svg width="22" height="12" viewBox="0 0 26 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M24 13.5L13 2.5L2 13.5" stroke="#EFEFEF" strokeWidth="3" />
               </svg>}
-            <div className="shadow-sm shadow-[#505050] absolute top-[38px] right-0 w-full md:w-[200px] bg-[#341461]/[.3] py-3" style={{ display: isMenuOpen ? 'block' : 'none', zIndex: 9999 }}>
+            <div className="shadow-sm shadow-[#505050] absolute top-[38px] right-0 w-full md:w-[200px] bg-[#341461]/[.8] py-3" style={{ display: isMenuOpen ? 'block' : 'none', zIndex: 9999 }}>
               {Object.keys(SIDEBAR_ITEMS).map((key) => {
                 const isActive = routeMatch(SIDEBAR_ROUTES[key])
                 return (
-                  <div key={key} className={`w-full text-center hover:bg-[#341461]/[.2] ${isActive ? 'text-[#EEE]' : 'cursor-pointer text-white'} text-[18px] md:text-[20px]`}
+                  <div key={key} className={`w-full text-center hover:bg-[#341461] ${isActive ? 'text-[#EEE]' : 'cursor-pointer text-white'} text-[18px] md:text-[20px]`}
                     onClick={() => onClickMenu(SIDEBAR_ROUTES[key], isActive)}>
                     {SIDEBAR_ITEMS[key]}
                   </div>

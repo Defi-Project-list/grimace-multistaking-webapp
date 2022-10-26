@@ -45,7 +45,7 @@ export default function Pools() {
                                 <img src='./images/grimacestakingclub_mobile.png' width="100%" />
                             </div>
                             <div className='w-full max-w-[768px] font-light text-white text-[18px] md:text-[20px] px-4'>
-                                <div className='border-b border-[#F3BA2F]'>
+                                <div className='border-b-2 border-[#F3BA2F]'>
                                     Just stake some tokens to earn high APR, low risk
                                 </div>
                             </div>

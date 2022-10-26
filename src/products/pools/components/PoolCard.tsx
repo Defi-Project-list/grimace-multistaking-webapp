@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import FormControl from '@mui/material/FormControl'
-import IconButton from '@mui/material/IconButton'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import InputAdornment from '@mui/material/InputAdornment'
-import { Button, FormControlLabel, RadioGroup } from '@mui/material'
-import SearchIcon from '@mui/icons-material/Search'
-import PoolSelectOption from './PoolSelectOption'
+import { Button } from '@mui/material'
 
 export default function PoolCard() {
     const [isDetailed, setIsDetailed] = useState(false)
@@ -36,7 +30,7 @@ export default function PoolCard() {
 
     const PoolStatusPane = () => {
         return (
-            <div className='w-full xl:basis-1/2 flex flex-col md:flex-row justify-between sm:justify-between gap-4'>
+            <div className='w-full xl:basis-1/2 flex flex-col md:flex-row justify-between xl:justify-around gap-4'>
                 <div className='flex flex-col gap-1'>
                     <div className='flex gap-2 items-center'>
                         <svg viewBox="64 64 896 896" focusable="false" fill="#341461" width="14px" height="14px" data-icon="lock" aria-hidden="true"><path d="M832 464h-68V240c0-70.7-57.3-128-128-128H388c-70.7 0-128 57.3-128 128v224h-68c-17.7 0-32 14.3-32 32v384c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V496c0-17.7-14.3-32-32-32zM332 240c0-30.9 25.1-56 56-56h248c30.9 0 56 25.1 56 56v224H332V240zm460 600H232V536h560v304zM484 701v53c0 4.4 3.6 8 8 8h40c4.4 0 8-3.6 8-8v-53a48.01 48.01 0 10-56 0z"></path></svg>
@@ -112,8 +106,8 @@ export default function PoolCard() {
     }
     return (
         <div className='w-full'>
-            <div className='w-full bg-white rounded-md py-4 px-4 md:px-8' style={{ boxShadow: '2px 2px 4px #333' }}>
-                <div className={`w-full flex flex-col md:flex-row gap-2 sm:gap-4 justify-between ${isDetailed?'border-b-2 border-[#987DF9]':''}`}>
+            <div className='w-full bg-white rounded-md py-4 px-4 md:px-8' style={{ boxShadow: '2px 2px 4px #888' }}>
+                <div className={`w-full flex flex-col md:flex-row gap-2 sm:gap-4 justify-between ${isDetailed ? 'border-b-2 border-[#987DF9]' : ''}`}>
                     <div className='w-full flex flex-col xl:flex-row gap-4 justify-between items-center pb-4'>
                         <div className='w-full xl:basis-1/2 flex flex-col sm:flex-row justify-between sm:justify-around gap-4'>
                             <div className='w-full md:basis-1/2 flex justify-start sm:justify-start xl:justify-around gap-6 sm:gap-8 lg:gap-10'>
@@ -175,7 +169,7 @@ export default function PoolCard() {
                             <div className='flex flex-col gap-1'>
                                 <div className='flex gap-2 items-center'>
                                     <svg viewBox="64 64 896 896" focusable="false" fill="#341461" width="14px" height="14px" data-icon="pie-chart" aria-hidden="true"><path d="M864 518H506V160c0-4.4-3.6-8-8-8h-26a398.46 398.46 0 00-282.8 117.1 398.19 398.19 0 00-85.7 127.1A397.61 397.61 0 0072 552a398.46 398.46 0 00117.1 282.8c36.7 36.7 79.5 65.6 127.1 85.7A397.61 397.61 0 00472 952a398.46 398.46 0 00282.8-117.1c36.7-36.7 65.6-79.5 85.7-127.1A397.61 397.61 0 00872 552v-26c0-4.4-3.6-8-8-8zM705.7 787.8A331.59 331.59 0 01470.4 884c-88.1-.4-170.9-34.9-233.2-97.2C174.5 724.1 140 640.7 140 552c0-88.7 34.5-172.1 97.2-234.8 54.6-54.6 124.9-87.9 200.8-95.5V586h364.3c-7.7 76.3-41.3 147-96.6 201.8zM952 462.4l-2.6-28.2c-8.5-92.1-49.4-179-115.2-244.6A399.4 399.4 0 00589 74.6L560.7 72c-4.7-.4-8.7 3.2-8.7 7.9V464c0 4.4 3.6 8 8 8l384-1c4.7 0 8.4-4 8-8.6zm-332.2-58.2V147.6a332.24 332.24 0 01166.4 89.8c45.7 45.6 77 103.6 90 166.1l-256.4.7z"></path></svg>
-                                    <span className='text-app-primary text-[12px] font-light'>Reward Per Block</span>
+                                    <span className='text-app-primary text-[12px] font-light'>Reward per Block</span>
                                 </div>
                                 <div className='text-app-primary text-[20px] md:text-[22px] font-bold leading-[1.1]'>123 TKN</div>
                                 <span className='text-app-primary text-[12px] font-light'>123456 USD</span>
@@ -226,12 +220,14 @@ export default function PoolCard() {
                             </div>
                         </div>
                     </div>
-                    <div className='w-full rounded-md bg-app-warning p-4 flex gap-2 items-center'>
-                        <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path fillRule="evenodd" clipRule="evenodd" d="M7.5 1.86364C4.11098 1.86364 1.36364 4.61098 1.36364 8C1.36364 11.389 4.11098 14.1364 7.5 14.1364C10.889 14.1364 13.6364 11.389 13.6364 8C13.6364 4.61098 10.889 1.86364 7.5 1.86364ZM0 8C0 3.85786 3.35786 0.5 7.5 0.5C11.6421 0.5 15 3.85786 15 8C15 12.1421 11.6421 15.5 7.5 15.5C3.35786 15.5 0 12.1421 0 8Z" fill="#F3BA2F" />
-                            <path fillRule="evenodd" clipRule="evenodd" d="M7.50018 4.59082C7.87674 4.59082 8.182 4.89608 8.182 5.27264V7.99991C8.182 8.37647 7.87674 8.68173 7.50018 8.68173C7.12362 8.68173 6.81836 8.37647 6.81836 7.99991V5.27264C6.81836 4.89608 7.12362 4.59082 7.50018 4.59082Z" fill="#F3BA2F" />
-                            <path fillRule="evenodd" clipRule="evenodd" d="M6.81836 10.7277C6.81836 10.3512 7.12362 10.0459 7.50018 10.0459H7.507C7.88355 10.0459 8.18881 10.3512 8.18881 10.7277C8.18881 11.1043 7.88355 11.4095 7.507 11.4095H7.50018C7.12362 11.4095 6.81836 11.1043 6.81836 10.7277Z" fill="#F3BA2F" />
-                        </svg>
+                    <div className='w-full rounded-md bg-app-warning p-4 flex gap-2'>
+                        <div className='mt-[3px]'>
+                            <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fillRule="evenodd" clipRule="evenodd" d="M7.5 1.86364C4.11098 1.86364 1.36364 4.61098 1.36364 8C1.36364 11.389 4.11098 14.1364 7.5 14.1364C10.889 14.1364 13.6364 11.389 13.6364 8C13.6364 4.61098 10.889 1.86364 7.5 1.86364ZM0 8C0 3.85786 3.35786 0.5 7.5 0.5C11.6421 0.5 15 3.85786 15 8C15 12.1421 11.6421 15.5 7.5 15.5C3.35786 15.5 0 12.1421 0 8Z" fill="#F3BA2F" />
+                                <path fillRule="evenodd" clipRule="evenodd" d="M7.50018 4.59082C7.87674 4.59082 8.182 4.89608 8.182 5.27264V7.99991C8.182 8.37647 7.87674 8.68173 7.50018 8.68173C7.12362 8.68173 6.81836 8.37647 6.81836 7.99991V5.27264C6.81836 4.89608 7.12362 4.59082 7.50018 4.59082Z" fill="#F3BA2F" />
+                                <path fillRule="evenodd" clipRule="evenodd" d="M6.81836 10.7277C6.81836 10.3512 7.12362 10.0459 7.50018 10.0459H7.507C7.88355 10.0459 8.18881 10.3512 8.18881 10.7277C8.18881 11.1043 7.88355 11.4095 7.507 11.4095H7.50018C7.12362 11.4095 6.81836 11.1043 6.81836 10.7277Z" fill="#F3BA2F" />
+                            </svg>
+                        </div>
                         <div className="text-[14px] md:text-[15px] text-app-purple font-semibold">
                             Whenever you wanna do Emergency Unstake, please make sure you harvest your reward first, otherwise, you will lose you unclaimed reward #0x123456789ABCDEF
                         </div>
