@@ -68,7 +68,10 @@ export default function Header() {
 
   return (
     <div className="w-full bg-[#341461]/[.3] fixed" style={{ zIndex: 2 }}>
-      <div className="w-full flex justify-center md:justify-end py-2 px-4">
+      <div className="w-full flex justify-center md:justify-between py-2 px-4">
+        <div className="hidden md:block w-full max-w-[220px]">
+          <img src='./images/Logo_GrimaceCoin_White.png' width="100%" />
+        </div>
         <div className="flex gap-3 md:gap-4 items-center md:pr-4">
           <div className="flex gap-2 items-center">
             <div className="bg-white w-[28px] h-[28px] flex justify-center items-center" style={{ borderRadius: '50%' }}>

@@ -16,10 +16,10 @@ interface SelectProps {
 const MenuProps = {
     sx: {
         "ul": {
-            backgroundColor: '#1E2536',
+            backgroundColor: '#987DF9',
         },
         "&& .Mui-selected": {
-            backgroundColor: "linear-gradient(180deg, #161f35 -10%, #1E2536 30%)"
+            backgroundColor: "linear-gradient(180deg, #FFFFFF -10%, #FFFFFF 30%)"
         },
         "& .Mui-Root": {
         },
@@ -39,7 +39,7 @@ const MenuProps = {
 }
 
 const MuiSelectStyle = {
-    backgroundColor: '#1E2536',
+    backgroundColor: '#FFFFFF',
     borderRadius: '12px',
     height: '30px',    
 }
@@ -47,9 +47,9 @@ const MuiSelectStyle = {
 export default function PaginationKit({ rowsPerPage, count, page, onSelectRows, onSelectPage }: SelectProps) {
 
     return (
-        <div className="w-full flex flex-col flex-col-reverse md:flex-row md:justify-between items-center mt-2">
+        <div className="flex flex-col gap-2 md:gap-6 flex-col-reverse md:flex-row items-center my-4">
             <div className="flex gap-2 items-center">
-                <div className='text-white text-[14px]'>Show</div>
+                <div className='text-app-primary text-[14px]'>Show</div>
                 <FormControl sx={{ m: 1, width: 70 }} size="small">
                     <Select
                         displayEmpty
@@ -68,9 +68,9 @@ export default function PaginationKit({ rowsPerPage, count, page, onSelectRows, 
                         <MenuItem value={0}><div className='w-full text-center'>All</div></MenuItem>
                     </Select>
                 </FormControl>
-                <div className='text-white text-[14px]'>results</div>
+                <div className='text-app-primary text-[14px]'>results</div>
             </div>
-            <Pagination count={count} showFirstButton showLastButton page={page} onChange={onSelectPage} size="small" />
+            <Pagination count={count} color="secondary" showFirstButton showLastButton page={page} shape="rounded" onChange={onSelectPage} size="small" />
         </div>
     )
 }

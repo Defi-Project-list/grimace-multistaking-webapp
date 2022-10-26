@@ -22,8 +22,8 @@ export default function PoolsBar({ isSelectedLivePools, handleSelectShowPools }:
     }
 
     return (
-        <div className='w-full flex flex-col justify-end gap-4 sm:flex-row'>
-            <FormControl sx={{ m: 1, width: '100%', boxShadow: '2px 2px 4px #333', borderRadius: '5px' }} variant="outlined">
+        <div className='w-full flex flex-col justify-end gap-4 sm:gap-6 sm:flex-row py-2 mb-4'>
+            <FormControl sx={{ width: '100%', boxShadow: '2px 2px 4px #333', borderRadius: '5px' }} variant="outlined">
                 <OutlinedInput
                     id="outlined-search-pool"
                     type={'text'}
@@ -44,7 +44,7 @@ export default function PoolsBar({ isSelectedLivePools, handleSelectShowPools }:
                     }
                 />
             </FormControl>
-            <div className="flex gap-4 items-center">
+            <div className="w-full sm:w-auto flex gap-4 items-center justify-end sm:justify-start">
                 <div className={`flex gap-2 items-center ${!isSelectedLivePools?'cursor-pointer':''}`} onClick={() => handleSelectShowPools(true)}>
                     <PoolSelectOption isSelected={isSelectedLivePools} />
                     <div className='text-app-primary text-[15px] whitespace-nowrap'>Live Pool</div>
