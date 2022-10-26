@@ -70,7 +70,7 @@ export default function PaginationKit({ rowsPerPage, count, page, onSelectRows, 
                 </FormControl>
                 <div className='text-app-primary text-[14px]'>results</div>
             </div>
-            <Pagination count={count} color="secondary" showFirstButton showLastButton page={page} shape="rounded" onChange={onSelectPage} size="small" />
+            <Pagination count={count} color="primary" showFirstButton showLastButton page={page} shape="rounded" onChange={onSelectPage} size="small" />
         </div>
     )
 }

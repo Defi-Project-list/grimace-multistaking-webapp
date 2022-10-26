@@ -2,7 +2,7 @@ import Pools from '@app/products/pools'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 
-export default function WolfSwap() {
+export default function Home() {
   return (
     <>
       <Head>
