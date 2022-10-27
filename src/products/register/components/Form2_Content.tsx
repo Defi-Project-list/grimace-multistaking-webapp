@@ -1,4 +1,5 @@
 import { Button } from "@mui/material"
+import InfoSVG from "./forms/InfoSVG"
 import LogoURLInput from "./LogoURLInput"
 import TokenAddressInput from "./TokenAddressInput"
 
@@ -20,13 +21,9 @@ export default function Form2_Content(
             <div className='w-full flex flex-col md:flex-row md:items-center justify-center gap-4 py-4'>
                 <div className="w-full flex flex-col gap-4">
                     <TokenAddressInput onChangeToken={onChangeRewardToken} placeHolder1={"Reward Token Address"} placeHolder2={"Put token CA for rewards"} />
-                    <div className='w-full rounded-md bg-app-warning p-4 flex gap-2'>
-                        <div className='mt-[3px]'>
-                            <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path fillRule="evenodd" clipRule="evenodd" d="M7.5 1.86364C4.11098 1.86364 1.36364 4.61098 1.36364 8C1.36364 11.389 4.11098 14.1364 7.5 14.1364C10.889 14.1364 13.6364 11.389 13.6364 8C13.6364 4.61098 10.889 1.86364 7.5 1.86364ZM0 8C0 3.85786 3.35786 0.5 7.5 0.5C11.6421 0.5 15 3.85786 15 8C15 12.1421 11.6421 15.5 7.5 15.5C3.35786 15.5 0 12.1421 0 8Z" fill="#F3BA2F" />
-                                <path fillRule="evenodd" clipRule="evenodd" d="M7.50018 4.59082C7.87674 4.59082 8.182 4.89608 8.182 5.27264V7.99991C8.182 8.37647 7.87674 8.68173 7.50018 8.68173C7.12362 8.68173 6.81836 8.37647 6.81836 7.99991V5.27264C6.81836 4.89608 7.12362 4.59082 7.50018 4.59082Z" fill="#F3BA2F" />
-                                <path fillRule="evenodd" clipRule="evenodd" d="M6.81836 10.7277C6.81836 10.3512 7.12362 10.0459 7.50018 10.0459H7.507C7.88355 10.0459 8.18881 10.3512 8.18881 10.7277C8.18881 11.1043 7.88355 11.4095 7.507 11.4095H7.50018C7.12362 11.4095 6.81836 11.1043 6.81836 10.7277Z" fill="#F3BA2F" />
-                            </svg>
+                    <div className='w-full rounded-md bg-app-warning px-4 py-2 flex gap-2'>
+                        <div className='mt-[2px]'>
+                            <InfoSVG width={"13"} height={"13"} />
                         </div>
                         <div className="text-[11px] text-app-purple font-semibold">
                             Please fill the token address that you will give as stake rewards.
@@ -35,13 +32,9 @@ export default function Form2_Content(
                 </div>
                 <div className="w-full flex flex-col gap-4">
                     <LogoURLInput onChangeLogo={onChangeRewardLogo} placeHolder1={"Reward Token Logo"} placeHolder2={"Put the logo url of reward token"} />
-                    <div className='w-full rounded-md bg-app-warning p-4 flex gap-2'>
-                        <div className='mt-[3px]'>
-                            <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path fillRule="evenodd" clipRule="evenodd" d="M7.5 1.86364C4.11098 1.86364 1.36364 4.61098 1.36364 8C1.36364 11.389 4.11098 14.1364 7.5 14.1364C10.889 14.1364 13.6364 11.389 13.6364 8C13.6364 4.61098 10.889 1.86364 7.5 1.86364ZM0 8C0 3.85786 3.35786 0.5 7.5 0.5C11.6421 0.5 15 3.85786 15 8C15 12.1421 11.6421 15.5 7.5 15.5C3.35786 15.5 0 12.1421 0 8Z" fill="#F3BA2F" />
-                                <path fillRule="evenodd" clipRule="evenodd" d="M7.50018 4.59082C7.87674 4.59082 8.182 4.89608 8.182 5.27264V7.99991C8.182 8.37647 7.87674 8.68173 7.50018 8.68173C7.12362 8.68173 6.81836 8.37647 6.81836 7.99991V5.27264C6.81836 4.89608 7.12362 4.59082 7.50018 4.59082Z" fill="#F3BA2F" />
-                                <path fillRule="evenodd" clipRule="evenodd" d="M6.81836 10.7277C6.81836 10.3512 7.12362 10.0459 7.50018 10.0459H7.507C7.88355 10.0459 8.18881 10.3512 8.18881 10.7277C8.18881 11.1043 7.88355 11.4095 7.507 11.4095H7.50018C7.12362 11.4095 6.81836 11.1043 6.81836 10.7277Z" fill="#F3BA2F" />
-                            </svg>
+                    <div className='w-full rounded-md bg-app-warning px-4 py-2 flex gap-2'>
+                        <div className='mt-[2px]'>
+                            <InfoSVG width={"13"} height={"13"} />
                         </div>
                         <div className="text-[11px] text-app-purple font-semibold">
                             Please fill this field with the logo of the reward token, in 100x100px size.

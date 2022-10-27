@@ -6,10 +6,11 @@ import FormProgress from './components/FormProgress'
 import Form1_Content from './components/Form1_Content'
 import Form2_Content from './components/Form2_Content'
 import Form3_Content from './components/Form3_Content'
+import Form4_Content from './components/Form4_Content'
 
 export default function Register() {
     const router = useRouter()
-    const [step, setStep] = useState(3)
+    const [step, setStep] = useState(4)
 
     const onChangeStakeToken = (val: string) => {
 
@@ -36,7 +37,7 @@ export default function Register() {
                             Devs Corner
                         </div>
                         <div className='w-full font-light text-white text-[18px] md:text-[20px] lg:border-b-2 lg:border-[#F3BA2F]'>
-                            Register your tokens to join Grimace’s staking club
+                            Register your tokens to join Grimace Staking Club
                         </div>
                     </div>
                     <div className='logo-size'>
@@ -47,15 +48,16 @@ export default function Register() {
             <div className='w-full p-4 md:p-6 flex flex-col xl:flex-row gap-6 items-start'>
                 <div className='xl:basis-2/3 w-full bg-white rounded-md p-4 md:p-6' style={{ boxShadow: '2px 2px 4px #888' }}>
                     <div className='w-full text-[36px] sm:text-[40px] md:text-[44px] lg:text-[28px] xl:text-[50px] text-app-primary font-bold'>
-                        Apply for Grimace’s staking club
+                        Apply for Grimace Staking Club
                     </div>
                     <div className='text-[18px] md:text-[20px] text-app-primary mt-4'>
-                        Apply a Grimace’s staking club for your project, so that your investors are able to stake the Token and earn Rewards. Grimace Registration is very simple, you just have to follow the form below to apply for your Grimace Pool.
+                        Apply a Grimace Staking Club for your project, so that your investors are able to stake the Token and earn Rewards. Grimace Registration is very simple, you just have to follow the form below to apply for your Grimace Pool.
                     </div>
                     <FormProgress step={step} />
                     {step === 1 && <Form1_Content setStep={setStep} onChangeStakeToken={onChangeStakeToken} onChangeStakeLogo={onChangeStakeLogo} />}
                     {step === 2 && <Form2_Content setStep={setStep} onChangeRewardToken={onChangeRewardToken} onChangeRewardLogo={onChangeRewardLogo} />}
                     {step === 3 && <Form3_Content setStep={setStep} onChangeRewardToken={onChangeRewardToken} onChangeRewardLogo={onChangeRewardLogo} />}
+                    {step === 4 && <Form4_Content setStep={setStep} onChangeRewardToken={onChangeRewardToken} onChangeRewardLogo={onChangeRewardLogo} />}
                 </div>
                 <NotePanel />
             </div>
