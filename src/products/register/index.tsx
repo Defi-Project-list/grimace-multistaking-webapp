@@ -10,7 +10,7 @@ import Form4_Content from './components/Form4_Content'
 
 export default function Register() {
     const router = useRouter()
-    const [step, setStep] = useState(4)
+    const [step, setStep] = useState(3)
 
     const onChangeStakeToken = (val: string) => {
 

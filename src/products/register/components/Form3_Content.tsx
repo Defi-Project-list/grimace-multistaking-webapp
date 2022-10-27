@@ -222,7 +222,7 @@ export default function Form3_Content(
                         color="primary"
                         onClick={() => setStep(1)}
                     >
-                        <span className='text-[16px] md:text-[18px] text-app-primary font-bold whitespace-nowrap'>Back</span>
+                        <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Back</span>
                     </Button>
                 </div>
                 <div className="basis-1/2">

@@ -138,7 +138,7 @@ export default function Form4_Content(
                             color="secondary"
                             onClick={() => setStep(1)}
                         >
-                            <span className='text-[16px] md:text-[18px] text-app-primary font-bold whitespace-nowrap'>Allow TKN</span>
+                            <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Allow TKN</span>
                         </Button>
                     </div>
                 </div>
@@ -158,7 +158,7 @@ export default function Form4_Content(
                             color="secondary"
                             onClick={() => setStep(1)}
                         >
-                            <span className='text-[16px] md:text-[18px] text-app-primary font-bold whitespace-nowrap'>Allow TKN2</span>
+                            <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Allow TKN2</span>
                         </Button>
                     </div>
                 </div> */}
@@ -171,7 +171,7 @@ export default function Form4_Content(
                         color="primary"
                         onClick={() => setStep(1)}
                     >
-                        <span className='text-[16px] md:text-[18px] text-app-primary font-bold whitespace-nowrap'>Back</span>
+                        <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Back</span>
                     </Button>
                 </div>
                 <div className="basis-1/2">
