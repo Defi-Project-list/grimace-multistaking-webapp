@@ -22,9 +22,13 @@ export const BUSDTokenAddress = "0xe9e7cea3dedca5984780bafc599bd69add087d56"
 export const USDTTokenAddress = "0x55d398326f99059fF775485246999027B3197955"
 export const USDCTokenAddress = "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"
 
-export const AppTokenAddress = "0xf1ed6a819ceabc0b8d0d57bfc1bc6ade4eb78585"
+// mainnet
+// export const AppTokenAddress = ""
+// export const GrimaceClubAddress = ""
 
-export const AppLPAddress = "0x517cd2967ce02deee007b98323b43b6df8087f86"
+// testnet
+export const AppTokenAddress = "0xd0C3268af45780ADf2CbeC83524800e74b06236F"
+export const GrimaceClubAddress = "0x5a3CAe269810419418ae37e4F978Ff795f023995"
 
 export const CHAIN_ID_MAP: { [key: ChainId | number]: string } = {
     1: "Ethereum Mainnet",

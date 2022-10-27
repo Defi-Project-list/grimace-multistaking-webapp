@@ -15,7 +15,7 @@ export default function AmountInputBox({ id, placeHolder, decimals = 18, onChang
             <input
                 id={id}
                 type="text"
-                className="bg-white text-[#341461] text-[16px] md:text-[18px] rounded-md block w-full p-0 focus:outline-none min-w-[80px]"
+                className="bg-white text-[#341461] text-[18px] md:text-[20px] rounded-md block w-full p-0 focus:outline-none min-w-[80px]"
                 placeholder={placeHolder}
                 onFocus={handleFocus}
                 onBlur={handleBlur}

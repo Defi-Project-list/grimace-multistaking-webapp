@@ -61,7 +61,7 @@ export default function Wallet() {
                     onClick={activateProvider}
                     sx={{ borderRadius: "12px", fontFamily: 'Inter', width: '180px', height: '36px' }}
                 >
-                    <span className="text-[16px] md:text-[18px] text-app-primary">Connect</span>
+                    <span className="text-[16px] md:text-[18px]">Connect</span>
                 </Button>
             )}
             {isConnected && <AccountAndDisconnect />}
