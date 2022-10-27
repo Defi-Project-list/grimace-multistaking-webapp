@@ -6,6 +6,7 @@ import { SidebarItem, SIDEBAR_ROUTES } from '@app/common/layout/LayoutConstants'
 import PoolsBar from './components/PoolsBar'
 import PoolCard from './components/PoolCard'
 import PaginationKit from '@app/common/components/PaginationKit'
+import StakeModal from './components/StakeModal'
 
 export default function Pools() {
     const router = useRouter()
@@ -13,6 +14,8 @@ export default function Pools() {
     const [rowsPerPage, setRowsPerPage] = useState(10)
     const [page, setPage] = useState(1)
     const [pageCount, setPageCount] = useState(0)
+    const [isOpenStakeModal, setIsOpenStakeModal] = useState(false)
+    const [isOpenUnstakeModal, setIsOpenUnstakeModal] = useState(false)
 
     const onSelectPage = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value)
@@ -25,12 +28,13 @@ export default function Pools() {
     }
 
     useEffect(() => {
-        setPageCount(10)          
-        setPage(1)      
+        setPageCount(10)
+        setPage(1)
     }, [])
 
     return (
         <div className='w-full bg-app-common'>
+            <StakeModal isOpen={isOpenStakeModal} handleClose={() => setIsOpenStakeModal(false) } />
             <div className={`w-full flex justify-center items-center h-screen lg:min-h-[480px] lg:h-auto bg-[#FFFFFF] bg-[url('splash.png')] bg-center bg-cover bg-no-repeat`}>
                 <div className='w-full px-5 md:px-6 xl:px-8 flex gap-8 flex-col lg:flex-row lg:justify-between items-center'>
                     <div className='w-full flex flex-col lg:flex-row gap-2 lg:gap-4 xl:gap-8 items-center'>
@@ -66,7 +70,7 @@ export default function Pools() {
                                 color="primary"
                                 onClick={() => onRegister()}
                             >
-                                <span className='text-[16px] md:text-[18px] text-app-primary font-bold whitespace-nowrap'>Apply Pool for your project</span>
+                                <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Apply Pool for your project</span>
                             </Button>
                         </div>
                     </div>
@@ -74,6 +78,14 @@ export default function Pools() {
             </div>
             <div className='w-full p-4 md:p-6 flex flex-col lg:flex-row gap-6'>
                 <div className="w-full">
+                    <Button
+                        variant="contained"
+                        sx={{ width: '100%', height: '38px', fontFamily: 'Inter' }}
+                        color="primary"
+                        onClick={() => setIsOpenStakeModal((val:boolean) => !val)}
+                    >
+                        <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Emergency Unstake</span>
+                    </Button>
                     <PoolsBar isSelectedLivePools={isSelectedLivePools} handleSelectShowPools={setIsSelectedLivePools} />
                     <div className='w-full flex justify-center'>
                         <PaginationKit rowsPerPage={rowsPerPage} count={pageCount} page={page} onSelectRows={(event: SelectChangeEvent) => setRowsPerPage(Number(event.target.value as string))} onSelectPage={onSelectPage} />

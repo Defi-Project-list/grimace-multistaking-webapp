@@ -63,7 +63,7 @@ export default function PoolCard() {
                                                 color="secondary"
                                                 onClick={() => onApprove()}
                                             >
-                                                <span className='text-[16px] md:text-[18px] text-app-primary font-bold whitespace-nowrap'>Enable Staking</span>
+                                                <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Enable Staking</span>
                                             </Button>
                                         </div> */}
                 <div className='flex flex-col gap-2 justify-between h-full'>
@@ -74,7 +74,7 @@ export default function PoolCard() {
                         color="secondary"
                         onClick={() => onStake()}
                     >
-                        <span className='text-[16px] md:text-[18px] text-app-primary font-bold whitespace-nowrap'>Stake</span>
+                        <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Stake</span>
                     </Button>
                 </div>
                 {/* <div className='flex gap-4 items-center'>
@@ -90,7 +90,7 @@ export default function PoolCard() {
                                 color="secondary"
                                 onClick={() => onStake()}
                             >
-                                <span className='text-[16px] md:text-[18px] text-app-primary font-bold whitespace-nowrap'>Stake</span>
+                                <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Stake</span>
                             </Button>
                             <Button
                                 variant="contained"
@@ -98,7 +98,7 @@ export default function PoolCard() {
                                 color="primary"
                                 onClick={() => onUnstake()}
                             >
-                                <span className='text-[16px] md:text-[18px] text-app-primary font-bold whitespace-nowrap'>Unstake</span>
+                                <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Unstake</span>
                             </Button>
                         </div>
                     </div> */}
@@ -202,7 +202,7 @@ export default function PoolCard() {
                                         variant="contained"
                                         sx={{ width: '100%', height: '38px', fontFamily: 'Inter', backgroundColor: '#7A30E0' }}
                                         color="primary"
-                                        onClick={() => onClaim()}
+                                        onClick={() => onClaim()}                                        
                                     >
                                         <span className='text-[16px] md:text-[18px] text-white font-bold whitespace-nowrap'>Claim</span>
                                     </Button>
@@ -210,9 +210,9 @@ export default function PoolCard() {
                                         variant="contained"
                                         sx={{ width: '100%', height: '38px', fontFamily: 'Inter' }}
                                         color="primary"
-                                        onClick={() => onEmergencyUnstake()}
+                                        onClick={() => onEmergencyUnstake()}                                        
                                     >
-                                        <span className='text-[16px] md:text-[18px] text-app-primary font-bold whitespace-nowrap'>Emergency Unstake</span>
+                                        <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Emergency Unstake</span>
                                     </Button>
                                 </div>
                             </div>
