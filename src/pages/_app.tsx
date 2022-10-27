@@ -7,7 +7,7 @@ import theme from "@app/theme/theme"
 import Layout from '@app/common/layout/Layout'
 import { CssBaseline } from '@mui/material'
 import { Rpc_URLS } from '@app/constants/AppConstants'
-import { RefreshContextProvider } from "@app/contexts"
+import { RefreshContextProvider, GrimaceStakingClubProvider } from "@app/contexts"
 
 export const muiCache = createCache({
   key: 'mui',
@@ -44,12 +44,14 @@ function MyApp({
     <CacheProvider value={emotionCache}>
       <DAppProvider config={config}>
         <RefreshContextProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </ThemeProvider>
+          <GrimaceStakingClubProvider>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </ThemeProvider>
+          </GrimaceStakingClubProvider>
         </RefreshContextProvider>
       </DAppProvider>
     </CacheProvider>

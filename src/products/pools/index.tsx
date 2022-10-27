@@ -85,7 +85,8 @@ export default function Pools() {
                         onClick={() => setIsOpenStakeModal((val:boolean) => !val)}
                     >
                         <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Emergency Unstake</span>
-                    </Button>
+                    </Button>                    
+
                     <PoolsBar isSelectedLivePools={isSelectedLivePools} handleSelectShowPools={setIsSelectedLivePools} />
                     <div className='w-full flex justify-center'>
                         <PaginationKit rowsPerPage={rowsPerPage} count={pageCount} page={page} onSelectRows={(event: SelectChangeEvent) => setRowsPerPage(Number(event.target.value as string))} onSelectPage={onSelectPage} />
