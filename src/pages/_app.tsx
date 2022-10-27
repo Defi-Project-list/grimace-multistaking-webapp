@@ -7,7 +7,7 @@ import theme from "@app/theme/theme"
 import Layout from '@app/common/layout/Layout'
 import { CssBaseline } from '@mui/material'
 import { Rpc_URLS } from '@app/constants/AppConstants'
-import { RefreshContextProvider, GrimaceStakingClubProvider } from "@app/contexts"
+import { RefreshContextProvider, GrimaceStakingClubProvider, GrimaceRegisterProvider } from "@app/contexts"
 
 export const muiCache = createCache({
   key: 'mui',
@@ -45,12 +45,14 @@ function MyApp({
       <DAppProvider config={config}>
         <RefreshContextProvider>
           <GrimaceStakingClubProvider>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </ThemeProvider>
+            <GrimaceRegisterProvider>
+              <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              </ThemeProvider>
+            </GrimaceRegisterProvider>
           </GrimaceStakingClubProvider>
         </RefreshContextProvider>
       </DAppProvider>

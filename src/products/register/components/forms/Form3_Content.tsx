@@ -1,23 +1,23 @@
 import AmountInputBox from "@app/common/components/AmountInputBox"
-import { parseUnits } from "@ethersproject/units"
+import { formatUnits, parseUnits } from "@ethersproject/units"
 import { Button } from "@mui/material"
 import { BigNumber } from "ethers"
 import { useEffect, useState } from "react"
-import InfoSVG from "./forms/InfoSVG"
-import PoolStopDate from "./forms/PoolStopDate"
-import RewardPerBlockInput from "./forms/RewardPerBlockInput"
-import RewardSupplyInput from "./forms/RewardSupplyInput"
-import StakerLockTimeInput from "./forms/StakerLockTimeInput"
-import TelegramContactInput from "./forms/TelegramContactInput"
-import WarnSVG from "./forms/WarnSVG"
-import WebsiteURLInput from "./forms/WebsiteURLInput"
-import LogoURLInput from "./LogoURLInput"
-import TokenAddressInput from "./TokenAddressInput"
+import InfoSVG from "./InfoSVG"
+import PoolStopDate from "./PoolStopDate"
+import RewardPerBlockInput from "./RewardPerBlockInput"
+import RewardSupplyInput from "./RewardSupplyInput"
+import StakerLockTimeInput from "./StakerLockTimeInput"
+import TelegramContactInput from "./TelegramContactInput"
+import WarnSVG from "./WarnSVG"
+import WebsiteURLInput from "./WebsiteURLInput"
+import { useGrimaceRegister } from "@app/contexts"
+import validator from 'validator'
+
+const blockchain = process.env.blockchain
 
 interface props {
-    setStep: (val: number) => void,
-    onChangeRewardToken: (val: string) => void,
-    onChangeRewardLogo: (val: string) => void
+
 }
 
 const ID_REWARD_SUPPLY = 'id_reward_supply_input'
@@ -27,29 +27,40 @@ const ID_END_TIME = 'id_stake_end_time'
 const ID_WEBSITE_URL = 'id_website_url'
 const ID_TELEGRAM_CONTACT = 'id_telegram_contact'
 
-export default function Form3_Content(
-    {
-        setStep,
-        onChangeRewardToken,
-        onChangeRewardLogo
-    }: props
-) {
-    const [rewardSupply, setRewardSupply] = useState(BigNumber.from(0))
-    const [rewardPerBlock, setRewardPerBlock] = useState(BigNumber.from(0))
-    const [endTime, setEndTime] = useState<Date>()
-    const [stakerLockTime, setStakerLockTime] = useState(BigNumber.from(0))
-    const [websiteURL, setWebsiteURL] = useState('')
-    const [telegramContact, setTelegramContact] = useState('')
+export default function Form3_Content() {
+    const {
+        stakeToken,
+        stakeTokenLogo,
+        rewardToken,
+        rewardTokenLogo,
+        rewardSupply,
+        rewardPerBlock,
+        endTime,
+        stakerLockTime,
+        websiteURL,
+        telegramContact,
+        isPassableForm3,
+        setRewardSupply,
+        setRewardPerBlock,
+        setStakerLockTime,
+        setEndTime,
+        setWebsiteURL,
+        setTelegramContact,
+        setStep
+    } = useGrimaceRegister()
 
     const onRewardSupplyChange = (val: string) => {
         let amount = BigNumber.from(0)
         if (val.length > 0) {
-            // if (val.substring(val.indexOf('.') + 1).length <= 0) amount = parseUnits(val.substring(0, val.indexOf('.')), inToken?.decimals)
-            // else amount = parseUnits(val, inToken?.decimals)
-            if (val.substring(val.indexOf('.') + 1).length <= 0) amount = parseUnits(val.substring(0, val.indexOf('.')), 18)
-            else amount = parseUnits(val, 18)
+            if (val.substring(val.indexOf('.') + 1).length <= 0) amount = parseUnits(val.substring(0, val.indexOf('.')), rewardToken?.decimals)
+            else amount = parseUnits(val, rewardToken?.decimals)
         }
         setRewardSupply(amount)
+    }
+
+    const setRewardSupplyBoxValue = (val: BigNumber) => {
+        let element: any = document.getElementById(ID_REWARD_SUPPLY)
+        if (element) element.value = formatUnits(val, rewardToken?.decimals)
     }
 
     const initRewardSupplyBox = () => {
@@ -61,12 +72,15 @@ export default function Form3_Content(
     const onRewardPerBlockChange = (val: string) => {
         let amount = BigNumber.from(0)
         if (val.length > 0) {
-            // if (val.substring(val.indexOf('.') + 1).length <= 0) amount = parseUnits(val.substring(0, val.indexOf('.')), inToken?.decimals)
-            // else amount = parseUnits(val, inToken?.decimals)
-            if (val.substring(val.indexOf('.') + 1).length <= 0) amount = parseUnits(val.substring(0, val.indexOf('.')), 18)
-            else amount = parseUnits(val, 18)
+            if (val.substring(val.indexOf('.') + 1).length <= 0) amount = parseUnits(val.substring(0, val.indexOf('.')), rewardToken?.decimals)
+            else amount = parseUnits(val, rewardToken?.decimals)
         }
         setRewardPerBlock(amount)
+    }
+
+    const setRewardPerBlockBoxValue = (val: BigNumber) => {
+        let element: any = document.getElementById(ID_REWARD_PER_BLOCK)
+        if (element) element.value = formatUnits(val, rewardToken?.decimals)
     }
 
     const initRewardPerBlockBox = () => {
@@ -83,6 +97,11 @@ export default function Form3_Content(
         setStakerLockTime(amount)
     }
 
+    const setStakerLockTimeBoxValue = (val: BigNumber) => {
+        let element: any = document.getElementById(ID_STAKER_LOCK_TIME)
+        if (element) element.value = Number(val) / 86400
+    }
+
     const initStakerLockTimeBox = () => {
         setStakerLockTime(BigNumber.from(0))
         let element: any = document.getElementById(ID_STAKER_LOCK_TIME)
@@ -94,33 +113,33 @@ export default function Form3_Content(
             <div className="w-full flex flex-col md:flex-row gap-4">
                 <div className='md:basis-1/2 w-full bg-white rounded-md p-4 flex gap-4 items-center' style={{ boxShadow: '2px 2px 4px #888' }}>
                     <div className="w-[48px] xl:w-[56px]">
-                        <img src='./images/Logomark_GrimaceCoin.png' width="100%" />
+                        <img src={stakeTokenLogo} width="100%" />
                     </div>
                     <div className="flex flex-col">
                         <div className="text-[22px] md:text-[25px] text-app-purple font-bold">
-                            Stake TKN
+                            {`Stake ${stakeToken.name}`}
                         </div>
                         <div className="text-[14px] md:text-[15px] text-app-purple">
-                            TKN | 18 Decimal
+                            {`${stakeToken.symbol} | ${stakeToken.decimals} Decimal`}
                         </div>
                         <div className="text-[14px] md:text-[15px] text-app-purple break-all mt-2">
-                            CA: 0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c
+                            {`CA: ${stakeToken.address}`}
                         </div>
                     </div>
                 </div>
                 <div className='md:basis-1/2 w-full bg-white rounded-md p-4 flex gap-4 items-center' style={{ boxShadow: '2px 2px 4px #888' }}>
                     <div className="w-[48px] xl:w-[56px]">
-                        <img src='./images/Logomark_GrimaceCoin.png' width="100%" />
+                        <img src={rewardTokenLogo} width="100%" />
                     </div>
                     <div className="flex flex-col">
                         <div className="text-[22px] md:text-[25px] text-app-purple font-bold">
-                            Reward TKN
+                            {`Reward ${rewardToken.name}`}
                         </div>
                         <div className="text-[14px] md:text-[15px] text-app-purple">
-                            TKN | 18 Decimal
+                            {`${rewardToken.symbol} | ${rewardToken.decimals} Decimal`}
                         </div>
                         <div className="text-[14px] md:text-[15px] text-app-purple break-all mt-2">
-                            CA: 0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c
+                            {`CA: ${rewardToken.address}`}
                         </div>
                     </div>
                 </div>
@@ -130,7 +149,7 @@ export default function Form3_Content(
                     <InfoSVG width={"15"} height={"16"} />
                 </div>
                 <div className="text-[13px] md:text-[15px] text-app-purple">
-                    Reward Amount / Supply are total amount of WOLF that you are going to send to your Dojo Pool as reward for staking.
+                    {`Reward Amount / Supply are total amount of `}<span className="font-bold">{rewardToken.symbol}</span>{` that you are going to send to your Dojo Pool as reward for staking.`}
                 </div>
             </div>
             <RewardSupplyInput id={ID_REWARD_SUPPLY} onChange={onRewardSupplyChange} />
@@ -139,9 +158,9 @@ export default function Form3_Content(
                     <div className="mt-[3px]">
                         <WarnSVG width={"15"} height={"16"} />
                     </div>
-                    <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
+                    {rewardSupply.gt(0) && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
                         Total Reward Supply must be greater than 0
-                    </div>
+                    </div>}
                 </div>
             </div>
             <div className="w-full border-b-2 border-[#7A30E0] mt-6" />
@@ -153,9 +172,9 @@ export default function Form3_Content(
                             <div className="mt-[3px]">
                                 <WarnSVG width={"15"} height={"16"} />
                             </div>
-                            <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
+                            {Number(endTime) > Math.floor((new Date()).getTime() /1000) && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
                                 Please enter a valid date
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </div>
@@ -166,9 +185,9 @@ export default function Form3_Content(
                             <div className="mt-[3px]">
                                 <WarnSVG width={"15"} height={"16"} />
                             </div>
-                            <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
+                            {stakerLockTime.gt(0) && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
                                 Days lock should be greater than 0
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </div>
@@ -179,9 +198,9 @@ export default function Form3_Content(
                             <div className="mt-[3px]">
                                 <WarnSVG width={"15"} height={"16"} />
                             </div>
-                            <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
+                            {rewardPerBlock.gt(0) && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
                                 Reward per block should be greater than 0
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </div>
@@ -194,9 +213,9 @@ export default function Form3_Content(
                             <div className="mt-[3px]">
                                 <WarnSVG width={"15"} height={"16"} />
                             </div>
-                            <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
+                            {validator.isURL(websiteURL) && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
                                 Website url cannot be empty
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </div>
@@ -207,9 +226,9 @@ export default function Form3_Content(
                             <div className="mt-[3px]">
                                 <WarnSVG width={"15"} height={"16"} />
                             </div>
-                            <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
+                            {telegramContact.length>3 && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
                                 Telegram PIC Cannot be empty
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </div>
@@ -220,7 +239,7 @@ export default function Form3_Content(
                         variant="contained"
                         sx={{ width: '100%', height: '38px', fontFamily: 'Inter' }}
                         color="primary"
-                        onClick={() => setStep(1)}
+                        onClick={() => setStep(2)}
                     >
                         <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Back</span>
                     </Button>
@@ -230,7 +249,8 @@ export default function Form3_Content(
                         variant="contained"
                         sx={{ width: '100%', height: '38px', fontFamily: 'Inter', backgroundColor: '#7A30E0' }}
                         color="primary"
-                        onClick={() => setStep(3)}
+                        onClick={() => setStep(4)}
+                        disabled={!isPassableForm3}
                     >
                         <span className='text-[16px] md:text-[18px] text-white font-bold whitespace-nowrap'>Continue</span>
                     </Button>

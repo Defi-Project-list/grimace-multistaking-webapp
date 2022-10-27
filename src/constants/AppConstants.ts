@@ -23,7 +23,7 @@ export const USDTTokenAddress = "0x55d398326f99059fF775485246999027B3197955"
 export const USDCTokenAddress = "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"
 
 // mainnet
-// export const AppTokenAddress = ""
+// export const AppTokenAddress = "0xC6759a4Fc56B3ce9734035a56B36e8637c45b77E"
 // export const GrimaceClubAddress = ""
 
 // testnet

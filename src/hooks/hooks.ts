@@ -90,10 +90,10 @@ export function useTokenBalance(tokenAddress: string, blockchain: string): BigNu
   return balance
 }
 
-export function useTokenBalanceCallback(): { 
+export function useTokenBalanceCallback(): {
   tokenBalanceCallback: (tokenAddress: string, blockchain: string) => Promise<BigNumber>,
-  nativeBalanceCallback: (blockchain: string) => Promise<BigNumber> 
-  nativeBalanceFromAddrCallback: (blockchain: string, address:string) => Promise<BigNumber> 
+  nativeBalanceCallback: (blockchain: string) => Promise<BigNumber>
+  nativeBalanceFromAddrCallback: (blockchain: string, address: string) => Promise<BigNumber>
 } {
   const { account, library } = useEthers()
 
@@ -122,13 +122,34 @@ export function useTokenBalanceCallback(): {
   return { tokenBalanceCallback, nativeBalanceCallback, nativeBalanceFromAddrCallback }
 }
 
+export function useTokenCallback(): {
+  tokenCallback: (tokenContractAddress: string, blockchain: string) => Promise<any>
+} {
+  const { account, library } = useEthers()
+  const tokenCallback = async function (tokenContractAddress: string, blockchain: string) {
+    try {
+      const chainId = getChainIdFromName(blockchain)
+      const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+      const name = await tokenContract.name()
+      const decimals = await tokenContract.decimals()
+      const symbol = await tokenContract.symbol()
+      const address = tokenContract.address
+      return { address:address, name: name, symbol: symbol, decimals: decimals }
+    } catch (err) {
+      return
+    }
+  }
+
+  return { tokenCallback }
+}
+
 export function useApproveCallback(): {
   approveCallback: (recvAddress: string, tokenContractAddress: string, blockchain: string) => Promise<string>
 } {
   const { account, library } = useEthers()
   const approveCallback = async function (recvAddress: string, tokenContractAddress: string, blockchain: string) {
     const chainId = getChainIdFromName(blockchain)
-    const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, library, account ? account : undefined)    
+    const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, library, account ? account : undefined)
     if (!account || !library) return
     const provider = getProviderOrSigner(library, account) as any
     return tokenContract.connect(provider).approve(recvAddress, tokenContract.totalSupply()).then((response: TransactionResponse) => {

@@ -3,30 +3,15 @@ import { AppTokenAddress } from "@app/constants/AppConstants"
 import { useRouter } from 'next/router'
 import NotePanel from './components/NotePanel'
 import FormProgress from './components/FormProgress'
-import Form1_Content from './components/Form1_Content'
-import Form2_Content from './components/Form2_Content'
-import Form3_Content from './components/Form3_Content'
-import Form4_Content from './components/Form4_Content'
+import Form1_Content from './components/forms/Form1_Content'
+import Form2_Content from './components/forms/Form2_Content'
+import Form3_Content from './components/forms/Form3_Content'
+import Form4_Content from './components/forms/Form4_Content'
+import { useGrimaceRegister } from "@app/contexts"
 
 export default function Register() {
-    const router = useRouter()
-    const [step, setStep] = useState(3)
-
-    const onChangeStakeToken = (val: string) => {
-
-    }
-
-    const onChangeStakeLogo = (val: string) => {
-
-    }
-
-    const onChangeRewardToken = (val: string) => {
-
-    }
-
-    const onChangeRewardLogo = (val: string) => {
-
-    }
+    const router = useRouter()    
+    const { step } = useGrimaceRegister()
 
     return (
         <div className='w-full bg-app-common'>
@@ -51,13 +36,13 @@ export default function Register() {
                         Apply for Grimace Staking Club
                     </div>
                     <div className='text-[18px] md:text-[20px] text-app-primary mt-4'>
-                        Apply a Grimace Staking Club for your project, so that your investors are able to stake the Token and earn Rewards. Grimace Registration is very simple, you just have to follow the form below to apply for your Grimace Pool.
+                        Apply a Grimace Staking Club for your project, so that your investors are able to stake the Token and earn Rewards. Grimace Staking Club registration is very simple, you just have to follow the form below to apply for your Grimace Pool.
                     </div>
                     <FormProgress step={step} />
-                    {step === 1 && <Form1_Content setStep={setStep} onChangeStakeToken={onChangeStakeToken} onChangeStakeLogo={onChangeStakeLogo} />}
-                    {step === 2 && <Form2_Content setStep={setStep} onChangeRewardToken={onChangeRewardToken} onChangeRewardLogo={onChangeRewardLogo} />}
-                    {step === 3 && <Form3_Content setStep={setStep} onChangeRewardToken={onChangeRewardToken} onChangeRewardLogo={onChangeRewardLogo} />}
-                    {step === 4 && <Form4_Content setStep={setStep} onChangeRewardToken={onChangeRewardToken} onChangeRewardLogo={onChangeRewardLogo} />}
+                    {step === 1 && <Form1_Content />}
+                    {step === 2 && <Form2_Content />}
+                    {step === 3 && <Form3_Content />}
+                    {step === 4 && <Form4_Content />}
                 </div>
                 <NotePanel />
             </div>

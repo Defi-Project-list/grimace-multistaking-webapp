@@ -96,10 +96,10 @@ export interface IGrimaceStakingContext {
 }
 
 const GrimaceStakingContext = React.createContext<Maybe<IGrimaceStakingContext>>(null)
-const blockchain = 'bsc'
+const blockchain = process.env.blockchain
 
 export const GrimaceStakingClubProvider = ({ children = null as any }) => {
-    const { account, library } = useEthers()
+    const { chainId, account, library } = useEthers()    
     const [grimaceBalance, setGrimaceBalance] = useState(BigNumber.from(0))
     const { slowRefresh, fastRefresh } = useRefresh()
     const [bnbBalance, setBnbBalance] = useState(BigNumber.from(0))
@@ -148,10 +148,12 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
 
     useEffect(() => {
         const fetch = async () => {
-            const chainId = getChainIdFromName(blockchain)
-            let blocknumber = await RpcProviders[chainId].getBlockNumber()
-            let blockData = await RpcProviders[chainId].getBlock(blocknumber)
-            setBlockTimestamp(blockData.timestamp)
+            try {
+                const chainId = getChainIdFromName(blockchain)
+                let blocknumber = await RpcProviders[chainId].getBlockNumber()
+                let blockData = await RpcProviders[chainId].getBlock(blocknumber)
+                setBlockTimestamp(blockData.timestamp)
+            } catch (err) { }
         }
         fetch()
     }, [fastRefresh])
@@ -460,7 +462,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     }
 
     const fetchClubMapPoolInfo = async (factoryContract: Contract) => {
-        const res = await factoryContract.getAllPoolInfos(account)
+        const res = await factoryContract.getAllPoolInfos()
         return res
     }
 
@@ -470,30 +472,29 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         const owner = await factoryContract.owner()
         setGrimaceClubOwner(owner)
 
-        fetchClubMapPoolInfo(factoryContract).then(async result => {
+        fetchClubMapPoolInfo(factoryContract).then(async result => {            
             if (result.length > 0) {
                 let temp: IClubMapPoolInfo[] = []
                 let livePools = result[0]
                 let expiredPools = result[1]
-                let disabledPools = result[2]
-
-                await Promise.all(livePools.map(async (item) => {
+                let disabledPools = result[2]                
+                livePools.map(async (item) => {
                     temp.push({ poolAddress: item.poolAddress, poolAndUserInfo: undefined, owner: item.owner, createdAt: Number(item.createdAt) })
-                }))
+                })
                 temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
                 setAllLivePools(temp)
                 temp = []
 
-                await Promise.all(expiredPools.map(async (item) => {
+                expiredPools.map(async (item) => {
                     temp.push({ poolAddress: item.poolAddress, poolAndUserInfo: undefined, owner: item.owner, createdAt: Number(item.createdAt) })
-                }))
+                })
                 temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
                 setAllExpiredPools(temp)
                 temp = []
 
-                await Promise.all(disabledPools.map(async (item) => {
+                disabledPools.map(async (item) => {
                     temp.push({ poolAddress: item.poolAddress, poolAndUserInfo: undefined, owner: item.owner, createdAt: Number(item.createdAt) })
-                }))
+                })
                 temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
                 setAllDisabledPools(temp)
             } else {

@@ -84,8 +84,7 @@ export function getProviderOrSigner(library: JsonRpcProvider, account?: string):
 export function getContract(address: string, ABI: any, library: JsonRpcProvider, account?: string): Contract {
     if (!isAddress(address) || address === AddressZero) {
         throw Error(`Invalid 'address' parameter '${address}'.`)
-    }
-
+    }    
     return new Contract(address, ABI, getProviderOrSigner(library, account) as any)
 }
 

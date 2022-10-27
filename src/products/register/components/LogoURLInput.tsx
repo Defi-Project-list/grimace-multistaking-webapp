@@ -5,7 +5,7 @@ import OutlinedInput from '@mui/material/OutlinedInput'
 import InputAdornment from '@mui/material/InputAdornment'
 import ImageSearchIcon from '@mui/icons-material/ImageSearch'
 
-export default function LogoURLInput({ onChangeLogo, placeHolder1, placeHolder2 }: { onChangeLogo: (val: string) => void, placeHolder1:string, placeHolder2:string }) {
+export default function LogoURLInput({ id, onChangeLogo, placeHolder1, placeHolder2 }: { id:string, onChangeLogo: (val: string) => void, placeHolder1:string, placeHolder2:string }) {
     const [isFocused, setIsFocused] = useState(false)
 
     const handleFocus = () => {
@@ -19,7 +19,7 @@ export default function LogoURLInput({ onChangeLogo, placeHolder1, placeHolder2 
     return (
         <FormControl sx={{ width: '100%', boxShadow: '2px 2px 4px #888', borderRadius: '5px', backgroundColor: '#FFFFFF' }} variant="outlined">
             <OutlinedInput
-                id="outlined-search-pool"
+                id={id}
                 type={'text'}
                 sx={{ height: '44px' }}
                 // value={}

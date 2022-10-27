@@ -3,21 +3,12 @@ import { parseUnits } from "@ethersproject/units"
 import { Button } from "@mui/material"
 import { BigNumber } from "ethers"
 import { useEffect, useState } from "react"
-import InfoSVG from "./forms/InfoSVG"
-import PoolStopDate from "./forms/PoolStopDate"
-import RewardPerBlockInput from "./forms/RewardPerBlockInput"
-import RewardSupplyInput from "./forms/RewardSupplyInput"
-import StakerLockTimeInput from "./forms/StakerLockTimeInput"
-import SuccessSVG from "./forms/SuccessSVG"
-import TelegramContactInput from "./forms/TelegramContactInput"
-import WebsiteURLInput from "./forms/WebsiteURLInput"
-import LogoURLInput from "./LogoURLInput"
-import TokenAddressInput from "./TokenAddressInput"
+import SuccessSVG from "./SuccessSVG"
+import { useGrimaceRegister } from "@app/contexts"
+const blockchain = process.env.blockchain
 
 interface props {
-    setStep: (val: number) => void,
-    onChangeRewardToken: (val: string) => void,
-    onChangeRewardLogo: (val: string) => void
+
 }
 
 const ID_REWARD_SUPPLY = 'id_reward_supply_input'
@@ -27,13 +18,8 @@ const ID_END_TIME = 'id_stake_end_time'
 const ID_WEBSITE_URL = 'id_website_url'
 const ID_TELEGRAM_CONTACT = 'id_telegram_contact'
 
-export default function Form4_Content(
-    {
-        setStep,
-        onChangeRewardToken,
-        onChangeRewardLogo
-    }: props
-) {
+export default function Form4_Content() {
+    const { setStep } = useGrimaceRegister()
 
     return (
         <div className="w-full">

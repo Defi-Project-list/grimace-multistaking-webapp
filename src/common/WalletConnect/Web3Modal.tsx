@@ -4,6 +4,7 @@ import Web3Modal from 'web3modal'
 import WalletConnectProvider from '@walletconnect/web3-provider'
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk"
 import { BlockExplorer_URLS, Rpc_URLS, CHAIN_ID_NAME_MAP, Native_Currencies } from '@app/constants/AppConstants'
+import { getChainIdFromName } from '@app/utils/utils'
 
 const providerOptions = {
   injected: {
@@ -63,7 +64,7 @@ export const Web3ModalButton = () => {
 
   useEffect(() => {
     if (account) {
-      if (Number(process.env.network) !== chainId) {
+      if (getChainIdFromName('bsc') !== chainId) {
         switchNetwork()
       }
     }
