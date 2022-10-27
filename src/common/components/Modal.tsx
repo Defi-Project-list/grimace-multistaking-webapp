@@ -21,14 +21,14 @@ export default function Modal({
 }: PopupProps) {
 
     const handleWindowClick = (event) => {
-        const modal = document.getElementById("wolf-modal")
+        const modal = document.getElementById("grimace-staking-club-modal")
         if (event.target.id == modal.id) {
             handleClose()
         }
     }
     return (
         <div
-            id="wolf-modal"
+            id="grimace-staking-club-modal"
             aria-hidden="true"
             role="dialog"
             style={{ backgroundColor: '#ffffff20', display: isOpen ? "flex" : "none" }}

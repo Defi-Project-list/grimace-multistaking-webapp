@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Grimace Register</title>
+        <title>Grimace Staking Club</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>      
       <Pools />
