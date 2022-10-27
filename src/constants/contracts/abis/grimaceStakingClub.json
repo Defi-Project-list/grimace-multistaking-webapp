@@ -117,7 +117,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "getAllPoolAddresses",
+		"name": "getAllPoolInfos",
 		"outputs": [
 			{
 				"components": [
@@ -147,7 +147,7 @@
 						"type": "bool"
 					}
 				],
-				"internalType": "struct GrimaceStakingFactory.PoolInfo[]",
+				"internalType": "struct GrimaceStakingClub.PoolInfo[]",
 				"name": "",
 				"type": "tuple[]"
 			},
@@ -179,7 +179,7 @@
 						"type": "bool"
 					}
 				],
-				"internalType": "struct GrimaceStakingFactory.PoolInfo[]",
+				"internalType": "struct GrimaceStakingClub.PoolInfo[]",
 				"name": "",
 				"type": "tuple[]"
 			},
@@ -211,7 +211,7 @@
 						"type": "bool"
 					}
 				],
-				"internalType": "struct GrimaceStakingFactory.PoolInfo[]",
+				"internalType": "struct GrimaceStakingClub.PoolInfo[]",
 				"name": "",
 				"type": "tuple[]"
 			}
@@ -371,7 +371,7 @@
 	{
 		"inputs": [
 			{
-				"internalType": "contract GrimaceStaking",
+				"internalType": "contract GrimaceStakingPool",
 				"name": "_pool",
 				"type": "address"
 			},
