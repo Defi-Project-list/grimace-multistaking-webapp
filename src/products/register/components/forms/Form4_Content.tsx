@@ -179,9 +179,9 @@ export default function Form4_Content() {
                 </div>
             </div>
             <div className="w-full border-b-2 border-[#7A30E0] mt-6" />
-            <div className="w-full text-[18px] text-[20px] text-app-primary mt-6">
+            {!notNeedCreationFee && <div className="w-full text-[18px] text-[20px] text-app-primary mt-6">
                 You will need to pay <span className="font-bold">{`${formatUnits(payAmountForRegister, payTokenForRegister.decimals)} ${payTokenForRegister.symbol}`}</span> to apply for Grimace Staking Club
-            </div>
+            </div>}
             <div className="w-full flex flex-col gap-4 mt-6">
                 {!notNeedCreationFee && <div className="w-full">
                     {isAllowedPayToken ?
