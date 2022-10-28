@@ -6,6 +6,7 @@ import { Contract } from '@ethersproject/contracts'
 import { getAddress } from '@ethersproject/address'
 import { ChainId } from "@usedapp/core"
 import { DEAD_ADDRESS, RpcProviders, ZERO_ADDRESS } from '@app/constants/AppConstants'
+import { formatUnits, parseUnits } from '@ethersproject/units'
 
 enum NETWORK_NAME {
     Ethereum = 'ethereum',
@@ -330,3 +331,30 @@ export const decodeTxErrorMessage = (err: any) => {
     }
     return message
 }
+
+
+export const formatEther_Optimized = (amount: BigNumber, decimals: number = 18, toFixed: number, groupSeparator: boolean) => {
+    if (amount.gte(parseUnits('1', decimals))){ // >=1 
+        return formatEther(amount, decimals, toFixed, groupSeparator)
+    }else{ // < 1 
+        let num = Number(formatUnits(amount, decimals))
+        let strFixedNum = floatToFixedNumber(num.toFixed(getFixedDecimals(num, toFixed)))
+        if (groupSeparator) {
+            return Number(strFixedNum).toLocaleString(undefined, { maximumFractionDigits: getFixedDecimals(num, toFixed) + 1 })
+        }else{
+            return strFixedNum
+        }
+    }   
+}
+
+export const formatFixedNumber_Optimized = (amount:number, toFixed: number, groupSeparator: boolean) => {
+    let strFixedNum = floatToFixedNumber(amount.toFixed(getFixedDecimals(amount, toFixed)))
+    if (groupSeparator){
+        return Number(strFixedNum).toLocaleString(undefined, { maximumFractionDigits: getFixedDecimals(amount, toFixed) + 1 })
+    }else{
+        return strFixedNum
+    }
+}
+
+export const BSC_BLOCKTIME = 3 //3s
+export const ONEDAY_SECS = 86400

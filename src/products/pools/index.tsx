@@ -7,11 +7,22 @@ import PoolsBar from './components/PoolsBar'
 import PoolCard from './components/PoolCard'
 import PaginationKit from '@app/common/components/PaginationKit'
 import StakeModal from './components/StakeModal'
-import { useGrimaceStakingClub } from '@app/contexts'
+import { IClubMapPoolInfo, useGrimaceStakingClub } from '@app/contexts'
 
 export default function Pools() {
     const router = useRouter()
-    const { isLiveSelected, rowsPerPage, page, pageCount, setPage, setRowsPerPage, setIsLiveSelected, setPageCount} = useGrimaceStakingClub()    
+    const {
+        isLiveSelected,
+        rowsPerPage,
+        page,
+        pageCount,
+        pagedLivePools,
+        pagedExpiredPools,
+        setPage,
+        setRowsPerPage,
+        setIsLiveSelected,
+        setPageCount
+    } = useGrimaceStakingClub()
     const [isOpenStakeModal, setIsOpenStakeModal] = useState(false)
     const [isOpenUnstakeModal, setIsOpenUnstakeModal] = useState(false)
 
@@ -32,7 +43,7 @@ export default function Pools() {
 
     return (
         <div className='w-full bg-app-common'>
-            <StakeModal isOpen={isOpenStakeModal} handleClose={() => setIsOpenStakeModal(false) } />
+            <StakeModal isOpen={isOpenStakeModal} handleClose={() => setIsOpenStakeModal(false)} />
             <div className={`w-full flex justify-center items-center h-screen lg:min-h-[480px] lg:h-auto bg-[#FFFFFF] bg-[url('splash.png')] bg-center bg-cover bg-no-repeat`}>
                 <div className='w-full px-5 md:px-6 xl:px-8 flex gap-8 flex-col lg:flex-row lg:justify-between items-center'>
                     <div className='w-full flex flex-col lg:flex-row gap-2 lg:gap-4 xl:gap-8 items-center'>
@@ -75,12 +86,28 @@ export default function Pools() {
                 </div>
             </div>
             <div className='w-full p-4 md:p-6 flex flex-col lg:flex-row gap-6'>
-                <div className="w-full">                 
+                <div className="w-full">
                     <PoolsBar isLiveSelected={isLiveSelected} handleSelectShowPools={setIsLiveSelected} />
                     <div className='w-full flex justify-center'>
                         <PaginationKit rowsPerPage={rowsPerPage} count={pageCount} page={page} onSelectRows={(event: SelectChangeEvent) => setRowsPerPage(Number(event.target.value as string))} onSelectPage={onSelectPage} />
                     </div>
-                    <PoolCard />
+                    {isLiveSelected ?
+                        <>
+                            {pagedLivePools.map((item: IClubMapPoolInfo, index: number) => {
+                                return (
+                                    <PoolCard key={index} item={item.poolAndUserInfo} poolAddress={item.poolAddress} poolIndex={index} />
+                                )
+                            })}
+                        </>
+                        :
+                        <>
+                            {pagedExpiredPools.map((item: IClubMapPoolInfo, index: number) => {
+                                return (
+                                    <PoolCard key={index} item={item.poolAndUserInfo} poolAddress={item.poolAddress} poolIndex={index} />
+                                )
+                            })}
+                        </>
+                    }
                 </div>
             </div>
         </div>

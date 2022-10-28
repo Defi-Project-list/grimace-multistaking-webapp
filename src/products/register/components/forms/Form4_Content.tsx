@@ -5,7 +5,7 @@ import { BigNumber } from "ethers"
 import { useEffect, useState } from "react"
 import SuccessSVG from "./SuccessSVG"
 import { useGrimaceRegister } from "@app/contexts"
-import { decodeTxErrorMessage, getShortDateTimeWithoutSeconds } from "@app/utils/utils"
+import { decodeTxErrorMessage, getShortDateTimeWithoutSeconds, ONEDAY_SECS } from "@app/utils/utils"
 import InfoSVG from "./InfoSVG"
 import { useApproveCallback } from "@app/hooks/hooks"
 import { toast } from "react-toastify"
@@ -83,7 +83,7 @@ export default function Form4_Content() {
             console.log(error)
             setIsRewardTokenApproving(false)
         }
-        return null;
+        return null
     }
 
     const onCreatePool = async () => {
@@ -159,7 +159,7 @@ export default function Form4_Content() {
                     </div>
                     <div className="w-full md:basis-1/3 flex flex-col items-center md:items-start gap-1">
                         <div className="text-[15px] text-app-primary">Staker Timelock</div>
-                        <div className="text-[20px] md:text-[25px]  text-app-primary font-bold break-all">{`${Number(stakerLockTime) / 86400} Days`}</div>
+                        <div className="text-[20px] md:text-[25px]  text-app-primary font-bold break-all">{`${Number(stakerLockTime) / ONEDAY_SECS} Days`}</div>
                     </div>
                 </div>
                 <div className="w-full flex flex-col md:flex-row gap-4">

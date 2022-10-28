@@ -3,7 +3,7 @@ import React, { useEffect, useContext, useState } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
 import { useEthers } from "@usedapp/core";
-import { getContract, calculateGasMargin, isWrappedEther, getChainIdFromName, isToken } from '@app/utils/utils'
+import { getContract, calculateGasMargin, isWrappedEther, getChainIdFromName, isToken, BSC_BLOCKTIME } from '@app/utils/utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { GrimaceClubAddress, RpcProviders } from "src/constants/AppConstants"
 import grimaceFactoryAbi from '@app/constants/contracts/abis/grimaceStakingClub.json'
@@ -218,7 +218,7 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
     }, [rewardToken, rewardTokenLogo])
 
     useEffect(() => {        
-        if (rewardSupply.gt(rewardPerBlock.mul(stakerLockTime.mul(BigNumber.from(3))))
+        if (rewardSupply.gt(rewardPerBlock.mul(stakerLockTime.div(BigNumber.from(BSC_BLOCKTIME))))
             && rewardPerBlock.gt(0) && Number(endTime) > ((new Date()).getTime() / 1000)
             && stakerLockTime.gt(0) && validator.isURL(websiteURL) && telegramContact.length >= 3) setIsPassableForm3(true)
         else setIsPassableForm3(false)

@@ -13,7 +13,7 @@ import WarnSVG from "./WarnSVG"
 import WebsiteURLInput from "./WebsiteURLInput"
 import { useGrimaceRegister } from "@app/contexts"
 import validator from 'validator'
-import { getShortDate_ } from "@app/utils/utils"
+import { getShortDate_, ONEDAY_SECS } from "@app/utils/utils"
 
 const blockchain = process.env.blockchain
 
@@ -102,14 +102,14 @@ export default function Form3_Content() {
     const onStakerLockTimeChange = (val: string) => {
         let amount = BigNumber.from(0)
         if (val.length > 0) {
-            amount = BigNumber.from(Math.floor(Number(val) * 86400))
+            amount = BigNumber.from(Math.floor(Number(val) * ONEDAY_SECS))
         }
         setStakerLockTime(amount)
     }
 
     const setStakerLockTimeBoxValue = (val: BigNumber) => {
         let element: any = document.getElementById(ID_STAKER_LOCK_TIME)
-        if (element) element.value = Number(val) / 86400
+        if (element) element.value = Number(val) / ONEDAY_SECS
     }
 
     const initStakerLockTimeBox = () => {
@@ -120,7 +120,7 @@ export default function Form3_Content() {
 
     const onEndTimeChange = (d: Date) => {
         let timestamp = ((new Date(d)).getTime() / 1000)
-        timestamp = Math.floor(timestamp/86400)*86400        
+        timestamp = Math.floor(timestamp/ONEDAY_SECS)*ONEDAY_SECS        
         setEndTime(BigNumber.from(timestamp))
     }
 
