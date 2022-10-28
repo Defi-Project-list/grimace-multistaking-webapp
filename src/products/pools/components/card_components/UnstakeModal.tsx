@@ -49,9 +49,6 @@ export default function UnstakeModal({ isOpen, poolInfo, handleClose }: ModalPro
         init()
     }, [account, isOpen])
 
-    useEffect(() => {
-        console.log(poolInfo.poolAndUserInfo.userUnlockTime, blockTimestamp)
-    }, [blockTimestamp, poolInfo])
     const getValueUSDFromAmount = (amount: BigNumber, price: number, decimals: number) => {
         return Number(formatUnits(amount.mul(parseEther(price.toFixed(18))).div(parseEther('1')), decimals))
     }

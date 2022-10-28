@@ -78,7 +78,7 @@ export default function UserDetailsPane({ isDetailed, poolInfo, poolIndex, onSta
                 <PoolStatusPane poolInfo={poolInfo} />
             </div>
             <div className='w-full flex flex-col xl:flex-row gap-4 pb-4 md:py-4 items-center justify-between'>
-                <div className='w-full justify-between xl:justify-around flex flex-wrap gap-6 items-center'>
+                <div className='w-full justify-between xl:justify-around flex gap-6 items-center'>
                     <div className='flex gap-2 cursor-pointer items-center'>
                         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fillRule="evenodd" clipRule="evenodd" d="M2.25001 3.75001C2.0511 3.75001 1.86033 3.82902 1.71968 3.96968C1.57902 4.11033 1.50001 4.3011 1.50001 4.50001V12.75C1.50001 12.949 1.57902 13.1397 1.71968 13.2804C1.86033 13.421 2.0511 13.5 2.25001 13.5H10.5C10.699 13.5 10.8897 13.421 11.0304 13.2804C11.171 13.1397 11.25 12.949 11.25 12.75V8.25003C11.25 7.83581 11.5858 7.50002 12.0001 7.50002C12.4143 7.50002 12.7501 7.83581 12.7501 8.25003V12.75C12.7501 13.3468 12.513 13.9191 12.091 14.341C11.6691 14.763 11.0968 15.0001 10.5 15.0001H2.25001C1.65327 15.0001 1.08097 14.763 0.659012 14.341C0.237054 13.9191 0 13.3468 0 12.75V4.50001C0 3.90327 0.237054 3.33097 0.659012 2.90901C1.08097 2.48705 1.65327 2.25 2.25001 2.25H6.75003C7.16424 2.25 7.50003 2.58579 7.50003 3C7.50003 3.41422 7.16424 3.75001 6.75003 3.75001H2.25001Z" fill="#7A30E0" />
@@ -130,7 +130,7 @@ export default function UserDetailsPane({ isDetailed, poolInfo, poolIndex, onSta
                                 {`${formatFixedNumber_Optimized(poolInfo.poolAndUserInfo.userAvailableRewardUSD, 2, true)} USD`}
                             </span>
                         </div>
-                        <div className='w-full sm:w-auto flex flex-col gap-1 items-center'>
+                        <div className='w-full sm:w-auto flex flex-col gap-1 items-center min-w-[210px]'>
                             <LoadingButton
                                 loading={isClaiming}
                                 loadingPosition="center"

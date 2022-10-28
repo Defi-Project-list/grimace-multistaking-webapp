@@ -5,7 +5,7 @@ import { LoadingButton } from '@mui/lab'
 import { toast } from 'react-toastify'
 import PoolStopDate from '@app/products/register/components/forms/form_components/PoolStopDate'
 import { BigNumber } from 'ethers'
-import { formatUnits, parseUnits } from '@ethersproject/units'
+import { formatEther, formatUnits, parseUnits } from '@ethersproject/units'
 import RewardPerBlockInput from '@app/products/register/components/forms/form_components/RewardPerBlockInput'
 import StakerLockTimeInput from '@app/products/register/components/forms/form_components/StakerLockTimeInput'
 import WithdrawRewardInput from './WithdrawRewardInput'
@@ -58,6 +58,8 @@ export default function AdminDetailsPane({ isDetailed, poolInfo, poolIndex }: pr
             if (val.substring(val.indexOf('.') + 1).length <= 0) amount = parseUnits(val.substring(0, val.indexOf('.')), poolInfo.poolAndUserInfo.rewardToken.decimals)
             else amount = parseUnits(val, poolInfo.poolAndUserInfo.rewardToken.decimals)
         }
+        console.log(val)
+        console.log(formatEther(amount))
         setWithdrawAmount(amount)
     }
 
