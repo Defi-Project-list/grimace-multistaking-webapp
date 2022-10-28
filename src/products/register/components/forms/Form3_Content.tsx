@@ -13,6 +13,7 @@ import WarnSVG from "./WarnSVG"
 import WebsiteURLInput from "./WebsiteURLInput"
 import { useGrimaceRegister } from "@app/contexts"
 import validator from 'validator'
+import { getShortDate_ } from "@app/utils/utils"
 
 const blockchain = process.env.blockchain
 
@@ -54,8 +55,8 @@ export default function Form3_Content() {
         if (rewardPerBlock.gt(0)) setRewardPerBlockBoxValue(rewardPerBlock)
         if (stakerLockTime.gt(0)) setStakerLockTimeBoxValue(stakerLockTime)
         if (endTime.gt(0)) setEndTimeBoxValue(endTime)
-        if (websiteURL.length>0) setWebsiteURLBoxValue(websiteURL)
-        if (telegramContact.length>0) setTelegramContactBoxValue(telegramContact)
+        if (websiteURL.length > 0) setWebsiteURLBoxValue(websiteURL)
+        if (telegramContact.length > 0) setTelegramContactBoxValue(telegramContact)
     }, [])
 
     const onRewardSupplyChange = (val: string) => {
@@ -118,13 +119,14 @@ export default function Form3_Content() {
     }
 
     const onEndTimeChange = (d: Date) => {
-        let timestamp = Math.floor(d.getTime() / 1000)
+        let timestamp = ((new Date(d)).getTime() / 1000)
+        timestamp = Math.floor(timestamp/86400)*86400        
         setEndTime(BigNumber.from(timestamp))
     }
 
     const setEndTimeBoxValue = (val: BigNumber) => {
-        let element: any = document.getElementById(ID_END_TIME)
-        if (element) element.value = new Date(Number(val) * 1000)
+        let element: any = document.getElementById(ID_END_TIME)        
+        if (element) element.value = getShortDate_(new Date(Number(val) * 1000))
     }
 
     const setWebsiteURLBoxValue = (val: string) => {
@@ -146,13 +148,13 @@ export default function Form3_Content() {
                     </div>
                     <div className="flex flex-col">
                         <div className="text-[22px] md:text-[25px] text-app-purple font-bold">
-                            {`Stake ${stakeToken.name}`}
+                            <span className="text-app-primary">{`Stake `}</span>{`${stakeToken ? stakeToken.name : ''}`}
                         </div>
                         <div className="text-[14px] md:text-[15px] text-app-purple">
-                            {`${stakeToken.symbol} | ${stakeToken.decimals} Decimal`}
+                            {`${stakeToken ? stakeToken.symbol : ''} | ${stakeToken ? stakeToken.decimals : ''} Decimal`}
                         </div>
                         <div className="text-[14px] md:text-[15px] text-app-purple break-all mt-2">
-                            {`CA: ${stakeToken.address}`}
+                            {`CA: ${stakeToken ? stakeToken.address : ''}`}
                         </div>
                     </div>
                 </div>
@@ -162,13 +164,13 @@ export default function Form3_Content() {
                     </div>
                     <div className="flex flex-col">
                         <div className="text-[22px] md:text-[25px] text-app-purple font-bold">
-                            {`Reward ${rewardToken.name}`}
+                            <span className="text-app-primary">{`Reward `}</span>{`${rewardToken ? rewardToken.name : ''}`}
                         </div>
                         <div className="text-[14px] md:text-[15px] text-app-purple">
-                            {`${rewardToken.symbol} | ${rewardToken.decimals} Decimal`}
+                            {`${rewardToken ? rewardToken.symbol : ''} | ${rewardToken ? rewardToken.decimals : ''} Decimal`}
                         </div>
                         <div className="text-[14px] md:text-[15px] text-app-purple break-all mt-2">
-                            {`CA: ${rewardToken.address}`}
+                            {`CA: ${rewardToken ? rewardToken.address : ''}`}
                         </div>
                     </div>
                 </div>
@@ -178,88 +180,88 @@ export default function Form3_Content() {
                     <InfoSVG width={"15"} height={"16"} />
                 </div>
                 <div className="text-[13px] md:text-[15px] text-app-purple">
-                    {`Reward Amount / Supply are total amount of `}<span className="font-bold">{rewardToken.symbol}</span>{` that you are going to send to your Dojo Pool as reward for staking.`}
+                    {`Reward Amount / Supply are total amount of `}<span className="font-bold">{rewardToken ? rewardToken.symbol : ''}</span>{` that you are going to send to your Dojo Pool as reward for staking.`}
                 </div>
             </div>
             <RewardSupplyInput id={ID_REWARD_SUPPLY} onChange={onRewardSupplyChange} />
-            <div className="w-full bg-[#FFD7D7] rounded-md px-4 py-2 mt-2">
+            {!rewardSupply.gt(0) && <div className="w-full bg-[#FFD7D7] rounded-md px-4 py-2 mt-2">
                 <div className="flex gap-2">
                     <div className="mt-[3px]">
                         <WarnSVG width={"15"} height={"16"} />
                     </div>
-                    {rewardSupply.gt(0) && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
+                    <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
                         Total Reward Supply must be greater than 0
-                    </div>}
+                    </div>
                 </div>
-            </div>
+            </div>}
             <div className="w-full border-b-2 border-[#7A30E0] mt-6" />
             <div className="w-full flex gap-4 flex-col md:flex-row mt-4">
                 <div className="w-full flex flex-col gap-2">
                     <PoolStopDate id={ID_END_TIME} setEndTime={onEndTimeChange} />
-                    <div className="w-full bg-[#FFD7D7] rounded-md px-4 py-2">
+                    {!(Number(endTime) > Math.floor((new Date()).getTime() / 1000)) && <div className="w-full bg-[#FFD7D7] rounded-md px-4 py-2">
                         <div className="flex gap-2">
                             <div className="mt-[3px]">
                                 <WarnSVG width={"15"} height={"16"} />
                             </div>
-                            {Number(endTime) > Math.floor((new Date()).getTime() / 1000) && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
+                            <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
                                 Please enter a valid date
-                            </div>}
+                            </div>
                         </div>
-                    </div>
+                    </div>}
                 </div>
                 <div className="w-full flex flex-col gap-2">
                     <StakerLockTimeInput id={ID_STAKER_LOCK_TIME} onChange={onStakerLockTimeChange} />
-                    <div className="w-full bg-[#FFD7D7] rounded-md px-4 py-2">
+                    {!stakerLockTime.gt(0) && <div className="w-full bg-[#FFD7D7] rounded-md px-4 py-2">
                         <div className="flex gap-2">
                             <div className="mt-[3px]">
                                 <WarnSVG width={"15"} height={"16"} />
                             </div>
-                            {stakerLockTime.gt(0) && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
+                            <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
                                 Days lock should be greater than 0
-                            </div>}
+                            </div>
                         </div>
-                    </div>
+                    </div>}
                 </div>
                 <div className="w-full flex flex-col gap-2">
                     <RewardPerBlockInput id={ID_REWARD_PER_BLOCK} onChange={onRewardPerBlockChange} />
-                    <div className="w-full bg-[#FFD7D7] rounded-md px-4 py-2">
+                    {!rewardPerBlock.gt(0) && <div className="w-full bg-[#FFD7D7] rounded-md px-4 py-2">
                         <div className="flex gap-2">
                             <div className="mt-[3px]">
                                 <WarnSVG width={"15"} height={"16"} />
                             </div>
-                            {rewardPerBlock.gt(0) && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
+                            <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
                                 Reward per block should be greater than 0
-                            </div>}
+                            </div>
                         </div>
-                    </div>
+                    </div>}
                 </div>
             </div>
             <div className="w-full flex gap-4 flex-col md:flex-row mt-4">
                 <div className="w-full flex flex-col gap-2">
                     <WebsiteURLInput id={ID_WEBSITE_URL} onChange={setWebsiteURL} />
-                    <div className="w-full bg-[#FFD7D7] rounded-md px-4 py-2">
+                    {!validator.isURL(websiteURL) && <div className="w-full bg-[#FFD7D7] rounded-md px-4 py-2">
                         <div className="flex gap-2">
                             <div className="mt-[3px]">
                                 <WarnSVG width={"15"} height={"16"} />
                             </div>
-                            {validator.isURL(websiteURL) && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
+                            <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
                                 Website url cannot be empty
-                            </div>}
+                            </div>
                         </div>
-                    </div>
+                    </div>}
                 </div>
                 <div className="w-full flex flex-col gap-2">
                     <TelegramContactInput id={ID_TELEGRAM_CONTACT} onChange={setTelegramContact} />
-                    <div className="w-full bg-[#FFD7D7] rounded-md px-4 py-2">
+                    {!(telegramContact.length > 3) && <div className="w-full bg-[#FFD7D7] rounded-md px-4 py-2">
                         <div className="flex gap-2">
                             <div className="mt-[3px]">
                                 <WarnSVG width={"15"} height={"16"} />
                             </div>
-                            {telegramContact.length > 3 && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
+                            <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
                                 Telegram PIC Cannot be empty
-                            </div>}
+                            </div>
                         </div>
-                    </div>
+                    </div>}
                 </div>
             </div>
             <div className="w-full flex gap-4 mt-6">

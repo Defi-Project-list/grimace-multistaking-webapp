@@ -21,7 +21,7 @@ export default function Pools() {
 
     const onRegister = () => {
         router.push({
-            pathname: SIDEBAR_ROUTES[SidebarItem.POOLS]
+            pathname: SIDEBAR_ROUTES[SidebarItem.REGISTER]
         })
     }
 

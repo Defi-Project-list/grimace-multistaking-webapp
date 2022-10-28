@@ -109,7 +109,7 @@ export default function PoolCard() {
         <div className='w-full'>
             <div className='w-full bg-white rounded-md py-4 px-4 md:px-8' style={{ boxShadow: '2px 2px 4px #888' }}>
                 <div className={`w-full flex flex-col md:flex-row gap-2 sm:gap-4 justify-between ${isDetailed ? 'border-b-2 border-[#987DF9]' : ''}`}>
-                    <div className='w-full flex flex-col xl:flex-row gap-4 justify-between items-center pb-4'>
+                    <div className='w-full flex flex-col xl:flex-row gap-4 justify-between items-center py-2'>
                         <div className='w-full xl:basis-1/2 flex flex-col sm:flex-row justify-between sm:justify-around gap-4'>
                             <div className='w-full md:basis-1/2 flex justify-start sm:justify-start xl:justify-around gap-6 sm:gap-8 lg:gap-10'>
                                 <div className='bg-white w-[50px]' style={{ borderRadius: '50%' }}>

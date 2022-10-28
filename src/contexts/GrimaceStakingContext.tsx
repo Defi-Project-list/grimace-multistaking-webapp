@@ -3,7 +3,7 @@ import React, { useEffect, useContext, useState } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
 import { useEthers } from "@usedapp/core";
-import { getContract, calculateGasMargin, isWrappedEther } from '@app/utils/utils'
+import { getContract, calculateGasMargin, isWrappedEther, isAddress } from '@app/utils/utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { RpcProviders, GrimaceClubAddress, AppTokenAddress, ZERO_ADDRESS } from "src/constants/AppConstants"
 import useRefresh from 'src/hooks/useRefresh'
@@ -34,6 +34,8 @@ export interface IPoolAndUserInfo {
     isApprovedForMax: boolean
     userStakeTokenBalance: BigNumber
     userRewardTokenBalance: BigNumber
+    userStakeTokenBalanceUSD: number
+    userRewardTokenBalanceUSD: number
 
     stakingTokenPrice: number
     rewardTokenPrice: number
@@ -94,6 +96,8 @@ export interface IGrimaceStakingContext {
     setPoolUsableCallback: (isUsable: boolean, poolAddress: string) => Promise<any>
     updatePayTokenCallback: (payTokenAddress: string) => Promise<any>
     updatePayAmountCallback: (amount: BigNumber) => Promise<any>
+    updatePoolOwnerCallback: (newOwner: string, poolAddress: string) => Promise<any>
+    updateNoNeedChargeTokenCallback: (token: string) => Promise<any>
     ownerWithdrawPayTokensCallback: (poolAddress: string) => Promise<any>
     updateClubMapPoolInfo: () => void
     updatePagedLivePools: () => void
@@ -365,7 +369,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     }
 
     const updatePayTokenCallback = async function (payTokenAddress: string) {
-        if (!account || !library || !GrimaceClubAddress || !payTokenAddress) return
+        if (!account || !library || !GrimaceClubAddress || !payTokenAddress || !isAddress(payTokenAddress)) return
         const factoryContract: Contract = getContract(GrimaceClubAddress, grimaceFactoryAbi, library, account ? account : undefined)
         return factoryContract.estimateGas.updatePayToken(payTokenAddress).then(estimatedGasLimit => {
             const gas = estimatedGasLimit
@@ -385,6 +389,36 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         return factoryContract.estimateGas.updatePayAmount(amount).then(estimatedGasLimit => {
             const gas = estimatedGasLimit
             return factoryContract.updatePayAmount(amount, {
+                gasLimit: calculateGasMargin(gas)
+            }).then((response: TransactionResponse) => {
+                return response.wait().then((res: any) => {
+                    return { status: res.status, hash: response.hash }
+                })
+            })
+        })
+    }
+
+    const updatePoolOwnerCallback = async function (newOwner: string, poolAddress: string) {
+        if (!account || !library || !GrimaceClubAddress || !isAddress(newOwner)) return
+        const factoryContract: Contract = getContract(GrimaceClubAddress, grimaceFactoryAbi, library, account ? account : undefined)
+        return factoryContract.estimateGas.updatePoolOwner(newOwner, poolAddress).then(estimatedGasLimit => {
+            const gas = estimatedGasLimit
+            return factoryContract.updatePoolOwner(newOwner, poolAddress, {
+                gasLimit: calculateGasMargin(gas)
+            }).then((response: TransactionResponse) => {
+                return response.wait().then((res: any) => {
+                    return { status: res.status, hash: response.hash }
+                })
+            })
+        })
+    }
+
+    const updateNoNeedChargeTokenCallback = async function (token: string) {
+        if (!account || !library || !GrimaceClubAddress || !isAddress(token)) return
+        const factoryContract: Contract = getContract(GrimaceClubAddress, grimaceFactoryAbi, library, account ? account : undefined)
+        return factoryContract.estimateGas.updateNoNeedChargeToken(token).then(estimatedGasLimit => {
+            const gas = estimatedGasLimit
+            return factoryContract.updateNoNeedChargeToken(token, {
                 gasLimit: calculateGasMargin(gas)
             }).then((response: TransactionResponse) => {
                 return response.wait().then((res: any) => {
@@ -461,6 +495,9 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     const fetchAllowance = async (tokenAddress: string, recvAddress: string) => {
         const chainId = getChainIdFromName(blockchain);
         const tokenContract: Contract = getContract(tokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+        if (isWrappedEther(blockchain, tokenAddress)) {
+            return await tokenContract.totalSupply()
+        }
         const res = await tokenContract.allowance(account, recvAddress)
         return res
     }
@@ -524,9 +561,16 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     }
 
     const fetchPoolAndUserInfo = async (item: IClubMapPoolInfo, poolContract: Contract) => {
-        let t: IPoolAndUserInfo
+        let t: IPoolAndUserInfo = {
+            userStaked: BigNumber.from(0), userStakedUSD: 0, userUnlockTime: 0, userTotalEarned: BigNumber.from(0),
+            userTotalEarnedUSD: 0, availableReward: BigNumber.from(0),availableRewardUSD: 0, isApprovedForMax: false, 
+            userStakeTokenBalance: BigNumber.from(0), userStakeTokenBalanceUSD:0, userRewardTokenBalance: BigNumber.from(0),userRewardTokenBalanceUSD:0,
+            stakingTokenPrice: 0, rewardTokenPrice: 0, stakingToken: undefined, rewardToken: undefined, lastRewardBlock: 0, accRewardPerShare: BigNumber.from(0),
+            rewardPerBlock: BigNumber.from(0), poolOwner: '', lockDuration: 0, startTime: 0, endTime: 0, totalStaked: BigNumber.from(0), totalStakedUSD: 0,
+            totalClaimed: BigNumber.from(0), totalClaimedUSD: 0, rewardRemaining: BigNumber.from(0), rewardRemainingUSD: 0
+        }
 
-        fetchPoolInfo(poolContract).then(async result => {
+        await fetchPoolInfo(poolContract).then(async result => {
             await fetchTokenInfo(result.stakingToken).then(async token => {
                 t.stakingToken = { address: token.address, name: token.name, symbol: token.symbol, decimals: token.decimals, logoURI: result.stakeTokenLogo }
             }).catch(error => {
@@ -536,18 +580,17 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 t.rewardToken = { address: token.address, name: token.name, symbol: token.symbol, decimals: token.decimals, logoURI: result.rewardTokenLogo }
             }).catch(error => {
                 console.log(error)
-            })
-            t.rewardToken = result.rewardToken
+            })            
             await fetch(`/api/tokenPriceFromPCS?baseCurrency=${result.stakingToken}`)
                 .then((res) => res.json())
                 .then((res) => {
-                    t.stakingTokenPrice = Number(res.data.price)
+                    t.stakingTokenPrice = Number(res.price)
                 }).catch(error => { })
 
             await fetch(`/api/tokenPriceFromPCS?baseCurrency=${result.rewardToken}`)
                 .then((res) => res.json())
                 .then((res) => {
-                    t.rewardTokenPrice = Number(res.data.price)
+                    t.rewardTokenPrice = Number(res.price)
                 }).catch(error => { })
             t.lastRewardBlock = Number(result.lastRewardBlock)
             t.accRewardPerShare = result.accRewardPerShare
@@ -559,6 +602,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         }).catch(error => {
             console.log(error)
         })
+
         if (account) {
             const chainId = getChainIdFromName(blockchain);
             const stakeTokenContract: Contract = getContract(t.stakingToken.address, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
@@ -566,8 +610,10 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             try {
                 let bal = await stakeTokenContract.balanceOf(account)
                 t.userStakeTokenBalance = bal
+                t.userStakeTokenBalanceUSD = getValueUSDFromAmount(bal, t.stakingTokenPrice, t.stakingToken.decimals)
                 bal = await rewardTokenContract.balanceOf(account)
                 t.userRewardTokenBalance = bal
+                t.userRewardTokenBalanceUSD = getValueUSDFromAmount(bal, t.rewardTokenPrice, t.rewardToken.decimals)
             } catch (e) { }
 
             await fetchUserInfo(poolContract).then(async result => {
@@ -633,7 +679,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             const rewardTokenContract: Contract = getContract(t.rewardToken.address, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
             try {
                 let bal = await stakeTokenContract.balanceOf(account)
-                t.userStakeTokenBalance = bal
+                t.userStakeTokenBalance = bal                
                 bal = await rewardTokenContract.balanceOf(account)
                 t.userRewardTokenBalance = bal
                 bal = await nativeBalanceCallback(blockchain)
@@ -777,6 +823,8 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 setPoolUsableCallback,
                 updatePayTokenCallback,
                 updatePayAmountCallback,
+                updatePoolOwnerCallback,
+                updateNoNeedChargeTokenCallback,
                 ownerWithdrawPayTokensCallback,
                 updateClubMapPoolInfo,
                 updatePagedLivePools,

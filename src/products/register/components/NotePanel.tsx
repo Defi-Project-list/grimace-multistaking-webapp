@@ -19,7 +19,7 @@ export default function Register() {
                     Aditional Setting
                 </div>
                 <div className="text-[16px] md:text-[18px] text-app-primary font-normal">
-                    {`You will need to exclude our Grimace Staking Club creator contract ${GrimaceClubAddress} from any taxes / fee, dividend, transfer limit and max wallet`}
+                    {`You will need to exclude our Grimace Staking Club creator contract `}<span className="font-bold">{`${GrimaceClubAddress}`}</span>{` from any taxes / fee, dividend, transfer limit and max wallet`}
                     <br /><br />
                     If the reward token has transfer limit or max wallet functionality on a transfer, you can create a Grimace Staking Club with reward supple below or equal to the limit, and after you obtain your pool address, you can exclude it from the max transfer and wallet limit and the add the additional supply later (please contact us for assitance)
                     <br /><br />
@@ -31,7 +31,7 @@ export default function Register() {
                     Simple Pricing
                 </div>
                 <div className="text-[16px] md:text-[18px] text-app-primary font-normal">
-                    {`We have a few options of pricing, if you create a Grimace Staking Club with Grimace as the stake token or reward token, then you will not be charged with Grimace Staking Club creation fee, otherwise you will be charged `}<span className="font-bold">{`${formatEther(payAmountForRegister, payTokenForRegister.decimals, 2, true)} ${payTokenForRegister.symbol}`}</span>
+                    {`We have a few options of pricing, if you create a Grimace Staking Club with Grimace as the stake token or reward token, then you will not be charged with Grimace Staking Club creation fee, otherwise you will be charged `}<span className="font-bold">{payTokenForRegister?`${formatEther(payAmountForRegister, payTokenForRegister.decimals, 2, true)} ${payTokenForRegister.symbol}`:''}</span>
                 </div>
             </div>
         </div>

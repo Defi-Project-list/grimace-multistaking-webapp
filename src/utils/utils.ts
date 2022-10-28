@@ -236,6 +236,13 @@ export const getShortDateTime_ = (d: Date): string => {
     return y + "-" + m + "-" + date + " " + h + ':' + min + ':' + s
 }
 
+export const getShortDate_ = (d: Date): string => {
+    let y = d.getFullYear()
+    let m = (d.getMonth() + 1).toString().padStart(2, '0')
+    let date = d.getDate().toString().padStart(2, '0')  
+    return y + "-" + m + "-" + date
+}
+
 export const getShortenAmount = (amount: number, fixed: number): string => {
     let res = amount ?? 0
     let unit = ''

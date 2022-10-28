@@ -8,6 +8,7 @@ import Form2_Content from './components/forms/Form2_Content'
 import Form3_Content from './components/forms/Form3_Content'
 import Form4_Content from './components/forms/Form4_Content'
 import { useGrimaceRegister } from "@app/contexts"
+import Form5_Content from './components/forms/Form5_Content'
 
 export default function Register() {
     const router = useRouter()    
@@ -43,6 +44,7 @@ export default function Register() {
                     {step === 2 && <Form2_Content />}
                     {step === 3 && <Form3_Content />}
                     {step === 4 && <Form4_Content />}
+                    {step === 5 && <Form5_Content />}
                 </div>
                 <NotePanel />
             </div>
