@@ -256,12 +256,12 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
         if (isWrappedEther(blockchain, payTokenForRegister.address)) {
             bnbAmount = bnbAmount.add(payAmountForRegister)
         }
-        return factoryContract.estimateGas.createNewPool(stakeToken.address, rewardToken.address, stakeTokenLogo,
-            rewardTokenLogo, rewardSupply, payAmountForRegister, stakerLockTime, BigNumber.from(0),
+        return factoryContract.estimateGas.createNewPool(stakeToken.address, rewardToken.address, stakeTokenLogo, rewardTokenLogo, 
+            websiteURL, telegramContact, rewardSupply, payAmountForRegister, stakerLockTime, BigNumber.from(0),
             rewardPerBlock, endTime, { value: bnbAmount }).then(estimatedGasLimit => {
                 const gas = estimatedGasLimit
-                return factoryContract.createNewPool(stakeToken.address, rewardToken.address, stakeTokenLogo,
-                    rewardTokenLogo, rewardSupply, payAmountForRegister, stakerLockTime, BigNumber.from(0),
+                return factoryContract.createNewPool(stakeToken.address, rewardToken.address, stakeTokenLogo, rewardTokenLogo, 
+                    websiteURL, telegramContact, rewardSupply, payAmountForRegister, stakerLockTime, BigNumber.from(0),
                     rewardPerBlock, endTime, {
                     value: bnbAmount, gasLimit: calculateGasMargin(gas)
                 }).then((response: TransactionResponse) => {

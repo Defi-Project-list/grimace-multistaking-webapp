@@ -9,6 +9,7 @@ import PaginationKit from '@app/common/components/PaginationKit'
 import StakeModal from './components/StakeModal'
 import { IClubMapPoolInfo, IPoolAndUserInfo, useGrimaceStakingClub } from '@app/contexts'
 import LoadingPoolCard from './components/LoadingPoolCard'
+import UnstakeModal from './components/UnstakeModal'
 
 export default function Pools() {
     const router = useRouter()
@@ -47,12 +48,14 @@ export default function Pools() {
     }
 
     const onUnstake = (item: IClubMapPoolInfo) => {
-        setModalInfo({ ...item })
+        setModalInfo({ ...item})
+        setIsOpenStakeModal(true)
     }
 
     return (
         <div className='w-full bg-app-common'>
             {modalInfo && <StakeModal isOpen={isOpenStakeModal} poolInfo={modalInfo} handleClose={() => setIsOpenStakeModal(false)} />}
+            {modalInfo && <UnstakeModal isOpen={isOpenUnstakeModal} poolInfo={modalInfo} handleClose={() => setIsOpenUnstakeModal(false)} />}
             <div className={`w-full flex justify-center items-center h-screen lg:min-h-[480px] lg:h-auto bg-[#FFFFFF] bg-[url('splash.png')] bg-center bg-cover bg-no-repeat`}>
                 <div className='w-full px-5 md:px-6 xl:px-8 flex gap-8 flex-col lg:flex-row lg:justify-between items-center'>
                     <div className='w-full flex flex-col lg:flex-row gap-2 lg:gap-4 xl:gap-8 items-center'>

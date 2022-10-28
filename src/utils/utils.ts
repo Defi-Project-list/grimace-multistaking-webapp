@@ -358,3 +358,5 @@ export const formatFixedNumber_Optimized = (amount:number, toFixed: number, grou
 
 export const BSC_BLOCKTIME = 3 //3s
 export const ONEDAY_SECS = 86400
+
+export const BUY_BASE_URL = 'https://pancakeswap.finance/swap?outputCurrency='

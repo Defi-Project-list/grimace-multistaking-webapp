@@ -594,6 +594,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             await fetch(`/api/tokenPriceFromPCS?baseCurrency=${result.stakingToken}`)
                 .then((res) => res.json())
                 .then((res) => {
+                    console.log(res)
                     t.stakingTokenPrice = Number(res.price)
                 }).catch(error => { })
 
@@ -757,11 +758,9 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         try {
             let items: IClubMapPoolInfo[]
             if (isLiveSelected){
-                items = [...pagedLivePools]
-                setPagedLivePools([])
+                items = [...pagedLivePools]                
             }else{
-                items = [...pagedExpiredPools]
-                setPagedExpiredPools([])
+                items = [...pagedExpiredPools]                
             }
             let item = items[poolIndex]
             const chainId = getChainIdFromName(blockchain);

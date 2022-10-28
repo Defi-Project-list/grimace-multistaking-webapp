@@ -22,7 +22,7 @@ interface ModalProps {
 
 const ID_STAKE_TOKEN_INPUT = 'id_modal_stake_token_input'
 
-export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps) {
+export default function UnstakeModal({ isOpen, poolInfo, handleClose }: ModalProps) {
     const { library, account, chainId } = useEthers()
     const [isLoading, setIsLoading] = useState(false)
     const [hash, setHash] = useState('')
@@ -31,7 +31,7 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
     const {
         bnbBalance,
         pagedLivePools,
-        stakeCallback,
+        unstakeCallback,
         updateChangedPoolAndUserInfo
     } = useGrimaceStakingClub()
 
@@ -61,10 +61,10 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
             else amount = parseUnits(val, poolInfo.poolAndUserInfo.stakingToken.decimals)
         }
         setInputAmount(amount)
-        if (poolInfo.poolAndUserInfo.userStakeTokenBalance.lte(0)) {
+        if (poolInfo.poolAndUserInfo.userStaked.lte(0)) {
             setPercent(0)
         } else {
-            let p = amount.mul(BigNumber.from(10000)).div(poolInfo.poolAndUserInfo.userStakeTokenBalance)
+            let p = amount.mul(BigNumber.from(10000)).div(poolInfo.poolAndUserInfo.userStaked)
             let _percent = p.gt(BigNumber.from(10000)) ? 100 : Number(p) / 100
             setPercent(_percent)
         }
@@ -84,7 +84,7 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
     const onStake = async () => {
         setIsLoading(true)
         try {
-            await stakeCallback(amount, poolInfo.poolAddress, poolInfo.poolAndUserInfo.stakingToken.address).then((res: any) => {
+            await unstakeCallback(amount, poolInfo.poolAddress).then((res: any) => {
                 if (res.status === 1) {
                     setIsLoading(false)
                     let poolIndex = 0
@@ -122,7 +122,7 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
 
     const setAmountBySliderBar = (val: number) => {
         let _percent = (Math.floor(val * 100)) ?? 0
-        let _amount = poolInfo.poolAndUserInfo.userStakeTokenBalance.mul(BigNumber.from(_percent)).div(BigNumber.from(10000))
+        let _amount = poolInfo.poolAndUserInfo.userStaked.mul(BigNumber.from(_percent)).div(BigNumber.from(10000))
         setInputAmount(_amount)
         setInputBoxValue(_amount)
     }
@@ -136,12 +136,12 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
             <Modal
                 isOpen={isOpen}
                 handleClose={onClose}
-                bgColor={'#7A30E0'}
+                bgColor={'#987DF9'}
             >
                 <div className='w-full p-4'>
                     <div className="w-full flex flex-row justify-between items-center border-b-2 border-[#987DF9]">
                         <div className='w-full text-[14px] md:text-[15px] text-[#EFEFEF]'>
-                            Stake in pool
+                            Unstake from pool
                         </div>
                         <div className="w-full flex justify-end">
                             <button
@@ -165,10 +165,10 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
                                     </div>
                                     <div className='w-full text-white flex flex-col items-center sm:items-end'>
                                         <div className='text-[22px] sm:text-[25px] font-semibold'>
-                                            {`Stake ${poolInfo.poolAndUserInfo.stakingToken.symbol}`}
+                                            {`Unstake ${poolInfo.poolAndUserInfo.stakingToken.symbol}`}
                                         </div>
                                         <div className='text-[13px] sm:text-[15px] font-light'>
-                                            {`Balance: ${formatEther_Optimized(poolInfo.poolAndUserInfo.userStakeTokenBalance, poolInfo.poolAndUserInfo.stakingToken.decimals, 3, false)}`}
+                                            {`Balance: ${formatEther_Optimized(poolInfo.poolAndUserInfo.userStaked, poolInfo.poolAndUserInfo.stakingToken.decimals, 3, false)}`}
                                         </div>
                                     </div>
                                 </div>
@@ -195,7 +195,7 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
                                         onChange={handleSliderChange}
                                         min={0}
                                         max={100}
-                                        disabled={poolInfo.poolAndUserInfo.userStakeTokenBalance.lte(0) || !account || poolInfo.poolAndUserInfo.userStakeTokenBalance.lt(amount)}
+                                        disabled={poolInfo.poolAndUserInfo.userStaked.lte(0) || !account || poolInfo.poolAndUserInfo.userStaked.lt(amount)}
                                     />
                                     <div className='w-full px-4 flex gap-2'>
                                         <div className='basis-1/4'>
@@ -204,7 +204,7 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
                                                 sx={{ width: "100%", height: '40px' }}
                                                 color="secondary"
                                                 onClick={() => onSetAmountByPercent(25)}
-                                                disabled={poolInfo.poolAndUserInfo.userStakeTokenBalance.lte(0) || !account}
+                                                disabled={poolInfo.poolAndUserInfo.userStaked.lte(0) || !account}
                                             >
                                                 <span className='text-[18px] sm:text-[20px] font-bold'>25%</span>
                                             </Button>
@@ -215,7 +215,7 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
                                                 sx={{ width: "100%", height: '40px' }}
                                                 color="secondary"
                                                 onClick={() => onSetAmountByPercent(50)}
-                                                disabled={poolInfo.poolAndUserInfo.userStakeTokenBalance.lte(0) || !account}
+                                                disabled={poolInfo.poolAndUserInfo.userStaked.lte(0) || !account}
                                             >
                                                 <span className='text-[18px] sm:text-[20px] font-bold'>50%</span>
                                             </Button>
@@ -226,7 +226,7 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
                                                 sx={{ width: "100%", height: '40px' }}
                                                 color="secondary"
                                                 onClick={() => onSetAmountByPercent(75)}
-                                                disabled={poolInfo.poolAndUserInfo.userStakeTokenBalance.lte(0) || !account}
+                                                disabled={poolInfo.poolAndUserInfo.userStaked.lte(0) || !account}
                                             >
                                                 <span className='text-[18px] sm:text-[20px] font-bold'>75%</span>
                                             </Button>
@@ -237,7 +237,7 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
                                                 sx={{ width: "100%", height: '40px' }}
                                                 color="secondary"
                                                 onClick={() => onSetAmountByPercent(100)}
-                                                disabled={poolInfo.poolAndUserInfo.userStakeTokenBalance.lte(0) || !account}
+                                                disabled={poolInfo.poolAndUserInfo.userStaked.lte(0) || !account}
                                             >
                                                 <span className='text-[18px] sm:text-[20px] font-bold'>MAX</span>
                                             </Button>
@@ -263,9 +263,9 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
                                             sx={{ width: "100%", height: '40px' }}
                                             color="secondary"
                                             onClick={onStake}
-                                            disabled={amount.lte(0) || amount.gt(poolInfo.poolAndUserInfo.userStakeTokenBalance) || !account}
+                                            disabled={amount.lte(0) || amount.gt(poolInfo.poolAndUserInfo.userStaked) || !account}
                                         >
-                                            <span className='text-[20px] font-bold'>Stake</span>
+                                            <span className='text-[20px] font-bold'>Unstake</span>
                                         </Button>
                                     </div>
                                 </div>
@@ -281,8 +281,8 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
                                     <CircularProgress size='5rem' sx={{ color: '#FFFFFF' }} />
                                 </Fade>
                                 <div className='w-full' style={{ marginTop: '40px', marginBottom: '90px' }}>
-                                    <div className='w-full text-center text-white text-[28px] text-app-yellow font-bold'>
-                                        Staking
+                                    <div className='w-full text-center text-white text-[28px] text-white font-bold'>
+                                        Untaking
                                     </div>
                                     <div className='w-full text-center text-white text-[20px] mt-4 font-semibold'>
                                         {`${formatUnits(amount, poolInfo.poolAndUserInfo.stakingToken.decimals)} ${poolInfo.poolAndUserInfo.stakingToken.symbol}`}
