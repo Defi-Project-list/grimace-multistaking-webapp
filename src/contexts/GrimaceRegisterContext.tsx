@@ -10,6 +10,8 @@ import grimaceFactoryAbi from '@app/constants/contracts/abis/grimaceStakingClub.
 import { ITokenInfo } from './GrimaceStakingContext';
 import useRefresh from '@app/hooks/useRefresh';
 import ERC20_ABI from '@app/constants/contracts/abis/erc20.json'
+import validator from 'validator'
+import { formatEther, parseUnits } from '@ethersproject/units';
 
 declare type Maybe<T> = T | null | undefined
 
@@ -34,7 +36,9 @@ export interface IGrimaceRegisterContext {
     payAmountForRegister: BigNumber
     isAllowedRewardToken: boolean
     isAllowedPayToken: boolean
-    notNeedCreationFee:boolean
+    notNeedCreationFee: boolean
+
+    createdPoolAddress: string
 
     onChangeStakeToken: (token: ITokenInfo) => void
     onChangeStakeLogo: (val: string) => void
@@ -50,6 +54,9 @@ export interface IGrimaceRegisterContext {
     setTelegramContact: (val: string) => void
     init_registerValues: () => void
     createNewPoolCallback: () => Promise<any>
+    setIsAllowedRewardToken: (val: boolean) => void
+    setIsAllowedPayToken: (val: boolean) => void
+    setCreatedPoolAddress: (val: string) => void
     setStep: (v: number) => void
 }
 
@@ -69,7 +76,7 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
     const [isPassableForm4, setIsPassableForm4] = useState(false)
     const [rewardSupply, setRewardSupply] = useState(BigNumber.from(0))
     const [rewardPerBlock, setRewardPerBlock] = useState(BigNumber.from(0))
-    const [endTime, setEndTime] = useState<BigNumber>()
+    const [endTime, setEndTime] = useState<BigNumber>(BigNumber.from(0))
     const [stakerLockTime, setStakerLockTime] = useState(BigNumber.from(0))
     const [websiteURL, setWebsiteURL] = useState('')
     const [telegramContact, setTelegramContact] = useState('')
@@ -83,6 +90,8 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
     const [isAllowedRewardToken, setIsAllowedRewardToken] = useState(false)
     const [isAllowedPayToken, setIsAllowedPayToken] = useState(false)
 
+    const [createdPoolAddress, setCreatedPoolAddress] = useState('')
+
     useEffect(() => {
         try {
             if (!payTokenForRegister) updatePaymentForRegister()
@@ -91,13 +100,13 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
 
     useEffect(() => {
         updatePaymentForRegister()
-    }, [])
+    }, [account, rewardToken])
 
     useEffect(() => {
-        if (stakeToken && rewardToken && noNeedChargeFeeToken){
+        if (stakeToken && rewardToken && noNeedChargeFeeToken) {
             if (isToken(stakeToken.address, noNeedChargeFeeToken) || isToken(rewardToken.address, noNeedChargeFeeToken)) setNotNeedCreationFee(true)
             else setNotNeedCreationFee(false)
-        }else{
+        } else {
             setNotNeedCreationFee(false)
         }
     }, [stakeToken, rewardToken, noNeedChargeFeeToken])
@@ -133,6 +142,9 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
     const fetchAllowance = async (tokenAddress: string, recvAddress: string) => {
         const chainId = getChainIdFromName(blockchain);
         const tokenContract: Contract = getContract(tokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+        if (isWrappedEther(blockchain, tokenAddress)) {
+            return await tokenContract.totalSupply()
+        }
         const res = await tokenContract.allowance(account, recvAddress)
         return res
     }
@@ -142,8 +154,8 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
         const factoryContract: Contract = getContract(GrimaceClubAddress, grimaceFactoryAbi, RpcProviders[chainId], account ? account : undefined)
         try {
             const payaddr = await fetchPayToken(factoryContract)
-            const token = await fetchTokenInfo(payaddr) 
-            setPayTokenForRegister({...token, logoURI:''})
+            const token = await fetchTokenInfo(payaddr)
+            setPayTokenForRegister({ ...token, logoURI: '' })
 
             const payamount = await fetchPayAmount(factoryContract)
             setPayAmountForRegister(payamount)
@@ -151,19 +163,22 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
             const _noNeedChargeFeeToken = await fetchNoNeedChargeFeeToken(factoryContract)
             setNoNeedChargeFeeToken(_noNeedChargeFeeToken)
 
-            await fetchAllowance(token.address, GrimaceClubAddress).then(async allowance => {
-                if (allowance.gte(payamount)) setIsAllowedPayToken(true)
-                else setIsAllowedPayToken(false)
-            }).catch(error => {
-                console.log(error)
-            })
-
-            await fetchAllowance(rewardToken.address, GrimaceClubAddress).then(async allowance => {
-                if (allowance.gte(rewardSupply)) setIsAllowedRewardToken(true)
-                else setIsAllowedRewardToken(false)
-            }).catch(error => {
-                console.log(error)
-            })
+            if (account) {
+                await fetchAllowance(token.address, GrimaceClubAddress).then(async allowance => {
+                    if (allowance.gte(payamount.gt(0)?payamount:parseUnits("1", token.decimals))) setIsAllowedPayToken(true)
+                    else setIsAllowedPayToken(false)
+                }).catch(error => {
+                    console.log(error)
+                })
+                if (rewardToken) {
+                    await fetchAllowance(rewardToken.address, GrimaceClubAddress).then(async allowance => {                        
+                        if (allowance.gte(rewardSupply.gt(0)?rewardSupply:parseUnits("1", rewardToken.decimals))) setIsAllowedRewardToken(true)
+                        else setIsAllowedRewardToken(false)
+                    }).catch(error => {
+                        console.log(error)
+                    })
+                }
+            }
         } catch (err) { console.log(err) }
     }
 
@@ -189,6 +204,7 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
         setNotNeedCreationFee(false)
         setIsAllowedRewardToken(false)
         setIsAllowedPayToken(false)
+        setCreatedPoolAddress('')
     }
 
     useEffect(() => {
@@ -200,6 +216,18 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
         if (rewardToken && rewardTokenLogo) setIsPassableForm2(true)
         else setIsPassableForm2(false)
     }, [rewardToken, rewardTokenLogo])
+
+    useEffect(() => {        
+        if (rewardSupply.gt(rewardPerBlock.mul(stakerLockTime.mul(BigNumber.from(3))))
+            && rewardPerBlock.gt(0) && Number(endTime) > ((new Date()).getTime() / 1000)
+            && stakerLockTime.gt(0) && validator.isURL(websiteURL) && telegramContact.length >= 3) setIsPassableForm3(true)
+        else setIsPassableForm3(false)
+    }, [rewardSupply, rewardPerBlock, endTime, stakerLockTime, websiteURL, telegramContact])
+
+    useEffect(() => {
+        if ((isAllowedPayToken && isAllowedRewardToken) || (notNeedCreationFee && isAllowedRewardToken)) setIsPassableForm4(true)
+        else setIsPassableForm4(false)
+    }, [isAllowedPayToken, isAllowedRewardToken])
 
     const onChangeStakeToken = (token: ITokenInfo) => {
         setStakeToken(token)
@@ -268,7 +296,9 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
                 isAllowedRewardToken,
                 isAllowedPayToken,
                 notNeedCreationFee,
-                
+
+                createdPoolAddress,
+
                 onChangeStakeToken,
                 onChangeStakeLogo,
                 onChangeRewardToken,
@@ -283,6 +313,9 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
                 setTelegramContact,
                 init_registerValues,
                 createNewPoolCallback,
+                setIsAllowedRewardToken,
+                setIsAllowedPayToken,
+                setCreatedPoolAddress,
                 setStep
             }}
         >

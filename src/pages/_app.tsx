@@ -8,6 +8,8 @@ import Layout from '@app/common/layout/Layout'
 import { CssBaseline } from '@mui/material'
 import { Rpc_URLS } from '@app/constants/AppConstants'
 import { RefreshContextProvider, GrimaceStakingClubProvider, GrimaceRegisterProvider } from "@app/contexts"
+import 'react-toastify/dist/ReactToastify.css'
+import { ToastContainer } from 'react-toastify'
 
 export const muiCache = createCache({
   key: 'mui',
@@ -52,6 +54,7 @@ function MyApp({
                   <Component {...pageProps} />
                 </Layout>
               </ThemeProvider>
+              <ToastContainer />              
             </GrimaceRegisterProvider>
           </GrimaceStakingClubProvider>
         </RefreshContextProvider>
