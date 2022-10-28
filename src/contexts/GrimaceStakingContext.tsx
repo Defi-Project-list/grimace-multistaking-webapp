@@ -146,12 +146,12 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
 
     const [totalStakedValue, setTotalStakedValue] = useState(0)
 
-    const [queueLivePools, setQueueLivePools] = useState({pagedProps:'', data: undefined})
-    const [queueExpiredPools, setQueueExpiredPools] = useState({pagedProps:'', data: undefined})
-    const [queueAdminChanged, setQueueAdminChanged] = useState({pagedProps:'', data: undefined})
-    const [queuePoolAndUserChanged, setQueuePoolAndUserChanged] = useState({pagedProps:'', data: undefined})    
-    const [queueApproveChanged, setQueueApproveChanged] = useState({pagedProps:'', data: undefined})
-    
+    const [queueLivePools, setQueueLivePools] = useState({ pagedProps: '', data: undefined })
+    const [queueExpiredPools, setQueueExpiredPools] = useState({ pagedProps: '', data: undefined })
+    const [queueAdminChanged, setQueueAdminChanged] = useState({ pagedProps: '', data: undefined })
+    const [queuePoolAndUserChanged, setQueuePoolAndUserChanged] = useState({ pagedProps: '', data: undefined })
+    const [queueApproveChanged, setQueueApproveChanged] = useState({ pagedProps: '', data: undefined })
+
     const [pagedProps, setPagedProps] = useState('')
 
     useEffect(() => {
@@ -183,22 +183,20 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     }, [slowRefresh, allLivePools, allExpiredPools])
 
     useEffect(() => {
-        if (isLiveSelected) {
-            setIsLoadingPools(true)
-            updatePagedLivePools()
+        if (pagedProps) {
+            if (isLiveSelected) {
+                setIsLoadingPools(true)
+                updatePagedLivePools()
+            } else {
+                setIsLoadingPools(true)
+                updatePagedExpiredPools()
+            }
         }
-    }, [account, rowsPerPage, page, isLiveSelected, allLivePools])
+    }, [pagedProps])
 
     useEffect(() => {
         setPagedProps(`${account}_${rowsPerPage}_${page}_${isLiveSelected}`)
-    }, [account, rowsPerPage, page, isLiveSelected])
-
-    useEffect(() => {
-        if (!isLiveSelected) {
-            setIsLoadingPools(true)
-            updatePagedExpiredPools()
-        }
-    }, [account, rowsPerPage, page, isLiveSelected, allExpiredPools])
+    }, [account, rowsPerPage, page, isLiveSelected, allLivePools, allExpiredPools])
 
     useEffect(() => {
         if (!isLoadingPools) {
@@ -841,7 +839,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     const updateChangedPoolAndUserInfo = async (poolIndex: number) => {
         try {
             let items: IClubMapPoolInfo[]
-            let prePagedProps=pagedProps
+            let prePagedProps = pagedProps
             if (isLiveSelected) {
                 items = [...pagedLivePools]
             } else {
@@ -853,7 +851,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             let userpoolInfo = await fetchChangedPoolAndUserInfo(item, poolContract)
             item.poolAndUserInfo = userpoolInfo
             items[poolIndex] = item
-            setQueuePoolAndUserChanged({pagedProps: prePagedProps, data: items})
+            setQueuePoolAndUserChanged({ pagedProps: prePagedProps, data: items })
         } catch (error) {
             console.log(error)
         }
@@ -896,7 +894,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     const updateAdminChangedPool = async (poolIndex: number) => {
         try {
             let items: IClubMapPoolInfo[]
-            let prePagedProps=pagedProps
+            let prePagedProps = pagedProps
             if (isLiveSelected) {
                 items = [...pagedLivePools]
             } else {
@@ -908,7 +906,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             let userpoolInfo = await fetchAdminChangedPool(item, poolContract)
             item.poolAndUserInfo = userpoolInfo
             items[poolIndex] = item
-            setQueueAdminChanged({pagedProps: prePagedProps, data: items})
+            setQueueAdminChanged({ pagedProps: prePagedProps, data: items })
         } catch (error) {
             console.log(error)
         }
@@ -926,7 +924,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     const setUserInfo_Approved = async (poolIndex: number) => {
         try {
             let items: IClubMapPoolInfo[]
-            let prePagedProps=pagedProps
+            let prePagedProps = pagedProps
             if (isLiveSelected) items = [...pagedLivePools]
             else items = [...pagedExpiredPools]
             let item = items[poolIndex]
@@ -934,14 +932,14 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             if (item_pooluser) item_pooluser.isApprovedForMax = true
             item.poolAndUserInfo = item_pooluser
             items[poolIndex] = item
-            setQueueApproveChanged({pagedProps: prePagedProps, data: items})
+            setQueueApproveChanged({ pagedProps: prePagedProps, data: items })
         } catch (error) {
             console.log(error)
         }
     }
 
     useEffect(() => {
-        if (queueLivePools.data){
+        if (queueLivePools.data) {
             if (queueLivePools.pagedProps === pagedProps) {
                 setPagedLivePools(queueLivePools.data)
             }
@@ -962,8 +960,8 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                         temp.push({ ...item, poolAndUserInfo: t })
                     })
             )
-            temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)            
-            setQueueLivePools({pagedProps: prePagedProps, data: temp})
+            temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
+            setQueueLivePools({ pagedProps: prePagedProps, data: temp })
         } catch (error) {
             console.log(error)
         }
@@ -971,7 +969,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     }
 
     useEffect(() => {
-        if (queueExpiredPools.data){
+        if (queueExpiredPools.data) {
             if (queueExpiredPools.pagedProps === pagedProps) {
                 setPagedExpiredPools(queueExpiredPools.data)
             }
@@ -992,8 +990,8 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                         temp.push({ ...item, poolAndUserInfo: t })
                     })
             )
-            temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)            
-            setQueueExpiredPools({pagedProps: prePagedProps, data: temp})
+            temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
+            setQueueExpiredPools({ pagedProps: prePagedProps, data: temp })
         } catch (error) {
             console.log(error)
         }
