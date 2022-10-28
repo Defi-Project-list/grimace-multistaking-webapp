@@ -7,7 +7,8 @@ import PoolsBar from './components/PoolsBar'
 import PoolCard from './components/PoolCard'
 import PaginationKit from '@app/common/components/PaginationKit'
 import StakeModal from './components/StakeModal'
-import { IClubMapPoolInfo, useGrimaceStakingClub } from '@app/contexts'
+import { IClubMapPoolInfo, IPoolAndUserInfo, useGrimaceStakingClub } from '@app/contexts'
+import LoadingPoolCard from './components/LoadingPoolCard'
 
 export default function Pools() {
     const router = useRouter()
@@ -18,6 +19,9 @@ export default function Pools() {
         pageCount,
         pagedLivePools,
         pagedExpiredPools,
+        isLoadingPools,
+        allLivePools,
+        allExpiredPools,
         setPage,
         setRowsPerPage,
         setIsLiveSelected,
@@ -25,6 +29,7 @@ export default function Pools() {
     } = useGrimaceStakingClub()
     const [isOpenStakeModal, setIsOpenStakeModal] = useState(false)
     const [isOpenUnstakeModal, setIsOpenUnstakeModal] = useState(false)
+    const [modalInfo, setModalInfo] = useState<IClubMapPoolInfo>()
 
     const onSelectPage = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value)
@@ -36,14 +41,18 @@ export default function Pools() {
         })
     }
 
-    useEffect(() => {
-        setPageCount(10)
-        setPage(1)
-    }, [])
+    const onStake = (item: IClubMapPoolInfo) => {
+        setModalInfo({ ...item})
+        setIsOpenStakeModal(true)
+    }
+
+    const onUnstake = (item: IClubMapPoolInfo) => {
+        setModalInfo({ ...item })
+    }
 
     return (
         <div className='w-full bg-app-common'>
-            <StakeModal isOpen={isOpenStakeModal} handleClose={() => setIsOpenStakeModal(false)} />
+            {modalInfo && <StakeModal isOpen={isOpenStakeModal} poolInfo={modalInfo} handleClose={() => setIsOpenStakeModal(false)} />}
             <div className={`w-full flex justify-center items-center h-screen lg:min-h-[480px] lg:h-auto bg-[#FFFFFF] bg-[url('splash.png')] bg-center bg-cover bg-no-repeat`}>
                 <div className='w-full px-5 md:px-6 xl:px-8 flex gap-8 flex-col lg:flex-row lg:justify-between items-center'>
                     <div className='w-full flex flex-col lg:flex-row gap-2 lg:gap-4 xl:gap-8 items-center'>
@@ -76,7 +85,7 @@ export default function Pools() {
                             <Button
                                 variant="contained"
                                 sx={{ width: '100%', height: '38px', fontFamily: 'Inter' }}
-                                color="primary"
+                                color="secondary"
                                 onClick={() => onRegister()}
                             >
                                 <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Apply Pool for your project</span>
@@ -93,19 +102,39 @@ export default function Pools() {
                     </div>
                     {isLiveSelected ?
                         <>
-                            {pagedLivePools.map((item: IClubMapPoolInfo, index: number) => {
-                                return (
-                                    <PoolCard key={index} item={item.poolAndUserInfo} poolAddress={item.poolAddress} poolIndex={index} />
-                                )
-                            })}
+                            {isLoadingPools ?
+                                <>
+                                    {allLivePools.slice(rowsPerPage > 0 ? (page - 1) * rowsPerPage : 0, rowsPerPage > 0 ? Math.min(page * rowsPerPage, allLivePools.length) : allLivePools.length).map((_, index: number) => {
+                                        return (
+                                            <LoadingPoolCard key={index} />
+                                        )
+                                    })}
+                                </> :
+                                <>
+                                    {pagedLivePools.map((item: IClubMapPoolInfo, index: number) => {
+                                        return (
+                                            <PoolCard key={index} poolInfo={item} poolIndex={index} onStake={onStake} onUnstake={onUnstake} />
+                                        )
+                                    })}
+                                </>}
                         </>
                         :
                         <>
-                            {pagedExpiredPools.map((item: IClubMapPoolInfo, index: number) => {
-                                return (
-                                    <PoolCard key={index} item={item.poolAndUserInfo} poolAddress={item.poolAddress} poolIndex={index} />
-                                )
-                            })}
+                            {isLoadingPools ?
+                                <>
+                                    {pagedExpiredPools.slice(rowsPerPage > 0 ? (page - 1) * rowsPerPage : 0, rowsPerPage > 0 ? Math.min(page * rowsPerPage, pagedExpiredPools.length) : pagedExpiredPools.length).map((_, index: number) => {
+                                        return (
+                                            <LoadingPoolCard key={index} />
+                                        )
+                                    })}
+                                </> :
+                                <>
+                                    {pagedExpiredPools.map((item: IClubMapPoolInfo, index: number) => {
+                                        return (
+                                            <PoolCard key={index} poolInfo={item} poolIndex={index} onStake={onStake} onUnstake={onUnstake} />
+                                        )
+                                    })}
+                                </>}
                         </>
                     }
                 </div>

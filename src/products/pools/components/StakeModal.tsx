@@ -5,28 +5,41 @@ import { Contract } from '@ethersproject/contracts'
 import ERC20_ABI from 'src/constants/contracts/abis/erc20.json'
 import { CHAIN_ID_NAME_MAP, RpcProviders } from '@app/constants/AppConstants'
 import { useEthers } from "@usedapp/core"
-import { formatEther, getContract, getEtherscanLink, unknownToken_Icon } from '@app/utils/utils'
+import { decodeTxErrorMessage, formatEther, getContract, getEtherscanLink, isToken, unknownToken_Icon } from '@app/utils/utils'
 import TokenQuantityInput from './TokenQuantityInput'
 import { BigNumber } from '@ethersproject/bignumber'
 import { Button, Slider } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 import Fade from '@mui/material/Fade'
+import { IClubMapPoolInfo, IPoolAndUserInfo, useGrimaceStakingClub } from '@app/contexts'
+import { toast } from 'react-toastify'
 
 interface ModalProps {
     isOpen: boolean
+    poolInfo: IClubMapPoolInfo
     handleClose: () => void
 }
 
 const ID_STAKE_TOKEN_INPUT = 'id_modal_stake_token_input'
 const BUY_BASE_URL = 'https://pancakeswap.finance/swap?outputCurrency='
 
-export default function StakeModal({ isOpen, handleClose }: ModalProps) {
+export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps) {
     const { library, account, chainId } = useEthers()
     const [isLoading, setIsLoading] = useState(false)
     const [hash, setHash] = useState('')
     const [amount, setInputAmount] = useState(BigNumber.from(0))
-    const [stakeTokenBalance, setStakeTokenBalance] = useState(BigNumber.from(0))
     const [percent, setPercent] = useState<number | string | Array<number | string>>(0)
+    const [item, setItem] = useState<IPoolAndUserInfo>()
+    const {
+        bnbBalance,
+        pagedLivePools,
+        stakeCallback,
+        updateChangedPoolAndUserInfo
+    } = useGrimaceStakingClub()
+
+    useEffect(() => {
+        setItem(poolInfo.poolAndUserInfo)
+    }, [poolInfo])
 
     const onClose = () => {
         if (!isLoading) handleClose()
@@ -35,18 +48,22 @@ export default function StakeModal({ isOpen, handleClose }: ModalProps) {
     const onInputChange = (val: string) => {
         let amount = BigNumber.from(0)
         if (val.length > 0) {
-            // if (val.substring(val.indexOf('.') + 1).length <= 0) amount = parseUnits(val.substring(0, val.indexOf('.')), inToken?.decimals)
-            // else amount = parseUnits(val, inToken?.decimals)
-            if (val.substring(val.indexOf('.') + 1).length <= 0) amount = parseUnits(val.substring(0, val.indexOf('.')), 18)
-            else amount = parseUnits(val, 18)
+            if (val.substring(val.indexOf('.') + 1).length <= 0) amount = parseUnits(val.substring(0, val.indexOf('.')), item.stakingToken.decimals)
+            else amount = parseUnits(val, item.stakingToken.decimals)
         }
         setInputAmount(amount)
+        if (item.userStakeTokenBalance.lte(0)) {
+            setPercent(0)
+        } else {
+            let p = amount.mul(BigNumber.from(10000)).div(item.userStakeTokenBalance)
+            let _percent = p.gt(BigNumber.from(10000)) ? 100 : Number(p) / 100
+            setPercent(_percent)
+        }
     }
 
     const setInputBoxValue = (val: BigNumber) => {
         let element: any = document.getElementById(ID_STAKE_TOKEN_INPUT)
-        // if (element) element.value = formatUnits(val, inToken?.decimals)
-        if (element) element.value = formatUnits(val, 18)
+        if (element) element.value = formatUnits(val, item.stakingToken.decimals)
     }
 
     const initInputBox = () => {
@@ -56,15 +73,50 @@ export default function StakeModal({ isOpen, handleClose }: ModalProps) {
     }
 
     const onStake = async () => {
-
+        setIsLoading(true)
+        try {
+            await stakeCallback(amount, poolInfo.poolAddress, item.stakingToken.address).then((res: any) => {
+                if (res.status === 1) {
+                    setIsLoading(false)
+                    let poolIndex = 0
+                    for (let i=0;i<pagedLivePools.length;i++) {
+                        if (isToken(pagedLivePools[i].poolAddress, poolInfo.poolAddress)){
+                            poolIndex = i
+                            break;
+                        }
+                    }
+                    updateChangedPoolAndUserInfo(poolIndex)
+                    toast.success('Successfully staked!')
+                } else {
+                    toast.error(`Transaction reverted! Tx:${res.hash}`)
+                }
+            }).catch((error: any) => {
+                console.log(error)
+                setIsLoading(false)
+                let err: any = error
+                toast.error(decodeTxErrorMessage(err))
+            })
+        } catch (error) {
+            console.log(error)
+            setIsLoading(false)
+        }
+        return null
     }
 
     const onSetAmountByPercent = (val: number) => {
         setPercent(val)
+        setAmountBySliderBar(Number(val))
     }
 
+    const setAmountBySliderBar = (val: number) => {
+        let _percent = (Math.floor(val * 100)) ?? 0
+        let _amount = item.userStakeTokenBalance.mul(BigNumber.from(_percent)).div(BigNumber.from(10000))
+        setInputAmount(_amount)
+        setInputBoxValue(_amount)
+    }
     const handleSliderChange = (event: Event, newValue: number | number[]) => {
         setPercent(newValue);
+        setAmountBySliderBar(Number(newValue))
     };
 
     return (
@@ -122,7 +174,7 @@ export default function StakeModal({ isOpen, handleClose }: ModalProps) {
                                         onChange={handleSliderChange}
                                         min={0}
                                         max={100}
-                                        disabled={stakeTokenBalance.lte(0) || !account}
+                                        disabled={item.userStakeTokenBalance.lte(0) || !account || item.userStakeTokenBalance.lt(amount)}
                                     />
                                     <div className='w-full px-4 flex gap-2'>
                                         <div className='basis-1/4'>
@@ -131,7 +183,7 @@ export default function StakeModal({ isOpen, handleClose }: ModalProps) {
                                                 sx={{ width: "100%", height: '40px' }}
                                                 color="secondary"
                                                 onClick={() => onSetAmountByPercent(25)}
-                                            // disabled={stakeTokenBalance.lte(0) || !account}
+                                                disabled={item.userStakeTokenBalance.lte(0) || !account}
                                             >
                                                 <span className='text-[18px] sm:text-[20px] font-bold'>25%</span>
                                             </Button>
@@ -142,7 +194,7 @@ export default function StakeModal({ isOpen, handleClose }: ModalProps) {
                                                 sx={{ width: "100%", height: '40px' }}
                                                 color="secondary"
                                                 onClick={() => onSetAmountByPercent(50)}
-                                            // disabled={stakeTokenBalance.lte(0) || !account}
+                                                disabled={item.userStakeTokenBalance.lte(0) || !account}
                                             >
                                                 <span className='text-[18px] sm:text-[20px] font-bold'>50%</span>
                                             </Button>
@@ -153,7 +205,7 @@ export default function StakeModal({ isOpen, handleClose }: ModalProps) {
                                                 sx={{ width: "100%", height: '40px' }}
                                                 color="secondary"
                                                 onClick={() => onSetAmountByPercent(75)}
-                                            // disabled={stakeTokenBalance.lte(0) || !account}
+                                                disabled={item.userStakeTokenBalance.lte(0) || !account}
                                             >
                                                 <span className='text-[18px] sm:text-[20px] font-bold'>75%</span>
                                             </Button>
@@ -164,7 +216,7 @@ export default function StakeModal({ isOpen, handleClose }: ModalProps) {
                                                 sx={{ width: "100%", height: '40px' }}
                                                 color="secondary"
                                                 onClick={() => onSetAmountByPercent(100)}
-                                            // disabled={stakeTokenBalance.lte(0) || !account}
+                                                disabled={item.userStakeTokenBalance.lte(0) || !account}
                                             >
                                                 <span className='text-[18px] sm:text-[20px] font-bold'>MAX</span>
                                             </Button>
@@ -190,7 +242,7 @@ export default function StakeModal({ isOpen, handleClose }: ModalProps) {
                                             sx={{ width: "100%", height: '40px' }}
                                             color="secondary"
                                             onClick={onStake}
-                                            disabled={amount.lte(0) || amount.gt(stakeTokenBalance) || !account}
+                                            disabled={amount.lte(0) || amount.gt(item.userStakeTokenBalance) || !account}
                                         >
                                             <span className='text-[20px] font-bold'>Stake</span>
                                         </Button>
