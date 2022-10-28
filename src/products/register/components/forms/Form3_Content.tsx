@@ -49,6 +49,15 @@ export default function Form3_Content() {
         setStep
     } = useGrimaceRegister()
 
+    useEffect(() => {
+        if (rewardSupply.gt(0)) setRewardSupplyBoxValue(rewardSupply)
+        if (rewardPerBlock.gt(0)) setRewardPerBlockBoxValue(rewardPerBlock)
+        if (stakerLockTime.gt(0)) setStakerLockTimeBoxValue(stakerLockTime)
+        if (endTime.gt(0)) setEndTimeBoxValue(endTime)
+        if (websiteURL.length>0) setWebsiteURLBoxValue(websiteURL)
+        if (telegramContact.length>0) setTelegramContactBoxValue(telegramContact)
+    }, [])
+
     const onRewardSupplyChange = (val: string) => {
         let amount = BigNumber.from(0)
         if (val.length > 0) {
@@ -106,6 +115,26 @@ export default function Form3_Content() {
         setStakerLockTime(BigNumber.from(0))
         let element: any = document.getElementById(ID_STAKER_LOCK_TIME)
         if (element) element.value = ""
+    }
+
+    const onEndTimeChange = (d: Date) => {
+        let timestamp = Math.floor(d.getTime() / 1000)
+        setEndTime(BigNumber.from(timestamp))
+    }
+
+    const setEndTimeBoxValue = (val: BigNumber) => {
+        let element: any = document.getElementById(ID_END_TIME)
+        if (element) element.value = new Date(Number(val) * 1000)
+    }
+
+    const setWebsiteURLBoxValue = (val: string) => {
+        let element: any = document.getElementById(ID_WEBSITE_URL)
+        if (element) element.value = val
+    }
+
+    const setTelegramContactBoxValue = (val: string) => {
+        let element: any = document.getElementById(ID_TELEGRAM_CONTACT)
+        if (element) element.value = val
     }
 
     return (
@@ -166,13 +195,13 @@ export default function Form3_Content() {
             <div className="w-full border-b-2 border-[#7A30E0] mt-6" />
             <div className="w-full flex gap-4 flex-col md:flex-row mt-4">
                 <div className="w-full flex flex-col gap-2">
-                    <PoolStopDate id={ID_END_TIME} setEndTime={setEndTime} />
+                    <PoolStopDate id={ID_END_TIME} setEndTime={onEndTimeChange} />
                     <div className="w-full bg-[#FFD7D7] rounded-md px-4 py-2">
                         <div className="flex gap-2">
                             <div className="mt-[3px]">
                                 <WarnSVG width={"15"} height={"16"} />
                             </div>
-                            {Number(endTime) > Math.floor((new Date()).getTime() /1000) && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
+                            {Number(endTime) > Math.floor((new Date()).getTime() / 1000) && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
                                 Please enter a valid date
                             </div>}
                         </div>
@@ -226,7 +255,7 @@ export default function Form3_Content() {
                             <div className="mt-[3px]">
                                 <WarnSVG width={"15"} height={"16"} />
                             </div>
-                            {telegramContact.length>3 && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
+                            {telegramContact.length > 3 && <div className="text-[13px] md:text-[15px] text-[#FF5858] font-semibold">
                                 Telegram PIC Cannot be empty
                             </div>}
                         </div>

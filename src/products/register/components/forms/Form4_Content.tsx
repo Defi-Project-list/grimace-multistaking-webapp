@@ -11,48 +11,47 @@ interface props {
 
 }
 
-const ID_REWARD_SUPPLY = 'id_reward_supply_input'
-const ID_REWARD_PER_BLOCK = 'id_reward_per_block_input'
-const ID_STAKER_LOCK_TIME = 'id_staker_lock_time'
-const ID_END_TIME = 'id_stake_end_time'
-const ID_WEBSITE_URL = 'id_website_url'
-const ID_TELEGRAM_CONTACT = 'id_telegram_contact'
-
 export default function Form4_Content() {
-    const { setStep } = useGrimaceRegister()
+    const {
+        stakeToken,
+        stakeTokenLogo,
+        rewardToken,
+        rewardTokenLogo,
+        setStep
+    } = useGrimaceRegister()
 
     return (
         <div className="w-full">
             <div className="w-full flex flex-col md:flex-row gap-4">
                 <div className='md:basis-1/2 w-full bg-white rounded-md p-4 flex gap-4 items-center' style={{ boxShadow: '2px 2px 4px #888' }}>
                     <div className="w-[48px] xl:w-[56px]">
-                        <img src='./images/Logomark_GrimaceCoin.png' width="100%" />
+                        <img src={stakeTokenLogo} width="100%" />
                     </div>
                     <div className="flex flex-col">
                         <div className="text-[22px] md:text-[25px] text-app-purple font-bold">
-                            Stake TKN
+                            {`Stake ${stakeToken.name}`}
                         </div>
                         <div className="text-[14px] md:text-[15px] text-app-purple">
-                            TKN | 18 Decimal
+                            {`${stakeToken.symbol} | ${stakeToken.decimals} Decimal`}
                         </div>
                         <div className="text-[14px] md:text-[15px] text-app-purple break-all mt-2">
-                            CA: 0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c
+                            {`CA: ${stakeToken.address}`}
                         </div>
                     </div>
                 </div>
                 <div className='md:basis-1/2 w-full bg-white rounded-md p-4 flex gap-4 items-center' style={{ boxShadow: '2px 2px 4px #888' }}>
                     <div className="w-[48px] xl:w-[56px]">
-                        <img src='./images/Logomark_GrimaceCoin.png' width="100%" />
+                        <img src={rewardTokenLogo} width="100%" />
                     </div>
                     <div className="flex flex-col">
                         <div className="text-[22px] md:text-[25px] text-app-purple font-bold">
-                            Reward TKN
+                            {`Reward ${rewardToken.name}`}
                         </div>
                         <div className="text-[14px] md:text-[15px] text-app-purple">
-                            TKN | 18 Decimal
+                            {`${rewardToken.symbol} | ${rewardToken.decimals} Decimal`}
                         </div>
                         <div className="text-[14px] md:text-[15px] text-app-purple break-all mt-2">
-                            CA: 0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c
+                            {`CA: ${rewardToken.address}`}
                         </div>
                     </div>
                 </div>
@@ -155,7 +154,7 @@ export default function Form4_Content() {
                         variant="contained"
                         sx={{ width: '100%', height: '38px', fontFamily: 'Inter' }}
                         color="primary"
-                        onClick={() => setStep(1)}
+                        onClick={() => setStep(3)}
                     >
                         <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Back</span>
                     </Button>
@@ -165,7 +164,7 @@ export default function Form4_Content() {
                         variant="contained"
                         sx={{ width: '100%', height: '38px', fontFamily: 'Inter', backgroundColor: '#7A30E0' }}
                         color="primary"
-                        onClick={() => setStep(3)}
+                        onClick={() => setStep(5)}
                     >
                         <span className='text-[16px] md:text-[18px] text-white font-bold whitespace-nowrap'>Finish</span>
                     </Button>

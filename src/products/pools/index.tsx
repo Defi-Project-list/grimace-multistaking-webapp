@@ -7,13 +7,11 @@ import PoolsBar from './components/PoolsBar'
 import PoolCard from './components/PoolCard'
 import PaginationKit from '@app/common/components/PaginationKit'
 import StakeModal from './components/StakeModal'
+import { useGrimaceStakingClub } from '@app/contexts'
 
 export default function Pools() {
     const router = useRouter()
-    const [isSelectedLivePools, setIsSelectedLivePools] = useState(true)
-    const [rowsPerPage, setRowsPerPage] = useState(10)
-    const [page, setPage] = useState(1)
-    const [pageCount, setPageCount] = useState(0)
+    const { isLiveSelected, rowsPerPage, page, pageCount, setPage, setRowsPerPage, setIsLiveSelected, setPageCount} = useGrimaceStakingClub()    
     const [isOpenStakeModal, setIsOpenStakeModal] = useState(false)
     const [isOpenUnstakeModal, setIsOpenUnstakeModal] = useState(false)
 
@@ -78,7 +76,7 @@ export default function Pools() {
             </div>
             <div className='w-full p-4 md:p-6 flex flex-col lg:flex-row gap-6'>
                 <div className="w-full">                 
-                    <PoolsBar isSelectedLivePools={isSelectedLivePools} handleSelectShowPools={setIsSelectedLivePools} />
+                    <PoolsBar isLiveSelected={isLiveSelected} handleSelectShowPools={setIsLiveSelected} />
                     <div className='w-full flex justify-center'>
                         <PaginationKit rowsPerPage={rowsPerPage} count={pageCount} page={page} onSelectRows={(event: SelectChangeEvent) => setRowsPerPage(Number(event.target.value as string))} onSelectPage={onSelectPage} />
                     </div>

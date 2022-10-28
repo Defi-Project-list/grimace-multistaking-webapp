@@ -28,7 +28,7 @@ export const USDCTokenAddress = "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"
 
 // testnet
 export const AppTokenAddress = "0xd0C3268af45780ADf2CbeC83524800e74b06236F"
-export const GrimaceClubAddress = "0x3495BD74DE996B7FCC81Bb64D2a2386221919C55"
+export const GrimaceClubAddress = "0xeF19F0f4486C975Dc4cb55167EE53Fb6718467c8"
 
 export const CHAIN_ID_MAP: { [key: ChainId | number]: string } = {
     1: "Ethereum Mainnet",

@@ -32,6 +32,8 @@ export interface IPoolAndUserInfo {
     availableReward: BigNumber
     availableRewardUSD: number
     isApprovedForMax: boolean
+    userStakeTokenBalance: BigNumber
+    userRewardTokenBalance: BigNumber
 
     stakingTokenPrice: number
     rewardTokenPrice: number
@@ -61,7 +63,6 @@ export interface IClubMapPoolInfo {
 }
 
 export interface IGrimaceStakingContext {
-    grimaceBalance: BigNumber
     bnbBalance: BigNumber
     allLivePools: IClubMapPoolInfo[]
     allExpiredPools: IClubMapPoolInfo[]
@@ -71,9 +72,13 @@ export interface IGrimaceStakingContext {
     grimaceClubOwner: string
     blockTimestamp: number
     isLiveSelected: boolean
+    rowsPerPage: number
+    page: number
+    pageCount: number
 
     setRowsPerPage: (val: number) => void
     setPage: (val: number) => void
+    setPageCount: (val: number) => void
     setIsLiveSelected: (val: boolean) => void
     stakeCallback: (amount: BigNumber, poolAddress: string, stakingTokenAddress: string) => Promise<any>
     unstakeCallback: (amount: BigNumber, poolAddress: string) => Promise<any>
@@ -90,20 +95,20 @@ export interface IGrimaceStakingContext {
     updatePayTokenCallback: (payTokenAddress: string) => Promise<any>
     updatePayAmountCallback: (amount: BigNumber) => Promise<any>
     ownerWithdrawPayTokensCallback: (poolAddress: string) => Promise<any>
-    updateClubMapPoolInfo()
-    updatePagedLivePools()
-    updatePagedExpiredPools()
+    updateClubMapPoolInfo: () => void
+    updatePagedLivePools: () => void
+    updatePagedExpiredPools: () => void
+    updateChangedPoolAndUserInfo: (poolIndex: number) => void
 }
 
 const GrimaceStakingContext = React.createContext<Maybe<IGrimaceStakingContext>>(null)
 const blockchain = process.env.blockchain
 
 export const GrimaceStakingClubProvider = ({ children = null as any }) => {
-    const { chainId, account, library } = useEthers()    
-    const [grimaceBalance, setGrimaceBalance] = useState(BigNumber.from(0))
+    const { chainId, account, library } = useEthers()
     const { slowRefresh, fastRefresh } = useRefresh()
     const [bnbBalance, setBnbBalance] = useState(BigNumber.from(0))
-    const nativeBalance = useNativeTokenBalance('bsc')
+    const nativeBalance = useNativeTokenBalance(blockchain)
     const { nativeBalanceCallback } = useTokenBalanceCallback()
 
     const [allLivePools, setAllLivePools] = useState<IClubMapPoolInfo[]>([])
@@ -119,8 +124,21 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
 
     const [rowsPerPage, setRowsPerPage] = useState(10)
     const [page, setPage] = useState(1)
+    const [pageCount, setPageCount] = useState(0)
 
     const [isLiveSelected, setIsLiveSelected] = useState(true)
+
+    useEffect(() => {
+        if (isLiveSelected) {
+            if (allLivePools) setPageCount(rowsPerPage > 0 ? Math.ceil(allLivePools.length / rowsPerPage) : 0)
+            else setPageCount(0)
+            setPage(1)
+        } else {
+            if (allExpiredPools) setPageCount(rowsPerPage > 0 ? Math.ceil(allExpiredPools.length / rowsPerPage) : 0)
+            else setPageCount(0)
+            setPage(1)
+        }
+    }, [rowsPerPage, isLiveSelected, allLivePools, allExpiredPools])
 
     useEffect(() => {
         if (nativeBalance) {
@@ -138,13 +156,13 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         if (isLiveSelected) {
             updatePagedLivePools()
         }
-    }, [account, rowsPerPage, page, isLiveSelected, allLivePools])
+    }, [account, rowsPerPage, page, isLiveSelected, allLivePools, fastRefresh])
 
     useEffect(() => {
         if (!isLiveSelected) {
             updatePagedExpiredPools()
         }
-    }, [account, rowsPerPage, page, isLiveSelected, allExpiredPools])
+    }, [account, rowsPerPage, page, isLiveSelected, allExpiredPools, fastRefresh])
 
     useEffect(() => {
         const fetch = async () => {
@@ -161,30 +179,21 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     const stakeCallback = async function (amount: BigNumber, poolAddress: string, stakingTokenAddress: string) {
         if (!account || !library || !poolAddress) return
         const poolContract: Contract = getContract(poolAddress, poolAbi, library, account ? account : undefined)
-        if (isWrappedEther('bsc', stakingTokenAddress)) {
-            return poolContract.estimateGas.stake(amount, { value: amount }).then(estimatedGasLimit => {
-                const gas = estimatedGasLimit
-                return poolContract.stake(amount, {
-                    value: amount,
-                    gasLimit: calculateGasMargin(gas)
-                }).then((response: TransactionResponse) => {
-                    return response.wait().then((res: any) => {
-                        return { status: res.status, hash: response.hash }
-                    })
-                })
-            })
-        } else {
-            return poolContract.estimateGas.stake(amount).then(estimatedGasLimit => {
-                const gas = estimatedGasLimit
-                return poolContract.stake(amount, {
-                    gasLimit: calculateGasMargin(gas)
-                }).then((response: TransactionResponse) => {
-                    return response.wait().then((res: any) => {
-                        return { status: res.status, hash: response.hash }
-                    })
-                })
-            })
+        let bnbAmount: BigNumber = BigNumber.from(0)
+        if (isWrappedEther(blockchain, stakingTokenAddress)) {
+            bnbAmount = bnbAmount.add(amount)
         }
+        return poolContract.estimateGas.stake(amount, { value: bnbAmount }).then(estimatedGasLimit => {
+            const gas = estimatedGasLimit
+            return poolContract.stake(amount, {
+                value: bnbAmount,
+                gasLimit: calculateGasMargin(gas)
+            }).then((response: TransactionResponse) => {
+                return response.wait().then((res: any) => {
+                    return { status: res.status, hash: response.hash }
+                })
+            })
+        })
     }
 
     const unstakeCallback = async function (amount: BigNumber, poolAddress: string) {
@@ -402,7 +411,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     ///////////////////
 
     const fetchTokenInfo = async (tokenAddress: string) => {
-        if (isWrappedEther('bsc', tokenAddress)) {
+        if (isWrappedEther(blockchain, tokenAddress)) {
             return { address: tokenAddress, name: "BNB Token", symbol: "BNB", decimals: 18 }
         } else {
             const chainId = getChainIdFromName(blockchain);
@@ -412,11 +421,6 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             const symbol = await tokenContract.symbol()
             return { address: tokenAddress, name: name, symbol: symbol, decimals: Number(decimals) }
         }
-    }
-
-    const fetchAvailableRewards = async (poolContract: Contract) => {
-        const res = await poolContract.pendingReward(account)
-        return res
     }
 
     const fetchRewardRemaining = async (poolContract: Contract) => {
@@ -472,12 +476,20 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         const owner = await factoryContract.owner()
         setGrimaceClubOwner(owner)
 
-        fetchClubMapPoolInfo(factoryContract).then(async result => {            
+        fetchClubMapPoolInfo(factoryContract).then(async result => {
+            if (account) {
+                try {
+                    let bal = await nativeBalanceCallback(blockchain)
+                    setBnbBalance(bal)
+                } catch (e) { }
+            } else {
+                setBnbBalance(BigNumber.from(0))
+            }
             if (result.length > 0) {
                 let temp: IClubMapPoolInfo[] = []
                 let livePools = result[0]
                 let expiredPools = result[1]
-                let disabledPools = result[2]                
+                let disabledPools = result[2]
                 livePools.map(async (item) => {
                     temp.push({ poolAddress: item.poolAddress, poolAndUserInfo: undefined, owner: item.owner, createdAt: Number(item.createdAt) })
                 })
@@ -548,6 +560,16 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             console.log(error)
         })
         if (account) {
+            const chainId = getChainIdFromName(blockchain);
+            const stakeTokenContract: Contract = getContract(t.stakingToken.address, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+            const rewardTokenContract: Contract = getContract(t.rewardToken.address, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+            try {
+                let bal = await stakeTokenContract.balanceOf(account)
+                t.userStakeTokenBalance = bal
+                bal = await rewardTokenContract.balanceOf(account)
+                t.userRewardTokenBalance = bal
+            } catch (e) { }
+
             await fetchUserInfo(poolContract).then(async result => {
                 t.userStaked = result.amount
                 t.userStakedUSD = getValueUSDFromAmount(result.amount, t.stakingTokenPrice, t.stakingToken.decimals)
@@ -578,6 +600,8 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             t.availableReward = BigNumber.from(0)
             t.availableRewardUSD = 0
             t.isApprovedForMax = false
+            t.userStakeTokenBalance = BigNumber.from(0)
+            t.userRewardTokenBalance = BigNumber.from(0)
         }
         await fetchTotalStaked(poolContract).then(async amount => {
             t.totalStaked = amount
@@ -600,6 +624,87 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         return t
     }
 
+    const fetchChangedPoolAndUserInfo = async (item: IClubMapPoolInfo, poolContract: Contract) => {
+        let t: IPoolAndUserInfo = { ...item.poolAndUserInfo }
+
+        if (account) {
+            const chainId = getChainIdFromName(blockchain);
+            const stakeTokenContract: Contract = getContract(t.stakingToken.address, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+            const rewardTokenContract: Contract = getContract(t.rewardToken.address, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
+            try {
+                let bal = await stakeTokenContract.balanceOf(account)
+                t.userStakeTokenBalance = bal
+                bal = await rewardTokenContract.balanceOf(account)
+                t.userRewardTokenBalance = bal
+                bal = await nativeBalanceCallback(blockchain)
+                setBnbBalance(bal)
+            } catch (e) { }
+            await fetchUserInfo(poolContract).then(async result => {
+                t.userStaked = result.amount
+                t.userStakedUSD = getValueUSDFromAmount(result.amount, t.stakingTokenPrice, t.stakingToken.decimals)
+                t.userUnlockTime = Number(result.unlockTime)
+                t.userTotalEarned = result.totalEarned
+                t.userTotalEarnedUSD = getValueUSDFromAmount(result.totalEarned, t.rewardTokenPrice, t.rewardToken.decimals)
+            }).catch(error => {
+                console.log(error)
+            })
+            await fetchPendingReward(poolContract).then(async result => {
+                t.availableReward = result
+                t.availableRewardUSD = getValueUSDFromAmount(result, t.rewardTokenPrice, t.rewardToken.decimals)
+            }).catch(error => {
+                console.log(error)
+            })
+        } else {
+            t.userStaked = BigNumber.from(0)
+            t.userStakedUSD = 0
+            t.userUnlockTime = 0
+            t.userTotalEarned = BigNumber.from(0)
+            t.userTotalEarnedUSD = 0
+            t.availableReward = BigNumber.from(0)
+            t.availableRewardUSD = 0
+            t.isApprovedForMax = false
+            t.userStakeTokenBalance = BigNumber.from(0)
+            t.userRewardTokenBalance = BigNumber.from(0)
+        }
+        await fetchTotalStaked(poolContract).then(async amount => {
+            t.totalStaked = amount
+            t.totalStakedUSD = getValueUSDFromAmount(amount, t.stakingTokenPrice, t.stakingToken.decimals)
+        }).catch(error => {
+            console.log(error)
+        })
+        await fetchTotalClaimed(poolContract).then(async amount => {
+            t.totalClaimed = amount
+            t.totalClaimedUSD = getValueUSDFromAmount(amount, t.rewardTokenPrice, t.rewardToken.decimals)
+        }).catch(error => {
+            console.log(error)
+        })
+        await fetchRewardRemaining(poolContract).then(async amount => {
+            t.rewardRemaining = amount
+            t.rewardRemainingUSD = getValueUSDFromAmount(amount, t.rewardTokenPrice, t.rewardToken.decimals)
+        }).catch(error => {
+            console.log(error)
+        })
+        return t
+    }
+
+    const updateChangedPoolAndUserInfo = async (poolIndex: number) => {
+        try {
+            let items: IClubMapPoolInfo[]
+            if (isLiveSelected) items = [...pagedLivePools]
+            else items = [...pagedExpiredPools]
+            let item = items[poolIndex]
+            const chainId = getChainIdFromName(blockchain);
+            const poolContract: Contract = getContract(item.poolAddress, poolAbi, RpcProviders[chainId], account ? account : undefined)
+            let userpoolInfo = await fetchChangedPoolAndUserInfo(item, poolContract)
+            item.poolAndUserInfo = userpoolInfo
+            items[poolIndex] = item
+            if (isLiveSelected) setPagedLivePools(items)
+            else setPagedExpiredPools(items)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     const updatePagedLivePools = async () => {
         try {
             let temp: IClubMapPoolInfo[] = []
@@ -612,6 +717,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                         temp.push({ ...item, poolAndUserInfo: t })
                     })
             )
+            temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
             setPagedLivePools(temp)
         } catch (error) {
             console.log(error)
@@ -630,6 +736,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                         temp.push({ ...item, poolAndUserInfo: t })
                     })
             )
+            temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
             setPagedExpiredPools(temp)
         } catch (error) {
             console.log(error)
@@ -639,7 +746,6 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     return (
         <GrimaceStakingContext.Provider
             value={{
-                grimaceBalance,
                 bnbBalance,
                 allLivePools,
                 allExpiredPools,
@@ -649,9 +755,13 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 grimaceClubOwner,
                 blockTimestamp,
                 isLiveSelected,
+                rowsPerPage,
+                page,
+                pageCount,
 
                 setRowsPerPage,
                 setPage,
+                setPageCount,
                 setIsLiveSelected,
                 stakeCallback,
                 unstakeCallback,
@@ -671,6 +781,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 updateClubMapPoolInfo,
                 updatePagedLivePools,
                 updatePagedExpiredPools,
+                updateChangedPoolAndUserInfo
             }}
         >
             {children}

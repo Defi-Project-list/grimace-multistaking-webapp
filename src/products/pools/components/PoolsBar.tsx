@@ -7,7 +7,7 @@ import { FormControlLabel, RadioGroup } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import PoolSelectOption from './PoolSelectOption'
 
-export default function PoolsBar({ isSelectedLivePools, handleSelectShowPools }: { isSelectedLivePools, handleSelectShowPools: (isLive: boolean) => void }) {
+export default function PoolsBar({ isLiveSelected, handleSelectShowPools }: { isLiveSelected, handleSelectShowPools: (isLive: boolean) => void }) {
     const [isFocused, setIsFocused] = useState(false)
     const handleChange = (value: string) => {
 
@@ -45,12 +45,12 @@ export default function PoolsBar({ isSelectedLivePools, handleSelectShowPools }:
                 />
             </FormControl>
             <div className="w-full sm:w-auto flex gap-4 items-center justify-end sm:justify-start">
-                <div className={`flex gap-2 items-center ${!isSelectedLivePools?'cursor-pointer':''}`} onClick={() => handleSelectShowPools(true)}>
-                    <PoolSelectOption isSelected={isSelectedLivePools} />
+                <div className={`flex gap-2 items-center ${!isLiveSelected?'cursor-pointer':''}`} onClick={() => handleSelectShowPools(true)}>
+                    <PoolSelectOption isSelected={isLiveSelected} />
                     <div className='text-app-primary text-[15px] whitespace-nowrap'>Live Pool</div>
                 </div>
-                <div className={`flex gap-2 items-center ${isSelectedLivePools?'cursor-pointer':''}`} onClick={() => handleSelectShowPools(false)}>
-                    <PoolSelectOption isSelected={!isSelectedLivePools} />
+                <div className={`flex gap-2 items-center ${isLiveSelected?'cursor-pointer':''}`} onClick={() => handleSelectShowPools(false)}>
+                    <PoolSelectOption isSelected={!isLiveSelected} />
                     <div className='text-app-primary text-[15px] whitespace-nowrap'>Expired Pool</div>
                 </div>       
             </div>
