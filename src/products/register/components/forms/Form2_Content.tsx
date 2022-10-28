@@ -61,7 +61,7 @@ export default function Form2_Content() {
 
     return (
         <div className="w-full">
-            <div className='w-full flex flex-col md:flex-row md:items-center justify-center gap-4 py-4'>
+            <div className='w-full flex flex-col md:flex-row justify-center gap-4 py-4'>
                 <div className="w-full flex flex-col gap-4">
                     <TokenAddressInput id={TOKEN_ADDRESS_ID} onChangeToken={(val) => handleRewardToken(val)} placeHolder1={"Reward Token Address"} placeHolder2={"Put token CA for rewards"} />
                     <div className='w-full rounded-md bg-app-warning px-4 py-2 flex gap-2'>
