@@ -10,6 +10,7 @@ import StakeModal from './components/StakeModal'
 import { IClubMapPoolInfo, IPoolAndUserInfo, useGrimaceStakingClub } from '@app/contexts'
 import LoadingPoolCard from './components/LoadingPoolCard'
 import UnstakeModal from './components/UnstakeModal'
+import { formatFixedNumber_Optimized } from '@app/utils/utils'
 
 export default function Pools() {
     const router = useRouter()
@@ -23,6 +24,7 @@ export default function Pools() {
         isLoadingPools,
         allLivePools,
         allExpiredPools,
+        totalStakedValue,
         setPage,
         setRowsPerPage,
         setIsLiveSelected,
@@ -49,7 +51,7 @@ export default function Pools() {
 
     const onUnstake = (item: IClubMapPoolInfo) => {
         setModalInfo({ ...item})
-        setIsOpenStakeModal(true)
+        setIsOpenUnstakeModal(true)
     }
 
     return (
@@ -81,7 +83,7 @@ export default function Pools() {
                             Total Staked Value ($)
                         </div>
                         <div className="flex gap-1 items-center text-[28px] md:text-[30px] text-white font-bold">
-                            {'123,456,789.10'}
+                            {`${formatFixedNumber_Optimized(totalStakedValue, 2, true)}`}
                             <span className='text-[24px] mt-1'>USD</span>
                         </div>
                         <div className='w-full my-1'>

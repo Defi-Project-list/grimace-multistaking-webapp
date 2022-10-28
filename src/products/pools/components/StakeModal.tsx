@@ -184,7 +184,7 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
                                     <div className='text-[13px] sm:text-[15px] font-light'>
                                         {`BNB Balance: ${formatEther_Optimized(bnbBalance, 18, 3, false)}`}
                                     </div>
-                                </div>
+                                </div>                                
                                 <div className="w-full flex flex-col gap-2 mt-4">
                                     <Slider
                                         size="small"
@@ -244,6 +244,20 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
                                         </div>
                                     </div>
                                 </div>
+                                {(poolInfo.poolAndUserInfo.userStakeTokenBalance.lte(0) || amount.gt(poolInfo.poolAndUserInfo.userStakeTokenBalance)) &&
+                                    <div className='w-full rounded-md bg-app-box mt-6 py-1 px-2 flex gap-2'>
+                                        <div className='mt-[2px]'>
+                                            <svg width="16" height="16" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fillRule="evenodd" clipRule="evenodd" d="M9 1.63636C4.93318 1.63636 1.63636 4.93318 1.63636 9C1.63636 13.0668 4.93318 16.3636 9 16.3636C13.0668 16.3636 16.3636 13.0668 16.3636 9C16.3636 4.93318 13.0668 1.63636 9 1.63636ZM0 9C0 4.02944 4.02944 0 9 0C13.9706 0 18 4.02944 18 9C18 13.9706 13.9706 18 9 18C4.02944 18 0 13.9706 0 9Z" fill="#7A30E0" />
+                                                <path fillRule="evenodd" clipRule="evenodd" d="M8.99994 4.90918C9.45181 4.90918 9.81813 5.27549 9.81813 5.72736V9.00009C9.81813 9.45196 9.45181 9.81827 8.99994 9.81827C8.54808 9.81827 8.18176 9.45196 8.18176 9.00009V5.72736C8.18176 5.27549 8.54808 4.90918 8.99994 4.90918Z" fill="#7A30E0" />
+                                                <path fillRule="evenodd" clipRule="evenodd" d="M8.18176 12.2725C8.18176 11.8207 8.54808 11.4543 8.99994 11.4543H9.00813C9.46 11.4543 9.82631 11.8207 9.82631 12.2725C9.82631 12.7244 9.46 13.0907 9.00813 13.0907H8.99994C8.54808 13.0907 8.18176 12.7244 8.18176 12.2725Z" fill="#7A30E0" />
+                                            </svg>
+                                        </div>
+                                        <div className="text-[15px] text-app-primary font-semibold">
+                                            Insufficient balance
+                                        </div>
+                                    </div>
+                                }
                                 <div className='w-full flex items-center gap-5 mt-8'>
                                     <div className='basis-1/2'>
                                         <Button

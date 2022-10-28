@@ -203,8 +203,11 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
                 <div className='w-full flex flex-col xl:flex-row gap-4 justify-between items-center py-2'>
                     <div className='w-full xl:basis-1/2 flex flex-col sm:flex-row justify-between sm:justify-around gap-4'>
                         <div className='w-full md:basis-1/2 flex justify-start sm:justify-start xl:justify-around gap-6 sm:gap-8 lg:gap-10'>
-                            <div className='bg-white w-[50px]' style={{ borderRadius: '50%' }}>
+                            <div className='bg-white w-[50px] relative overflow-visible' style={{ borderRadius: '50%' }}>
                                 <img src={poolInfo.poolAndUserInfo.stakingToken.logoURI} width="100%" />
+                                <div className='absolute bg-white w-[20px] bottom-0 right-0 border border-white' style={{ borderRadius: '50%' }}>
+                                    <img src={poolInfo.poolAndUserInfo.rewardToken.logoURI} width="100%" />
+                                </div>
                             </div>
                             <div className=''>
                                 <div className='text-[18px] md:text-[20px] text-app-primary font-bold whitespace-nowrap'>{`Earn ${poolInfo.poolAndUserInfo.rewardToken.symbol}`}</div>
