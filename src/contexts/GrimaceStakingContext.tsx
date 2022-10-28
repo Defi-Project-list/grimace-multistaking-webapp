@@ -109,6 +109,7 @@ export interface IGrimaceStakingContext {
     updatePagedLivePools: () => void
     updatePagedExpiredPools: () => void
     updateChangedPoolAndUserInfo: (poolIndex: number) => void
+    updateTotalStakedValue: () => void
     setUserInfo_Approved: (poolIndex: number) => void
 }
 
@@ -702,9 +703,10 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     const updateTotalStakedValue = async () => {
         let price = 0
         let totalUSD = 0
-        let allPools:IClubMapPoolInfo[]=[]
+        let allPools: IClubMapPoolInfo[] = []
         allLivePools.map((item) => allPools.push(item))
         allExpiredPools.map((item) => allPools.push(item))
+        let isNewCalc = totalStakedValue > 0 ? false : true
         await Promise.all(allPools.map(async (item: IClubMapPoolInfo) => {
             try {
                 const chainId = getChainIdFromName(blockchain);
@@ -722,8 +724,9 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                     })
                 })
             } catch (err) { }
-            setTotalStakedValue(totalUSD)
+            if (isNewCalc) setTotalStakedValue(totalUSD)
         }))
+        setTotalStakedValue(totalUSD)
     }
 
     const fetchChangedPoolAndUserInfo = async (item: IClubMapPoolInfo, poolContract: Contract) => {
@@ -918,6 +921,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 updatePagedLivePools,
                 updatePagedExpiredPools,
                 updateChangedPoolAndUserInfo,
+                updateTotalStakedValue,
                 setUserInfo_Approved
             }}
         >

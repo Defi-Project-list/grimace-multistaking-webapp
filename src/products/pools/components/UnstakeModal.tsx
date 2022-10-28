@@ -34,7 +34,8 @@ export default function UnstakeModal({ isOpen, poolInfo, handleClose }: ModalPro
         pagedLivePools,
         blockTimestamp,
         unstakeCallback,
-        updateChangedPoolAndUserInfo
+        updateChangedPoolAndUserInfo,
+        updateTotalStakedValue
     } = useGrimaceStakingClub()
 
     const init = () => {
@@ -101,6 +102,7 @@ export default function UnstakeModal({ isOpen, poolInfo, handleClose }: ModalPro
                         }
                     }
                     updateChangedPoolAndUserInfo(poolIndex)
+                    updateTotalStakedValue()
                     toast.success('Successfully staked!')
                 } else {
                     toast.error(`Transaction reverted! Tx:${res.hash}`)

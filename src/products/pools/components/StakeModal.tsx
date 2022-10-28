@@ -32,7 +32,8 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
         bnbBalance,
         pagedLivePools,
         stakeCallback,
-        updateChangedPoolAndUserInfo
+        updateChangedPoolAndUserInfo,
+        updateTotalStakedValue
     } = useGrimaceStakingClub()
 
     const init = () => {
@@ -96,6 +97,7 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
                         }
                     }
                     updateChangedPoolAndUserInfo(poolIndex)
+                    updateTotalStakedValue()                    
                     toast.success('Successfully staked!')
                 } else {
                     toast.error(`Transaction reverted! Tx:${res.hash}`)
