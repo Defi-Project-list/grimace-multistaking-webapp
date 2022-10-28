@@ -146,6 +146,14 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
 
     const [totalStakedValue, setTotalStakedValue] = useState(0)
 
+    const [queueLivePools, setQueueLivePools] = useState({pagedProps:'', data: undefined})
+    const [queueExpiredPools, setQueueExpiredPools] = useState({pagedProps:'', data: undefined})
+    const [queueAdminChanged, setQueueAdminChanged] = useState({pagedProps:'', data: undefined})
+    const [queuePoolAndUserChanged, setQueuePoolAndUserChanged] = useState({pagedProps:'', data: undefined})    
+    const [queueApproveChanged, setQueueApproveChanged] = useState({pagedProps:'', data: undefined})
+    
+    const [pagedProps, setPagedProps] = useState('')
+
     useEffect(() => {
         if (isLiveSelected) {
             if (allLivePools) setPageCount(rowsPerPage > 0 ? Math.ceil(allLivePools.length / rowsPerPage) : 0)
@@ -176,9 +184,31 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
 
     useEffect(() => {
         if (isLiveSelected) {
+            setIsLoadingPools(true)
             updatePagedLivePools()
         }
-    }, [account, page, isLiveSelected, allLivePools, fastRefresh])
+    }, [account, rowsPerPage, page, isLiveSelected, allLivePools])
+
+    useEffect(() => {
+        setPagedProps(`${account}_${rowsPerPage}_${page}_${isLiveSelected}`)
+    }, [account, rowsPerPage, page, isLiveSelected])
+
+    useEffect(() => {
+        if (!isLiveSelected) {
+            setIsLoadingPools(true)
+            updatePagedExpiredPools()
+        }
+    }, [account, rowsPerPage, page, isLiveSelected, allExpiredPools])
+
+    useEffect(() => {
+        if (!isLoadingPools) {
+            if (isLiveSelected) {
+                updatePagedLivePools()
+            } else {
+                updatePagedExpiredPools()
+            }
+        }
+    }, [fastRefresh])
 
     useEffect(() => {
         setPagedExpiredPools([])
@@ -187,12 +217,6 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     useEffect(() => {
         setPagedLivePools([])
     }, [account, page, isLiveSelected, allLivePools])
-
-    useEffect(() => {
-        if (!isLiveSelected) {
-            updatePagedExpiredPools()
-        }
-    }, [account, page, isLiveSelected, allExpiredPools, fastRefresh])
 
     useEffect(() => {
         const fetch = async () => {
@@ -593,7 +617,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             userStakeTokenBalanceUSD: 0, userRewardTokenBalance: BigNumber.from(0), userRewardTokenBalanceUSD: 0, stakingTokenPrice: 0, rewardTokenPrice: 0,
             stakingToken: undefined, rewardToken: undefined, websiteURL: '', telegramContact: '', lastRewardBlock: 0, accRewardPerShare: BigNumber.from(0),
             rewardPerBlock: BigNumber.from(0), poolOwner: '', lockDuration: 0, startTime: 0, endTime: 0, totalStaked: BigNumber.from(0), totalStakedUSD: 0,
-            totalClaimed: BigNumber.from(0), totalClaimedUSD: 0, rewardRemaining: BigNumber.from(0), rewardRemainingUSD: 0, isEndedStaking:false, apr: 0
+            totalClaimed: BigNumber.from(0), totalClaimedUSD: 0, rewardRemaining: BigNumber.from(0), rewardRemainingUSD: 0, isEndedStaking: false, apr: 0
         }
 
         await fetchPoolInfo(poolContract).then(async result => {
@@ -805,9 +829,19 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         return t
     }
 
+    useEffect(() => {
+        if (queuePoolAndUserChanged.data) {
+            if (queuePoolAndUserChanged.pagedProps === pagedProps) {
+                if (isLiveSelected) setPagedLivePools(queuePoolAndUserChanged.data)
+                else setPagedExpiredPools(queuePoolAndUserChanged.data)
+            }
+        }
+    }, [queuePoolAndUserChanged])
+
     const updateChangedPoolAndUserInfo = async (poolIndex: number) => {
         try {
             let items: IClubMapPoolInfo[]
+            let prePagedProps=pagedProps
             if (isLiveSelected) {
                 items = [...pagedLivePools]
             } else {
@@ -819,8 +853,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             let userpoolInfo = await fetchChangedPoolAndUserInfo(item, poolContract)
             item.poolAndUserInfo = userpoolInfo
             items[poolIndex] = item
-            if (isLiveSelected) setPagedLivePools(items)
-            else setPagedExpiredPools(items)
+            setQueuePoolAndUserChanged({pagedProps: prePagedProps, data: items})
         } catch (error) {
             console.log(error)
         }
@@ -831,12 +864,12 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         await fetchPoolInfo(poolContract).then(async result => {
             t.lastRewardBlock = Number(result.lastRewardBlock)
             t.accRewardPerShare = result.accRewardPerShare
-            t.rewardPerBlock = result.rewardPerBlock            
-            t.lockDuration = Number(result.lockDuration)            
+            t.rewardPerBlock = result.rewardPerBlock
+            t.lockDuration = Number(result.lockDuration)
             t.endTime = Number(result.endTime)
         }).catch(error => {
             console.log(error)
-        })       
+        })
         await fetchIsEndedStaking(poolContract).then(async res => {
             t.isEndedStaking = res
         }).catch(error => {
@@ -851,9 +884,19 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         return t
     }
 
+    useEffect(() => {
+        if (queueAdminChanged.data) {
+            if (queueAdminChanged.pagedProps === pagedProps) {
+                if (isLiveSelected) setPagedLivePools(queueAdminChanged.data)
+                else setPagedExpiredPools(queueAdminChanged.data)
+            }
+        }
+    }, [queueAdminChanged])
+
     const updateAdminChangedPool = async (poolIndex: number) => {
         try {
             let items: IClubMapPoolInfo[]
+            let prePagedProps=pagedProps
             if (isLiveSelected) {
                 items = [...pagedLivePools]
             } else {
@@ -865,16 +908,25 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             let userpoolInfo = await fetchAdminChangedPool(item, poolContract)
             item.poolAndUserInfo = userpoolInfo
             items[poolIndex] = item
-            if (isLiveSelected) setPagedLivePools(items)
-            else setPagedExpiredPools(items)
+            setQueueAdminChanged({pagedProps: prePagedProps, data: items})
         } catch (error) {
             console.log(error)
         }
     }
 
+    useEffect(() => {
+        if (queueApproveChanged.data) {
+            if (queueApproveChanged.pagedProps === pagedProps) {
+                if (isLiveSelected) setPagedLivePools(queueApproveChanged.data)
+                else setPagedExpiredPools(queueApproveChanged.data)
+            }
+        }
+    }, [queueApproveChanged])
+
     const setUserInfo_Approved = async (poolIndex: number) => {
         try {
             let items: IClubMapPoolInfo[]
+            let prePagedProps=pagedProps
             if (isLiveSelected) items = [...pagedLivePools]
             else items = [...pagedExpiredPools]
             let item = items[poolIndex]
@@ -882,16 +934,24 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             if (item_pooluser) item_pooluser.isApprovedForMax = true
             item.poolAndUserInfo = item_pooluser
             items[poolIndex] = item
-            if (isLiveSelected) setPagedLivePools(items)
-            else setPagedExpiredPools(items)
+            setQueueApproveChanged({pagedProps: prePagedProps, data: items})
         } catch (error) {
             console.log(error)
         }
     }
 
+    useEffect(() => {
+        if (queueLivePools.data){
+            if (queueLivePools.pagedProps === pagedProps) {
+                setPagedLivePools(queueLivePools.data)
+            }
+        }
+    }, [queueLivePools])
+
     const updatePagedLivePools = async () => {
         try {
             let temp: IClubMapPoolInfo[] = []
+            let prePagedProps = pagedProps
             if (pagedLivePools.length === 0) setIsLoadingPools(true)
             await Promise.all(
                 allLivePools.slice(rowsPerPage > 0 ? (page - 1) * rowsPerPage : 0, rowsPerPage > 0 ? Math.min(page * rowsPerPage, allLivePools.length) : allLivePools.length)
@@ -902,17 +962,26 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                         temp.push({ ...item, poolAndUserInfo: t })
                     })
             )
-            temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
-            setPagedLivePools(temp)
+            temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)            
+            setQueueLivePools({pagedProps: prePagedProps, data: temp})
         } catch (error) {
             console.log(error)
         }
         setIsLoadingPools(false)
     }
 
+    useEffect(() => {
+        if (queueExpiredPools.data){
+            if (queueExpiredPools.pagedProps === pagedProps) {
+                setPagedExpiredPools(queueExpiredPools.data)
+            }
+        }
+    }, [queueExpiredPools])
+
     const updatePagedExpiredPools = async () => {
         try {
             let temp: IClubMapPoolInfo[] = []
+            let prePagedProps = pagedProps
             if (pagedExpiredPools.length === 0) setIsLoadingPools(true)
             await Promise.all(
                 allExpiredPools.slice(rowsPerPage > 0 ? (page - 1) * rowsPerPage : 0, rowsPerPage > 0 ? Math.min(page * rowsPerPage, allExpiredPools.length) : allExpiredPools.length)
@@ -923,8 +992,8 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                         temp.push({ ...item, poolAndUserInfo: t })
                     })
             )
-            temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
-            setPagedExpiredPools(temp)
+            temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)            
+            setQueueExpiredPools({pagedProps: prePagedProps, data: temp})
         } catch (error) {
             console.log(error)
         }
