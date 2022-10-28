@@ -57,6 +57,7 @@ export interface IPoolAndUserInfo {
     totalClaimedUSD: number
     rewardRemaining: BigNumber
     rewardRemainingUSD: number
+    isEndedStaking: boolean
 
     apr: number
 }
@@ -109,6 +110,7 @@ export interface IGrimaceStakingContext {
     updatePagedLivePools: () => void
     updatePagedExpiredPools: () => void
     updateChangedPoolAndUserInfo: (poolIndex: number) => void
+    updateAdminChangedPool: (poolIndex: number) => void
     updateTotalStakedValue: () => void
     setUserInfo_Approved: (poolIndex: number) => void
 }
@@ -591,7 +593,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             userStakeTokenBalanceUSD: 0, userRewardTokenBalance: BigNumber.from(0), userRewardTokenBalanceUSD: 0, stakingTokenPrice: 0, rewardTokenPrice: 0,
             stakingToken: undefined, rewardToken: undefined, websiteURL: '', telegramContact: '', lastRewardBlock: 0, accRewardPerShare: BigNumber.from(0),
             rewardPerBlock: BigNumber.from(0), poolOwner: '', lockDuration: 0, startTime: 0, endTime: 0, totalStaked: BigNumber.from(0), totalStakedUSD: 0,
-            totalClaimed: BigNumber.from(0), totalClaimedUSD: 0, rewardRemaining: BigNumber.from(0), rewardRemainingUSD: 0, apr: 0
+            totalClaimed: BigNumber.from(0), totalClaimedUSD: 0, rewardRemaining: BigNumber.from(0), rewardRemainingUSD: 0, isEndedStaking:false, apr: 0
         }
 
         await fetchPoolInfo(poolContract).then(async result => {
@@ -688,6 +690,11 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         await fetchTotalClaimed(poolContract).then(async amount => {
             t.totalClaimed = amount
             t.totalClaimedUSD = getValueUSDFromAmount(amount, t.rewardTokenPrice, t.rewardToken.decimals)
+        }).catch(error => {
+            console.log(error)
+        })
+        await fetchIsEndedStaking(poolContract).then(async res => {
+            t.isEndedStaking = res
         }).catch(error => {
             console.log(error)
         })
@@ -819,6 +826,52 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         }
     }
 
+    const fetchAdminChangedPool = async (item: IClubMapPoolInfo, poolContract: Contract) => {
+        let t: IPoolAndUserInfo = { ...item.poolAndUserInfo }
+        await fetchPoolInfo(poolContract).then(async result => {
+            t.lastRewardBlock = Number(result.lastRewardBlock)
+            t.accRewardPerShare = result.accRewardPerShare
+            t.rewardPerBlock = result.rewardPerBlock            
+            t.lockDuration = Number(result.lockDuration)            
+            t.endTime = Number(result.endTime)
+        }).catch(error => {
+            console.log(error)
+        })       
+        await fetchIsEndedStaking(poolContract).then(async res => {
+            t.isEndedStaking = res
+        }).catch(error => {
+            console.log(error)
+        })
+        await fetchRewardRemaining(poolContract).then(async amount => {
+            t.rewardRemaining = amount
+            t.rewardRemainingUSD = getValueUSDFromAmount(amount, t.rewardTokenPrice, t.rewardToken.decimals)
+        }).catch(error => {
+            console.log(error)
+        })
+        return t
+    }
+
+    const updateAdminChangedPool = async (poolIndex: number) => {
+        try {
+            let items: IClubMapPoolInfo[]
+            if (isLiveSelected) {
+                items = [...pagedLivePools]
+            } else {
+                items = [...pagedExpiredPools]
+            }
+            let item = items[poolIndex]
+            const chainId = getChainIdFromName(blockchain);
+            const poolContract: Contract = getContract(item.poolAddress, poolAbi, RpcProviders[chainId], account ? account : undefined)
+            let userpoolInfo = await fetchAdminChangedPool(item, poolContract)
+            item.poolAndUserInfo = userpoolInfo
+            items[poolIndex] = item
+            if (isLiveSelected) setPagedLivePools(items)
+            else setPagedExpiredPools(items)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     const setUserInfo_Approved = async (poolIndex: number) => {
         try {
             let items: IClubMapPoolInfo[]
@@ -921,6 +974,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 updatePagedLivePools,
                 updatePagedExpiredPools,
                 updateChangedPoolAndUserInfo,
+                updateAdminChangedPool,
                 updateTotalStakedValue,
                 setUserInfo_Approved
             }}

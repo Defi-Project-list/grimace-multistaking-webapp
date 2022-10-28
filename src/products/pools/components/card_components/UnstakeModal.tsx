@@ -13,7 +13,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Fade from '@mui/material/Fade'
 import { IClubMapPoolInfo, IPoolAndUserInfo, useGrimaceStakingClub } from '@app/contexts'
 import { toast } from 'react-toastify'
-import InfoSVG from '@app/products/register/components/forms/InfoSVG'
+import InfoSVG from '@app/products/register/components/forms/form_components/InfoSVG'
 
 interface ModalProps {
     isOpen: boolean

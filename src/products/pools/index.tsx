@@ -6,10 +6,10 @@ import { SidebarItem, SIDEBAR_ROUTES } from '@app/common/layout/LayoutConstants'
 import PoolsBar from './components/PoolsBar'
 import PoolCard from './components/PoolCard'
 import PaginationKit from '@app/common/components/PaginationKit'
-import StakeModal from './components/StakeModal'
+import StakeModal from './components/card_components/StakeModal'
 import { IClubMapPoolInfo, IPoolAndUserInfo, useGrimaceStakingClub } from '@app/contexts'
 import LoadingPoolCard from './components/LoadingPoolCard'
-import UnstakeModal from './components/UnstakeModal'
+import UnstakeModal from './components/card_components/UnstakeModal'
 import { formatFixedNumber_Optimized } from '@app/utils/utils'
 
 export default function Pools() {

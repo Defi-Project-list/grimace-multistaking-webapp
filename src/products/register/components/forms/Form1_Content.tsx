@@ -1,13 +1,13 @@
 import { Button } from "@mui/material"
-import InfoSVG from "./InfoSVG"
+import InfoSVG from "./form_components/InfoSVG"
 import LogoURLInput from "../LogoURLInput"
 import TokenAddressInput from "../TokenAddressInput"
 import validator from 'validator'
 import { isAddress } from "@app/utils/utils"
 import { useTokenCallback } from "@app/hooks/hooks"
 import { useEffect, useState } from "react"
-import TokenInfoBox from "./TokenInfoBox"
-import TokenNotFoundBox from "./TokenNotFoundBox"
+import TokenInfoBox from "./form_components/TokenInfoBox"
+import TokenNotFoundBox from "./form_components/TokenNotFoundBox"
 import { useGrimaceRegister } from "@app/contexts"
 
 const blockchain = process.env.blockchain
