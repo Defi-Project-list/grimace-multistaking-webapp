@@ -135,11 +135,11 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
                         <span className='text-app-primary text-[12px] font-light'>Ends in</span>
                     </div>
                     <div className='text-app-primary text-[20px] md:text-[22px] font-bold leading-[1.1]'>
-                        {`${formatFixedNumber_Optimized(getRemainSecs() / ONEDAY_SECS, 2, false)} Days Left`}
+                        {isLiveSelected ? `${formatFixedNumber_Optimized(getRemainSecs() / ONEDAY_SECS, 2, false)} Days Left` : 'Expired'}
                     </div>
-                    <span className='text-app-primary text-[12px] font-light'>
+                    {isLiveSelected && <span className='text-app-primary text-[12px] font-light'>
                         {`${Math.floor(getRemainSecs() / BSC_BLOCKTIME)} Blocks`}
-                    </span>
+                    </span>}
                 </div>
             </div>
         )
@@ -203,9 +203,11 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
                 <div className='w-full flex flex-col xl:flex-row gap-4 justify-between items-center py-2'>
                     <div className='w-full xl:basis-1/2 flex flex-col sm:flex-row justify-between sm:justify-around gap-4'>
                         <div className='w-full md:basis-1/2 flex justify-start sm:justify-start xl:justify-around gap-6 sm:gap-8 lg:gap-10'>
-                            <div className='bg-white w-[50px] relative overflow-visible' style={{ borderRadius: '50%' }}>
-                                <img src={poolInfo.poolAndUserInfo.stakingToken.logoURI} width="100%" />
-                                <div className='absolute bg-white w-[20px] bottom-0 right-0 border border-white' style={{ borderRadius: '50%' }}>
+                            <div className='relative overflow-visible'>
+                                <div className='bg-white w-[50px] relative overflow-hidden' style={{ borderRadius: '50%' }}>
+                                    <img src={poolInfo.poolAndUserInfo.stakingToken.logoURI} width="100%" />
+                                </div>
+                                <div className='absolute bg-white w-[20px] bottom-0 right-0 border border-white overflow-hidden' style={{ borderRadius: '50%' }}>
                                     <img src={poolInfo.poolAndUserInfo.rewardToken.logoURI} width="100%" />
                                 </div>
                             </div>

@@ -149,7 +149,7 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
                             <button
                                 type="button"
                                 className="text-gray-400 bg-transparent hover:bg-black-400 hover:text-gray-500 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-                                onClick={handleClose}>
+                                onClick={onClose}>
                                 <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path fillRule="evenodd" clipRule="evenodd" d="M15 2.72727C8.22196 2.72727 2.72727 8.22196 2.72727 15C2.72727 21.778 8.22196 27.2727 15 27.2727C21.778 27.2727 27.2727 21.778 27.2727 15C27.2727 8.22196 21.778 2.72727 15 2.72727ZM0 15C0 6.71573 6.71573 0 15 0C23.2843 0 30 6.71573 30 15C30 23.2843 23.2843 30 15 30C6.71573 30 0 23.2843 0 15Z" fill="#EFEFEF" />
                                     <path fillRule="evenodd" clipRule="evenodd" d="M20.957 9.04006C21.5846 9.66769 21.5846 10.6853 20.957 11.3129L11.3141 20.9558C10.6865 21.5834 9.66891 21.5834 9.04128 20.9558C8.41365 20.3281 8.41365 19.3105 9.04128 18.6829L18.6841 9.04006C19.3118 8.41243 20.3294 8.41243 20.957 9.04006Z" fill="#EFEFEF" />

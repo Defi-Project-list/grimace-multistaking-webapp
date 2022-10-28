@@ -1,5 +1,5 @@
 import { Button, Tooltip } from "@mui/material"
-import { useGrimaceRegister } from "@app/contexts"
+import { useGrimaceRegister, useGrimaceStakingClub } from "@app/contexts"
 import { copyTextToClipboard, shortenAddress } from "@app/utils/utils"
 import { useState } from "react"
 import { SidebarItem, SIDEBAR_ROUTES } from "@app/common/layout/LayoutConstants"
@@ -12,9 +12,11 @@ interface props {
 export default function Form5_Content() {
     const router = useRouter()
     const {
-        createdPoolAddress
+        createdPoolAddress,
+        init_registerValues
     } = useGrimaceRegister()
     const [isCopied, setIsCopied] = useState(false)
+    const {updateClubMapPoolInfo} = useGrimaceStakingClub()
 
     const copyAddress = () => {
         copyTextToClipboard(createdPoolAddress)
@@ -30,6 +32,8 @@ export default function Form5_Content() {
     }
 
     const onGoBack = () => {
+        init_registerValues()
+        updateClubMapPoolInfo()
         router.push({
             pathname: SIDEBAR_ROUTES[SidebarItem.POOLS]
         })
