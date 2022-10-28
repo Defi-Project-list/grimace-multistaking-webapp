@@ -22,6 +22,16 @@
 				"type": "string"
 			},
 			{
+				"internalType": "string",
+				"name": "_websiteURL",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_telegramContact",
+				"type": "string"
+			},
+			{
 				"internalType": "uint256",
 				"name": "_lockDuration",
 				"type": "uint256"
@@ -441,6 +451,16 @@
 			{
 				"internalType": "string",
 				"name": "rewardTokenLogo",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "websiteURL",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "telegramContact",
 				"type": "string"
 			},
 			{

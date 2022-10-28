@@ -20,9 +20,8 @@ interface props {
 }
 
 export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: props) {
-    const {chainId} = useEthers()
+    const { chainId } = useEthers()
     const [isDetailed, setIsDetailed] = useState(false)
-    const [item, setItem] = useState<IPoolAndUserInfo>()
     const {
         isLoadingPools,
         isLiveSelected,
@@ -36,10 +35,6 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
     const [isEmergencyUnstaking, setIsEmergencyUnstaking] = useState(false)
     const [isEnableStaking, setIsEnableStaking] = useState(false)
     const { approveCallback } = useApproveCallback()
-
-    useEffect(() => {
-        setItem(poolInfo.poolAndUserInfo)
-    }, [poolInfo])
 
     const handleShowDetails = (value: boolean) => {
         setIsDetailed(value)
@@ -72,7 +67,7 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
     const onApprove = async () => {
         setIsEnableStaking(true)
         try {
-            await approveCallback(poolInfo.poolAddress, item.stakingToken.address, blockchain).then((hash: string) => {
+            await approveCallback(poolInfo.poolAddress, poolInfo.poolAndUserInfo.stakingToken.address, blockchain).then((hash: string) => {
                 setIsEnableStaking(false)
                 setUserInfo_Approved(poolIndex)
                 toast.success('Approved!')
@@ -114,7 +109,7 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
     }
 
     const getRemainSecs = () => {
-        let remainsecs = item.endTime - blockTimestamp
+        let remainsecs = poolInfo.poolAndUserInfo.endTime - blockTimestamp
         if (remainsecs < 0) remainsecs = 0
         return remainsecs
     }
@@ -128,10 +123,10 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
                         <span className='text-app-primary text-[12px] font-light'>Total Staked</span>
                     </div>
                     <div className='text-app-primary text-[20px] md:text-[22px] font-bold leading-[1.1]'>
-                        {`${formatEther_Optimized(item.totalStaked, item.stakingToken.decimals, 2, true)} ${item.stakingToken.symbol}`}
+                        {`${formatEther_Optimized(poolInfo.poolAndUserInfo.totalStaked, poolInfo.poolAndUserInfo.stakingToken.decimals, 2, true)} ${poolInfo.poolAndUserInfo.stakingToken.symbol}`}
                     </div>
                     <span className='text-app-primary text-[12px] font-light'>
-                        {`${formatFixedNumber_Optimized(item.totalStakedUSD, 2, true)} USD`}
+                        {`${formatFixedNumber_Optimized(poolInfo.poolAndUserInfo.totalStakedUSD, 2, true)} USD`}
                     </span>
                 </div>
                 <div className='flex flex-col gap-1'>
@@ -153,8 +148,8 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
     const StakePane = () => {
         return (
             <div className='w-full sm:w-auto p-4 rounded-md border border-[#987DF9] bg-app-common xl:h-full min-w-[200px]'>
-                {!item.isApprovedForMax && <div className='flex flex-col gap-4 justify-between h-full'>
-                    <div className='text-app-primary text-[12px] font-light'>{`Stake ${item.stakingToken.symbol}`}</div>
+                {!poolInfo.poolAndUserInfo.isApprovedForMax && <div className='flex flex-col gap-4 justify-between h-full'>
+                    <div className='text-app-primary text-[12px] font-light'>{`Stake ${poolInfo.poolAndUserInfo.stakingToken.symbol}`}</div>
                     <LoadingButton
                         loading={isEnableStaking}
                         loadingPosition="center"
@@ -167,14 +162,14 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
                         <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>{isEnableStaking ? '' : 'Enable Staking'}</span>
                     </LoadingButton>
                 </div>}
-                {item.isApprovedForMax && <div className='flex flex-col sm:flex-row gap-4 sm:items-center'>
+                {poolInfo.poolAndUserInfo.isApprovedForMax && <div className='flex flex-col sm:flex-row gap-4 sm:items-center'>
                     <div className='w-full flex flex-col gap-1'>
-                        <div className='text-app-primary text-[12px] font-light'>{`${item.stakingToken.symbol} Staked`}</div>
+                        <div className='text-app-primary text-[12px] font-light'>{`${poolInfo.poolAndUserInfo.stakingToken.symbol} Staked`}</div>
                         <div className='text-app-primary text-[20px] md:text-[22px] font-bold leading-[1.1]'>
-                            {`${formatEther_Optimized(item.userStaked, item.stakingToken.decimals, 2, true)} ${item.stakingToken.symbol}`}
+                            {`${formatEther_Optimized(poolInfo.poolAndUserInfo.userStaked, poolInfo.poolAndUserInfo.stakingToken.decimals, 2, true)} ${poolInfo.poolAndUserInfo.stakingToken.symbol}`}
                         </div>
                         <span className='text-app-primary text-[12px] font-light'>
-                            {`${formatFixedNumber_Optimized(item.userStakedUSD, 2, true)} USD`}
+                            {`${formatFixedNumber_Optimized(poolInfo.poolAndUserInfo.userStakedUSD, 2, true)} USD`}
                         </span>
                     </div>
                     <div className='w-full sm:w-auto flex flex-col gap-1 items-center'>
@@ -192,7 +187,7 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
                             sx={{ width: '100%', height: '38px', fontFamily: 'Inter' }}
                             color="primary"
                             onClick={() => onUnstake(poolInfo)}
-                            disabled={!item.userStaked.gt(0) || !isLiveSelected}
+                            disabled={!poolInfo.poolAndUserInfo.userStaked.gt(0) || !isLiveSelected}
                         >
                             <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>Unstake</span>
                         </Button>
@@ -209,11 +204,11 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
                     <div className='w-full xl:basis-1/2 flex flex-col sm:flex-row justify-between sm:justify-around gap-4'>
                         <div className='w-full md:basis-1/2 flex justify-start sm:justify-start xl:justify-around gap-6 sm:gap-8 lg:gap-10'>
                             <div className='bg-white w-[50px]' style={{ borderRadius: '50%' }}>
-                                <img src={item.stakingToken.logoURI} width="100%" />
+                                <img src={poolInfo.poolAndUserInfo.stakingToken.logoURI} width="100%" />
                             </div>
                             <div className=''>
-                                <div className='text-[18px] md:text-[20px] text-app-primary font-bold whitespace-nowrap'>{`Earn ${item.rewardToken.symbol}`}</div>
-                                <div className='text-[14px] md:text-[15px] text-app-primary font-bold whitespace-nowrap'>{`Stake ${item.stakingToken.symbol}`}</div>
+                                <div className='text-[18px] md:text-[20px] text-app-primary font-bold whitespace-nowrap'>{`Earn ${poolInfo.poolAndUserInfo.rewardToken.symbol}`}</div>
+                                <div className='text-[14px] md:text-[15px] text-app-primary font-bold whitespace-nowrap'>{`Stake ${poolInfo.poolAndUserInfo.stakingToken.symbol}`}</div>
                             </div>
                         </div>
                         <div className='w-full md:basis-1/2 flex justify-start sm:justify-end xl:justify-around gap-6 sm:gap-8 lg:gap-10'>
@@ -223,12 +218,12 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
                                     <span className='text-app-primary text-[12px] font-light'>APR</span>
                                 </div>
                                 <div className='text-app-primary text-[20px] md:text-[22px] font-bold leading-[1.1] whitespace-nowrap'>
-                                    {`${formatFixedNumber_Optimized(item.apr, 2, false)}%`}
+                                    {`${formatFixedNumber_Optimized(poolInfo.poolAndUserInfo.apr, 2, false)}%`}
                                 </div>
                             </div>
                             <div className='flex bg-app-yellow rounded-md p-2 shadow-sm shadow-[#000] h-[51px] items-center font-bold'>
                                 <span className='text-app-primary text-[18px] md:text-[20px] whitespace-nowrap'>
-                                    {`${formatFixedNumber_Optimized(item.lockDuration / ONEDAY_SECS, 2, false)} Days lock`}
+                                    {`${formatFixedNumber_Optimized(poolInfo.poolAndUserInfo.lockDuration / ONEDAY_SECS, 2, false)} Days lock`}
                                 </span>
                             </div>
                         </div>
@@ -261,10 +256,11 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
                                 <path fillRule="evenodd" clipRule="evenodd" d="M8.99976 0.750003C8.99976 0.335788 9.33554 0 9.74976 0H14.2498C14.664 0 14.9998 0.335788 14.9998 0.750003V5.25002C14.9998 5.66424 14.664 6.00003 14.2498 6.00003C13.8356 6.00003 13.4998 5.66424 13.4998 5.25002V1.50001H9.74976C9.33554 1.50001 8.99976 1.16422 8.99976 0.750003Z" fill="#7A30E0" />
                                 <path fillRule="evenodd" clipRule="evenodd" d="M14.7801 0.219671C15.073 0.512565 15.073 0.987441 14.7801 1.28034L6.53009 9.53037C6.2372 9.82327 5.76232 9.82327 5.46943 9.53037C5.17653 9.23748 5.17653 8.7626 5.46943 8.46971L13.7195 0.219671C14.0124 -0.0732237 14.4872 -0.0732237 14.7801 0.219671Z" fill="#7A30E0" />
                             </svg>
-                            {/* <a className='text-[14px] mt-4 text-app-purple underline text-center' target="_SEJ" rel="noreferrer" href={}></a> */}
-                            <div className='text-[14px] md:text-[15px] text-app-primary font-bold'>
-                                Website
-                            </div>
+                            <a target="_SEJ" rel="noreferrer" href={poolInfo.poolAndUserInfo.websiteURL}>
+                                <div className='text-[14px] md:text-[15px] text-app-primary font-bold'>
+                                    Website
+                                </div>
+                            </a>
                         </div>
                         <div className='flex flex-col gap-1'>
                             <div className='flex gap-2 items-center'>
@@ -272,7 +268,7 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
                                 <span className='text-app-primary text-[12px] font-light'>Reward per Block</span>
                             </div>
                             <div className='text-app-primary text-[20px] md:text-[22px] font-bold leading-[1.1]'>
-                                {`${formatEther_Optimized(item.rewardPerBlock, item.rewardToken.decimals, 2, true)} ${item.rewardToken.symbol}`}
+                                {`${formatEther_Optimized(poolInfo.poolAndUserInfo.rewardPerBlock, poolInfo.poolAndUserInfo.rewardToken.decimals, 2, true)} ${poolInfo.poolAndUserInfo.rewardToken.symbol}`}
                             </div>
                         </div>
                         <div className='hidden sm:block xl:hidden'>
@@ -290,19 +286,19 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
                                     <span className='text-app-primary text-[12px] font-light'>Total Earned</span>
                                 </div>
                                 <div className='text-app-primary text-[20px] md:text-[22px] font-bold leading-[1.1] whitespace-nowrap'>
-                                    {`${formatEther_Optimized(item.userTotalEarned, item.rewardToken.decimals, 2, true)} ${item.rewardToken.symbol}`}
+                                    {`${formatEther_Optimized(poolInfo.poolAndUserInfo.userTotalEarned, poolInfo.poolAndUserInfo.rewardToken.decimals, 2, true)} ${poolInfo.poolAndUserInfo.rewardToken.symbol}`}
                                 </div>
                                 <span className='text-app-primary text-[12px] font-light whitespace-nowrap'>
-                                    {`${formatFixedNumber_Optimized(item.userTotalEarnedUSD, 2, true)} USD`}
+                                    {`${formatFixedNumber_Optimized(poolInfo.poolAndUserInfo.userTotalEarnedUSD, 2, true)} USD`}
                                 </span>
                             </div>
                             <div className='flex flex-col gap-1'>
                                 <div className='text-app-primary text-[12px] font-light'>Claimable Reward</div>
                                 <div className='text-app-primary text-[20px] md:text-[22px] font-bold leading-[1.1] whitespace-nowrap'>
-                                    {`${formatEther_Optimized(item.userAvailableReward, item.rewardToken.decimals, 2, true)} ${item.rewardToken.symbol}`}
+                                    {`${formatEther_Optimized(poolInfo.poolAndUserInfo.userAvailableReward, poolInfo.poolAndUserInfo.rewardToken.decimals, 2, true)} ${poolInfo.poolAndUserInfo.rewardToken.symbol}`}
                                 </div>
                                 <span className='text-app-primary text-[12px] font-light whitespace-nowrap'>
-                                    {`${formatFixedNumber_Optimized(item.userAvailableRewardUSD, 2, true)} USD`}
+                                    {`${formatFixedNumber_Optimized(poolInfo.poolAndUserInfo.userAvailableRewardUSD, 2, true)} USD`}
                                 </span>
                             </div>
                             <div className='w-full sm:w-auto flex flex-col gap-1 items-center'>
@@ -313,7 +309,7 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
                                     sx={{ width: '100%', height: '38px', fontFamily: 'Inter', backgroundColor: '#7A30E0' }}
                                     color="primary"
                                     onClick={() => onClaim()}
-                                    disabled={!item.userAvailableReward.gt(0)}
+                                    disabled={!poolInfo.poolAndUserInfo.userAvailableReward.gt(0)}
                                 >
                                     <span className='text-[16px] md:text-[18px] text-white font-bold whitespace-nowrap'>{isClaiming ? '' : 'Claim'}</span>
                                 </LoadingButton>
@@ -324,7 +320,7 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
                                     sx={{ width: '100%', height: '38px', fontFamily: 'Inter' }}
                                     color="primary"
                                     onClick={() => onEmergencyUnstake()}
-                                    disabled={!item.userStaked.gt(0)}
+                                    disabled={!poolInfo.poolAndUserInfo.userStaked.gt(0)}
                                 >
                                     <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>{isEmergencyUnstaking ? '' : 'Emergency Unstake'}</span>
                                 </LoadingButton>
@@ -341,11 +337,11 @@ export default function PoolCard({ poolInfo, poolIndex, onStake, onUnstake }: pr
                     </div>
                     <div className="text-[14px] md:text-[15px] text-app-purple font-semibold ">
                         <div>
-                            {`Whenever you wanna do Emergency Unstake, please make sure you claim your reward first, otherwise, you will lose you unclaimed reward #${item.rewardToken.address}`}
+                            {`Whenever you wanna do Emergency Unstake, please make sure you claim your reward first, otherwise, you will lose you unclaimed reward #${poolInfo.poolAndUserInfo.rewardToken.address}`}
                         </div>
-                        {/* {chainId && <a target="_SEJ" rel="noreferrer" href={getEtherscanLink(chainId, item.rewardToken.address, 'address')}>
+                        {/* {chainId && <a target="_SEJ" rel="noreferrer" href={getEtherscanLink(chainId, poolInfo.poolAndUserInfo.rewardToken.address, 'address')}>
                             <span className='text-[12px] underline'>
-                                {item.rewardToken.address}
+                                {poolInfo.poolAndUserInfo.rewardToken.address}
                             </span>
                         </a>} */}
                     </div>

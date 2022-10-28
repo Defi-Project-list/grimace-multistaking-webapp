@@ -41,6 +41,8 @@ export interface IPoolAndUserInfo {
     rewardTokenPrice: number
     stakingToken: ITokenInfo
     rewardToken: ITokenInfo
+    websiteURL: string
+    telegramContact: string
     lastRewardBlock: number
     accRewardPerShare: BigNumber
     rewardPerBlock: BigNumber
@@ -569,14 +571,14 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     const fetchPoolAndUserInfo = async (item: IClubMapPoolInfo, poolContract: Contract) => {
         let t: IPoolAndUserInfo = {
             userStaked: BigNumber.from(0), userStakedUSD: 0, userUnlockTime: 0, userTotalEarned: BigNumber.from(0),
-            userTotalEarnedUSD: 0, userAvailableReward: BigNumber.from(0), userAvailableRewardUSD: 0, isApprovedForMax: false,
-            userStakeTokenBalance: BigNumber.from(0), userStakeTokenBalanceUSD: 0, userRewardTokenBalance: BigNumber.from(0), userRewardTokenBalanceUSD: 0,
-            stakingTokenPrice: 0, rewardTokenPrice: 0, stakingToken: undefined, rewardToken: undefined, lastRewardBlock: 0, accRewardPerShare: BigNumber.from(0),
+            userTotalEarnedUSD: 0, userAvailableReward: BigNumber.from(0), userAvailableRewardUSD: 0, isApprovedForMax: false, userStakeTokenBalance: BigNumber.from(0), 
+            userStakeTokenBalanceUSD: 0, userRewardTokenBalance: BigNumber.from(0), userRewardTokenBalanceUSD: 0,stakingTokenPrice: 0, rewardTokenPrice: 0, 
+            stakingToken: undefined, rewardToken: undefined, websiteURL: '', telegramContact: '', lastRewardBlock: 0, accRewardPerShare: BigNumber.from(0),
             rewardPerBlock: BigNumber.from(0), poolOwner: '', lockDuration: 0, startTime: 0, endTime: 0, totalStaked: BigNumber.from(0), totalStakedUSD: 0,
             totalClaimed: BigNumber.from(0), totalClaimedUSD: 0, rewardRemaining: BigNumber.from(0), rewardRemainingUSD: 0, apr: 0
         }
 
-        await fetchPoolInfo(poolContract).then(async result => {
+        await fetchPoolInfo(poolContract).then(async result => {            
             await fetchTokenInfo(result.stakingToken).then(async token => {
                 t.stakingToken = { address: token.address, name: token.name, symbol: token.symbol, decimals: token.decimals, logoURI: result.stakeTokenLogo }
             }).catch(error => {
@@ -587,6 +589,8 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             }).catch(error => {
                 console.log(error)
             })
+            t.websiteURL = result.websiteURL
+            t.telegramContact = result.telegramContact
             await fetch(`/api/tokenPriceFromPCS?baseCurrency=${result.stakingToken}`)
                 .then((res) => res.json())
                 .then((res) => {
