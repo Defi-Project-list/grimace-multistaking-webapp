@@ -884,11 +884,11 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                     })
             )
             temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
-            if (pagedLivePools.length === 0) {
-                setPagedLivePools(temp)
-            } else {
+            // if (pagedLivePools.length === 0) {
+            //     setPagedLivePools(temp)
+            // } else {
                 setQueueLivePools({ pagedProps: prePagedProps, data: temp })
-            }
+            // }
         } catch (error) {
             console.log(error)
         }
@@ -918,11 +918,11 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                     })
             )
             temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
-            if (pagedExpiredPools.length === 0) {
-                setPagedExpiredPools(temp)
-            } else {
+            // if (pagedExpiredPools.length === 0) {
+            //     setPagedExpiredPools(temp)
+            // } else {
                 setQueueExpiredPools({ pagedProps: prePagedProps, data: temp })
-            }
+            // }
         } catch (error) {
             console.log(error)
         }

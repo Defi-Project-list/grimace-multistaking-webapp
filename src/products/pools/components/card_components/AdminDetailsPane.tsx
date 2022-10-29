@@ -58,8 +58,6 @@ export default function AdminDetailsPane({ isDetailed, poolInfo, poolIndex }: pr
             if (val.substring(val.indexOf('.') + 1).length <= 0) amount = parseUnits(val.substring(0, val.indexOf('.')), poolInfo.poolAndUserInfo.rewardToken.decimals)
             else amount = parseUnits(val, poolInfo.poolAndUserInfo.rewardToken.decimals)
         }
-        console.log(val)
-        console.log(formatEther(amount))
         setWithdrawAmount(amount)
     }
 
