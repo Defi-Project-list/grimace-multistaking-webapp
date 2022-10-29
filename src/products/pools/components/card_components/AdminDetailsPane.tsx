@@ -284,8 +284,7 @@ export default function AdminDetailsPane({ isDetailed, poolInfo, poolIndex }: pr
                             variant="contained"
                             sx={{ width: '100%', height: '38px', fontFamily: 'Inter' }}
                             color="primary"
-                            onClick={() => onSetResumeReward()}
-                            disabled={!poolInfo.poolAndUserInfo.userStaked.gt(0)}
+                            onClick={() => onSetResumeReward()}                            
                         >
                             <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>{isSettingAllowReward ? '' : 'Resume Reward'}</span>
                         </LoadingButton>
@@ -296,8 +295,7 @@ export default function AdminDetailsPane({ isDetailed, poolInfo, poolIndex }: pr
                             variant="contained"
                             sx={{ width: '100%', height: '38px', fontFamily: 'Inter' }}
                             color="primary"
-                            onClick={() => onSetStopReward()}
-                            disabled={!poolInfo.poolAndUserInfo.userStaked.gt(0)}
+                            onClick={() => onSetStopReward()}                            
                         >
                             <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>{isSettingAllowReward ? '' : 'Stop Reward'}</span>
                         </LoadingButton>
@@ -316,7 +314,6 @@ export default function AdminDetailsPane({ isDetailed, poolInfo, poolIndex }: pr
                                 sx={{ width: '100%', height: '38px', fontFamily: 'Inter' }}
                                 color="primary"
                                 onClick={() => onSetEndTime()}
-                                disabled={!poolInfo.poolAndUserInfo.userStaked.gt(0)}
                             >
                                 <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>{isSettingEndTime ? '' : 'Set'}</span>
                             </LoadingButton>
@@ -331,8 +328,7 @@ export default function AdminDetailsPane({ isDetailed, poolInfo, poolIndex }: pr
                                 variant="contained"
                                 sx={{ width: '100%', height: '38px', fontFamily: 'Inter' }}
                                 color="primary"
-                                onClick={() => onSetRewardPerBlock()}
-                                disabled={!poolInfo.poolAndUserInfo.userStaked.gt(0)}
+                                onClick={() => onSetRewardPerBlock()}                                
                             >
                                 <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>{isSettingRewardPerBlock ? '' : 'Set'}</span>
                             </LoadingButton>
@@ -349,8 +345,7 @@ export default function AdminDetailsPane({ isDetailed, poolInfo, poolIndex }: pr
                                 variant="contained"
                                 sx={{ width: '100%', height: '38px', fontFamily: 'Inter' }}
                                 color="primary"
-                                onClick={() => onSetStakerLockTime()}
-                                disabled={!poolInfo.poolAndUserInfo.userStaked.gt(0)}
+                                onClick={() => onSetStakerLockTime()}                                
                             >
                                 <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>{isSettingStakerLockTime ? '' : 'Set'}</span>
                             </LoadingButton>
@@ -365,8 +360,7 @@ export default function AdminDetailsPane({ isDetailed, poolInfo, poolIndex }: pr
                                 variant="contained"
                                 sx={{ width: '100%', height: '38px', fontFamily: 'Inter' }}
                                 color="primary"
-                                onClick={() => onWithdrawReward()}
-                                disabled={!poolInfo.poolAndUserInfo.userStaked.gt(0)}
+                                onClick={() => onWithdrawReward()}                                
                             >
                                 <span className='text-[16px] md:text-[18px] font-bold whitespace-nowrap'>{isWithdrawingReward ? '' : 'Withdraw'}</span>
                             </LoadingButton>

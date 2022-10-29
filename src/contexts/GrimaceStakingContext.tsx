@@ -3,7 +3,7 @@ import React, { useEffect, useContext, useState } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
 import { useEthers } from "@usedapp/core";
-import { getContract, calculateGasMargin, isWrappedEther, isAddress, ONEDAY_SECS, BSC_BLOCKTIME } from '@app/utils/utils'
+import { getContract, calculateGasMargin, isWrappedEther, isAddress, ONEDAY_SECS, BSC_BLOCKTIME, isToken } from '@app/utils/utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { RpcProviders, GrimaceClubAddress, AppTokenAddress, ZERO_ADDRESS } from "src/constants/AppConstants"
 import useRefresh from 'src/hooks/useRefresh'
@@ -42,13 +42,11 @@ export interface IPoolAndUserInfo {
     stakingToken: ITokenInfo
     rewardToken: ITokenInfo
     websiteURL: string
-    telegramContact: string
     lastRewardBlock: number
     accRewardPerShare: BigNumber
     rewardPerBlock: BigNumber
     poolOwner: string
     lockDuration: number
-    startTime: number
     endTime: number
 
     totalStaked: BigNumber
@@ -186,9 +184,11 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         if (pagedProps) {
             if (isLiveSelected) {
                 setIsLoadingPools(true)
+                // setPagedLivePools([])
                 updatePagedLivePools()
             } else {
                 setIsLoadingPools(true)
+                // setPagedExpiredPools([])
                 updatePagedExpiredPools()
             }
         }
@@ -206,15 +206,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 updatePagedExpiredPools()
             }
         }
-    }, [fastRefresh])
-
-    useEffect(() => {
-        setPagedExpiredPools([])
-    }, [account, page, isLiveSelected, allExpiredPools])
-
-    useEffect(() => {
-        setPagedLivePools([])
-    }, [account, page, isLiveSelected, allLivePools])
+    }, [normalRefresh])
 
     useEffect(() => {
         const fetch = async () => {
@@ -492,54 +484,6 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     }
     ///////////////////
 
-    const fetchTokenInfo = async (tokenAddress: string) => {
-        if (isWrappedEther(blockchain, tokenAddress)) {
-            return { address: tokenAddress, name: "BNB Token", symbol: "BNB", decimals: 18 }
-        } else {
-            const chainId = getChainIdFromName(blockchain);
-            const tokenContract: Contract = getContract(tokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
-            const name = await tokenContract.name()
-            const decimals = await tokenContract.decimals()
-            const symbol = await tokenContract.symbol()
-            return { address: tokenAddress, name: name, symbol: symbol, decimals: Number(decimals) }
-        }
-    }
-
-    const fetchRewardRemaining = async (poolContract: Contract) => {
-        const res = await poolContract.rewardRemaining()
-        return res
-    }
-
-    const fetchTotalStaked = async (poolContract: Contract) => {
-        const res = await poolContract.totalStaked()
-        return res
-    }
-
-    const fetchTotalClaimed = async (poolContract: Contract) => {
-        const res = await poolContract.totalClaimed()
-        return res
-    }
-
-    const fetchIsEndedStaking = async (poolContract: Contract) => {
-        const res = await poolContract.isEndedStaking()
-        return res
-    }
-
-    const fetchPoolInfo = async (poolContract: Contract) => {
-        const res = await poolContract.poolInfo()
-        return res
-    }
-
-    const fetchUserInfo = async (poolContract: Contract) => {
-        const res = await poolContract.userInfo(account)
-        return res
-    }
-
-    const fetchPendingReward = async (poolContract: Contract) => {
-        const res = await poolContract.pendingReward(account)
-        return res
-    }
-
     const fetchAllowance = async (tokenAddress: string, recvAddress: string) => {
         const chainId = getChainIdFromName(blockchain);
         const tokenContract: Contract = getContract(tokenAddress, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
@@ -552,6 +496,21 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
 
     const fetchClubMapPoolInfo = async (factoryContract: Contract) => {
         const res = await factoryContract.getAllPoolInfos()
+        return res
+    }
+
+    const fetchPoolAndUserStatus = async (_user: string, poolContract: Contract) => {
+        const res = await poolContract.getPoolAndUserStatus(_user)
+        return res
+    }
+
+    const fetchPoolStatus = async (poolContract: Contract) => {
+        const res = await poolContract.getPoolStatus()
+        return res
+    }
+
+    const fetchUserStatus = async (_user: string, poolContract: Contract) => {
+        const res = await poolContract.getUserStatus(_user)
         return res
     }
 
@@ -613,24 +572,14 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             userStaked: BigNumber.from(0), userStakedUSD: 0, userUnlockTime: 0, userTotalEarned: BigNumber.from(0),
             userTotalEarnedUSD: 0, userAvailableReward: BigNumber.from(0), userAvailableRewardUSD: 0, isApprovedForMax: false, userStakeTokenBalance: BigNumber.from(0),
             userStakeTokenBalanceUSD: 0, userRewardTokenBalance: BigNumber.from(0), userRewardTokenBalanceUSD: 0, stakingTokenPrice: 0, rewardTokenPrice: 0,
-            stakingToken: undefined, rewardToken: undefined, websiteURL: '', telegramContact: '', lastRewardBlock: 0, accRewardPerShare: BigNumber.from(0),
-            rewardPerBlock: BigNumber.from(0), poolOwner: '', lockDuration: 0, startTime: 0, endTime: 0, totalStaked: BigNumber.from(0), totalStakedUSD: 0,
+            stakingToken: undefined, rewardToken: undefined, websiteURL: '', lastRewardBlock: 0, accRewardPerShare: BigNumber.from(0),
+            rewardPerBlock: BigNumber.from(0), poolOwner: '', lockDuration: 0, endTime: 0, totalStaked: BigNumber.from(0), totalStakedUSD: 0,
             totalClaimed: BigNumber.from(0), totalClaimedUSD: 0, rewardRemaining: BigNumber.from(0), rewardRemainingUSD: 0, isEndedStaking: false, apr: 0
         }
-
-        await fetchPoolInfo(poolContract).then(async result => {
-            await fetchTokenInfo(result.stakingToken).then(async token => {
-                t.stakingToken = { address: token.address, name: token.name, symbol: token.symbol, decimals: token.decimals, logoURI: result.stakeTokenLogo }
-            }).catch(error => {
-                console.log(error)
-            })
-            await fetchTokenInfo(result.rewardToken).then(async token => {
-                t.rewardToken = { address: token.address, name: token.name, symbol: token.symbol, decimals: token.decimals, logoURI: result.rewardTokenLogo }
-            }).catch(error => {
-                console.log(error)
-            })
-            t.websiteURL = result.websiteURL
-            t.telegramContact = result.telegramContact
+        await fetchPoolStatus(poolContract).then(async result => {            
+            t.stakingToken = { address: result[4].tokenAddress, name: result[4].name, symbol: result[4].symbol, decimals: Number(result[4].decimals), logoURI: result[6].stakeTokenLogo }
+            t.rewardToken = { address: result[5].tokenAddress, name: result[5].name, symbol: result[5].symbol, decimals: Number(result[5].decimals), logoURI: result[6].rewardTokenLogo }
+            t.websiteURL = result[6].websiteURL
             await fetch(`/api/tokenPriceFromPCS?baseCurrency=${result.stakingToken}`)
                 .then((res) => res.json())
                 .then((res) => {
@@ -642,17 +591,28 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 .then((res) => {
                     t.rewardTokenPrice = Number(res.price)
                 }).catch(error => { })
-            t.lastRewardBlock = Number(result.lastRewardBlock)
-            t.accRewardPerShare = result.accRewardPerShare
-            t.rewardPerBlock = result.rewardPerBlock
-            t.poolOwner = result.poolOwner
-            t.lockDuration = Number(result.lockDuration)
-            t.startTime = Number(result.startTime)
-            t.endTime = Number(result.endTime)
-        }).catch(error => {
-            console.log(error)
-        })
+            t.lastRewardBlock = Number(result[6].lastRewardBlock)
+            t.accRewardPerShare = result[6].accRewardPerShare
+            t.rewardPerBlock = result[6].rewardPerBlock
+            t.poolOwner = result[6].poolOwner
+            t.lockDuration = Number(result[6].lockDuration)
+            t.endTime = Number(result[6].endTime)
 
+            t.totalStaked = result[0]
+            t.totalStakedUSD = getValueUSDFromAmount(result[0], t.stakingTokenPrice, t.stakingToken.decimals)
+            const oneYearBlocks = 365 * ONEDAY_SECS / BSC_BLOCKTIME
+            const rewardAmountPerYear = t.rewardPerBlock.mul(BigNumber.from(oneYearBlocks))
+            const rewardUSDPerYear = getValueUSDFromAmount(rewardAmountPerYear, t.rewardTokenPrice, t.rewardToken.decimals)
+            t.apr = t.totalStakedUSD <= 0 ? 0 : rewardUSDPerYear / t.totalStakedUSD * 100
+
+            t.totalClaimed = result[1]
+            t.totalClaimedUSD = getValueUSDFromAmount(result[1], t.rewardTokenPrice, t.rewardToken.decimals)
+
+            t.rewardRemaining = result[2]
+            t.rewardRemainingUSD = getValueUSDFromAmount(result[2], t.rewardTokenPrice, t.rewardToken.decimals)
+
+            t.isEndedStaking = result[3]
+        })
         if (account) {
             const chainId = getChainIdFromName(blockchain);
             const stakeTokenContract: Contract = getContract(t.stakingToken.address, ERC20_ABI, RpcProviders[chainId], account ? account : undefined)
@@ -666,21 +626,18 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 t.userRewardTokenBalanceUSD = getValueUSDFromAmount(bal, t.rewardTokenPrice, t.rewardToken.decimals)
             } catch (e) { }
 
-            await fetchUserInfo(poolContract).then(async result => {
-                t.userStaked = result.amount
-                t.userStakedUSD = getValueUSDFromAmount(result.amount, t.stakingTokenPrice, t.stakingToken.decimals)
-                t.userUnlockTime = Number(result.unlockTime)
-                t.userTotalEarned = result.totalEarned
-                t.userTotalEarnedUSD = getValueUSDFromAmount(result.totalEarned, t.rewardTokenPrice, t.rewardToken.decimals)
+            await fetchUserStatus(account, poolContract).then(async result => {
+                t.userAvailableReward = result[0]
+                t.userAvailableRewardUSD = getValueUSDFromAmount(result[0], t.rewardTokenPrice, t.rewardToken.decimals)
+                t.userStaked = result[1].amount
+                t.userStakedUSD = getValueUSDFromAmount(result[1].amount, t.stakingTokenPrice, t.stakingToken.decimals)
+                t.userUnlockTime = Number(result[1].unlockTime)
+                t.userTotalEarned = result[1].totalEarned
+                t.userTotalEarnedUSD = getValueUSDFromAmount(result[1].totalEarned, t.rewardTokenPrice, t.rewardToken.decimals)
             }).catch(error => {
                 console.log(error)
             })
-            await fetchPendingReward(poolContract).then(async result => {
-                t.userAvailableReward = result
-                t.userAvailableRewardUSD = getValueUSDFromAmount(result, t.rewardTokenPrice, t.rewardToken.decimals)
-            }).catch(error => {
-                console.log(error)
-            })
+
             await fetchAllowance(t.stakingToken.address, item.poolAddress).then(async allowance => {
                 if (allowance.gt(parseUnits("1", t.stakingToken.decimals))) t.isApprovedForMax = true
                 else t.isApprovedForMax = false
@@ -699,33 +656,6 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             t.userStakeTokenBalance = BigNumber.from(0)
             t.userRewardTokenBalance = BigNumber.from(0)
         }
-        await fetchTotalStaked(poolContract).then(async amount => {
-            t.totalStaked = amount
-            t.totalStakedUSD = getValueUSDFromAmount(amount, t.stakingTokenPrice, t.stakingToken.decimals)
-            const oneYearBlocks = 365 * ONEDAY_SECS / BSC_BLOCKTIME
-            const rewardAmountPerYear = t.rewardPerBlock.mul(BigNumber.from(oneYearBlocks))
-            const rewardUSDPerYear = getValueUSDFromAmount(rewardAmountPerYear, t.rewardTokenPrice, t.rewardToken.decimals)
-            t.apr = t.totalStakedUSD <= 0 ? 0 : rewardUSDPerYear / t.totalStakedUSD * 100
-        }).catch(error => {
-            console.log(error)
-        })
-        await fetchTotalClaimed(poolContract).then(async amount => {
-            t.totalClaimed = amount
-            t.totalClaimedUSD = getValueUSDFromAmount(amount, t.rewardTokenPrice, t.rewardToken.decimals)
-        }).catch(error => {
-            console.log(error)
-        })
-        await fetchIsEndedStaking(poolContract).then(async res => {
-            t.isEndedStaking = res
-        }).catch(error => {
-            console.log(error)
-        })
-        await fetchRewardRemaining(poolContract).then(async amount => {
-            t.rewardRemaining = amount
-            t.rewardRemainingUSD = getValueUSDFromAmount(amount, t.rewardTokenPrice, t.rewardToken.decimals)
-        }).catch(error => {
-            console.log(error)
-        })
         return t
     }
 
@@ -736,21 +666,25 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         allLivePools.map((item) => allPools.push(item))
         allExpiredPools.map((item) => allPools.push(item))
         let isNewCalc = totalStakedValue > 0 ? false : true
+        let prices: any[] = []
         await Promise.all(allPools.map(async (item: IClubMapPoolInfo) => {
             try {
                 const chainId = getChainIdFromName(blockchain);
                 const poolContract: Contract = getContract(item.poolAddress, poolAbi, RpcProviders[chainId], account ? account : undefined)
-                await fetchPoolInfo(poolContract).then(async result => {
-                    await fetch(`/api/tokenPriceFromPCS?baseCurrency=${result.stakingToken}`)
-                        .then((res) => res.json())
-                        .then((res) => {
-                            price = Number(res.price)
-                        }).catch(error => { })
-                    await fetchTotalStaked(poolContract).then(async amount => {
-                        totalUSD += getValueUSDFromAmount(amount, price, result.stakingToken.decimals)
-                    }).catch(error => {
-                        console.log(error)
-                    })
+                await fetchPoolStatus(poolContract).then(async result => {
+                    const stakingToken = result[6].stakingToken
+                    const i = prices.findIndex((t: any) => isToken(t.token, stakingToken))
+                    if (i >= 0) {
+                        price = prices[i].price
+                    } else {
+                        await fetch(`/api/tokenPriceFromPCS?baseCurrency=${stakingToken}`)
+                            .then((res) => res.json())
+                            .then((res) => {
+                                price = Number(res.price)
+                                prices.push({ token: stakingToken, price: price })
+                            }).catch(error => { })
+                    }
+                    totalUSD += getValueUSDFromAmount(result[0], price, Number(result[4].decimals))                    
                 })
             } catch (err) { }
             if (isNewCalc) setTotalStakedValue(totalUSD)
@@ -773,21 +707,17 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 bal = await nativeBalanceCallback(blockchain)
                 setBnbBalance(bal)
             } catch (e) { }
-            await fetchUserInfo(poolContract).then(async result => {
-                t.userStaked = result.amount
-                t.userStakedUSD = getValueUSDFromAmount(result.amount, t.stakingTokenPrice, t.stakingToken.decimals)
-                t.userUnlockTime = Number(result.unlockTime)
-                t.userTotalEarned = result.totalEarned
-                t.userTotalEarnedUSD = getValueUSDFromAmount(result.totalEarned, t.rewardTokenPrice, t.rewardToken.decimals)
+            await fetchUserStatus(account, poolContract).then(async result => {
+                t.userAvailableReward = result[0]
+                t.userAvailableRewardUSD = getValueUSDFromAmount(result[0], t.rewardTokenPrice, t.rewardToken.decimals)
+                t.userStaked = result[1].amount
+                t.userStakedUSD = getValueUSDFromAmount(result[1].amount, t.stakingTokenPrice, t.stakingToken.decimals)
+                t.userUnlockTime = Number(result[1].unlockTime)
+                t.userTotalEarned = result[1].totalEarned
+                t.userTotalEarnedUSD = getValueUSDFromAmount(result[1].totalEarned, t.rewardTokenPrice, t.rewardToken.decimals)                
             }).catch(error => {
                 console.log(error)
-            })
-            await fetchPendingReward(poolContract).then(async result => {
-                t.userAvailableReward = result
-                t.userAvailableRewardUSD = getValueUSDFromAmount(result, t.rewardTokenPrice, t.rewardToken.decimals)
-            }).catch(error => {
-                console.log(error)
-            })
+            })            
             await fetchAllowance(t.stakingToken.address, item.poolAddress).then(async allowance => {
                 if (allowance.gt(parseUnits("1", t.stakingToken.decimals))) t.isApprovedForMax = true
                 else t.isApprovedForMax = false
@@ -806,24 +736,24 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             t.userStakeTokenBalance = BigNumber.from(0)
             t.userRewardTokenBalance = BigNumber.from(0)
         }
-        await fetchTotalStaked(poolContract).then(async amount => {
-            t.totalStaked = amount
-            t.totalStakedUSD = getValueUSDFromAmount(amount, t.stakingTokenPrice, t.stakingToken.decimals)
+        await fetchPoolStatus(poolContract).then(async result => {
+            t.totalStaked = result[0]
+            t.totalStakedUSD = getValueUSDFromAmount(result[0], t.stakingTokenPrice, t.stakingToken.decimals)
+            const oneYearBlocks = 365 * ONEDAY_SECS / BSC_BLOCKTIME
+            const rewardAmountPerYear = t.rewardPerBlock.mul(BigNumber.from(oneYearBlocks))
+            const rewardUSDPerYear = getValueUSDFromAmount(rewardAmountPerYear, t.rewardTokenPrice, t.rewardToken.decimals)
+            t.apr = t.totalStakedUSD <= 0 ? 0 : rewardUSDPerYear / t.totalStakedUSD * 100
+
+            t.totalClaimed = result[1]
+            t.totalClaimedUSD = getValueUSDFromAmount(result[1], t.rewardTokenPrice, t.rewardToken.decimals)
+
+            t.rewardRemaining = result[2]
+            t.rewardRemainingUSD = getValueUSDFromAmount(result[2], t.rewardTokenPrice, t.rewardToken.decimals)
+
+            t.isEndedStaking = result[3]        
         }).catch(error => {
             console.log(error)
-        })
-        await fetchTotalClaimed(poolContract).then(async amount => {
-            t.totalClaimed = amount
-            t.totalClaimedUSD = getValueUSDFromAmount(amount, t.rewardTokenPrice, t.rewardToken.decimals)
-        }).catch(error => {
-            console.log(error)
-        })
-        await fetchRewardRemaining(poolContract).then(async amount => {
-            t.rewardRemaining = amount
-            t.rewardRemainingUSD = getValueUSDFromAmount(amount, t.rewardTokenPrice, t.rewardToken.decimals)
-        }).catch(error => {
-            console.log(error)
-        })
+        })     
         return t
     }
 
@@ -859,26 +789,18 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
 
     const fetchAdminChangedPool = async (item: IClubMapPoolInfo, poolContract: Contract) => {
         let t: IPoolAndUserInfo = { ...item.poolAndUserInfo }
-        await fetchPoolInfo(poolContract).then(async result => {
-            t.lastRewardBlock = Number(result.lastRewardBlock)
-            t.accRewardPerShare = result.accRewardPerShare
-            t.rewardPerBlock = result.rewardPerBlock
-            t.lockDuration = Number(result.lockDuration)
-            t.endTime = Number(result.endTime)
+        await fetchPoolStatus(poolContract).then(async result => {
+            t.lastRewardBlock = Number(result[6].lastRewardBlock)
+            t.accRewardPerShare = result[6].accRewardPerShare
+            t.rewardPerBlock = result[6].rewardPerBlock            
+            t.lockDuration = Number(result[6].lockDuration)
+            t.endTime = Number(result[6].endTime)
+            t.isEndedStaking = result[3]            
+            t.rewardRemaining = result[2]
+            t.rewardRemainingUSD = getValueUSDFromAmount(result[2], t.rewardTokenPrice, t.rewardToken.decimals)
         }).catch(error => {
             console.log(error)
-        })
-        await fetchIsEndedStaking(poolContract).then(async res => {
-            t.isEndedStaking = res
-        }).catch(error => {
-            console.log(error)
-        })
-        await fetchRewardRemaining(poolContract).then(async amount => {
-            t.rewardRemaining = amount
-            t.rewardRemainingUSD = getValueUSDFromAmount(amount, t.rewardTokenPrice, t.rewardToken.decimals)
-        }).catch(error => {
-            console.log(error)
-        })
+        })       
         return t
     }
 
@@ -939,6 +861,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     }
 
     useEffect(() => {
+        console.log(queueLivePools.pagedProps, pagedProps)
         if (queueLivePools.data) {
             if (queueLivePools.pagedProps === pagedProps) {
                 setPagedLivePools(queueLivePools.data)
@@ -961,7 +884,11 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                     })
             )
             temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
-            setQueueLivePools({ pagedProps: prePagedProps, data: temp })
+            if (pagedLivePools.length === 0) {
+                setPagedLivePools(temp)
+            } else {
+                setQueueLivePools({ pagedProps: prePagedProps, data: temp })
+            }
         } catch (error) {
             console.log(error)
         }
@@ -991,7 +918,11 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                     })
             )
             temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
-            setQueueExpiredPools({ pagedProps: prePagedProps, data: temp })
+            if (pagedExpiredPools.length === 0) {
+                setPagedExpiredPools(temp)
+            } else {
+                setQueueExpiredPools({ pagedProps: prePagedProps, data: temp })
+            }
         } catch (error) {
             console.log(error)
         }

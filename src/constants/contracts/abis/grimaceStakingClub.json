@@ -87,11 +87,6 @@
 						"type": "string"
 					},
 					{
-						"internalType": "string",
-						"name": "telegramContact",
-						"type": "string"
-					},
-					{
 						"internalType": "uint256",
 						"name": "rewardSupply",
 						"type": "uint256"
@@ -104,11 +99,6 @@
 					{
 						"internalType": "uint256",
 						"name": "lockDuration",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "startTime",
 						"type": "uint256"
 					},
 					{
@@ -260,13 +250,6 @@
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "ownerWithdrawETHs",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -469,19 +452,6 @@
 			}
 		],
 		"name": "updatePoolOwner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_wethAddress",
-				"type": "address"
-			}
-		],
-		"name": "updateWETHAddress",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"

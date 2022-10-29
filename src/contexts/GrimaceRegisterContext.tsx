@@ -261,12 +261,10 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
             rewardToken: rewardToken.address,
             stakingTokenLogo: stakeTokenLogo,
             rewardTokenLogo: rewardTokenLogo,
-            websiteURL: websiteURL,
-            telegramContact: telegramContact,
+            websiteURL: websiteURL,            
             rewardSupply: rewardSupply,
             payAmount: payAmountForRegister,
-            lockDuration: stakerLockTime,
-            startTime: BigNumber.from(0),
+            lockDuration: stakerLockTime,            
             rewardPerBlock: rewardPerBlock,
             endTime: endTime
         }
