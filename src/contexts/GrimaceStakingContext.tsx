@@ -576,7 +576,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             rewardPerBlock: BigNumber.from(0), poolOwner: '', lockDuration: 0, endTime: 0, totalStaked: BigNumber.from(0), totalStakedUSD: 0,
             totalClaimed: BigNumber.from(0), totalClaimedUSD: 0, rewardRemaining: BigNumber.from(0), rewardRemainingUSD: 0, isEndedStaking: false, apr: 0
         }
-        await fetchPoolStatus(poolContract).then(async result => {            
+        await fetchPoolStatus(poolContract).then(async result => {
             t.stakingToken = { address: result[4].tokenAddress, name: result[4].name, symbol: result[4].symbol, decimals: Number(result[4].decimals), logoURI: result[6].stakeTokenLogo }
             t.rewardToken = { address: result[5].tokenAddress, name: result[5].name, symbol: result[5].symbol, decimals: Number(result[5].decimals), logoURI: result[6].rewardTokenLogo }
             t.websiteURL = result[6].websiteURL
@@ -637,7 +637,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             }).catch(error => {
                 console.log(error)
             })
-
+            
             await fetchAllowance(t.stakingToken.address, item.poolAddress).then(async allowance => {
                 if (allowance.gt(parseUnits("1", t.stakingToken.decimals))) t.isApprovedForMax = true
                 else t.isApprovedForMax = false
@@ -684,7 +684,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                                 prices.push({ token: stakingToken, price: price })
                             }).catch(error => { })
                     }
-                    totalUSD += getValueUSDFromAmount(result[0], price, Number(result[4].decimals))                    
+                    totalUSD += getValueUSDFromAmount(result[0], price, Number(result[4].decimals))
                 })
             } catch (err) { }
             if (isNewCalc) setTotalStakedValue(totalUSD)
@@ -714,10 +714,10 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 t.userStakedUSD = getValueUSDFromAmount(result[1].amount, t.stakingTokenPrice, t.stakingToken.decimals)
                 t.userUnlockTime = Number(result[1].unlockTime)
                 t.userTotalEarned = result[1].totalEarned
-                t.userTotalEarnedUSD = getValueUSDFromAmount(result[1].totalEarned, t.rewardTokenPrice, t.rewardToken.decimals)                
+                t.userTotalEarnedUSD = getValueUSDFromAmount(result[1].totalEarned, t.rewardTokenPrice, t.rewardToken.decimals)
             }).catch(error => {
                 console.log(error)
-            })            
+            })
             await fetchAllowance(t.stakingToken.address, item.poolAddress).then(async allowance => {
                 if (allowance.gt(parseUnits("1", t.stakingToken.decimals))) t.isApprovedForMax = true
                 else t.isApprovedForMax = false
@@ -750,10 +750,10 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             t.rewardRemaining = result[2]
             t.rewardRemainingUSD = getValueUSDFromAmount(result[2], t.rewardTokenPrice, t.rewardToken.decimals)
 
-            t.isEndedStaking = result[3]        
+            t.isEndedStaking = result[3]
         }).catch(error => {
             console.log(error)
-        })     
+        })
         return t
     }
 
@@ -792,15 +792,15 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         await fetchPoolStatus(poolContract).then(async result => {
             t.lastRewardBlock = Number(result[6].lastRewardBlock)
             t.accRewardPerShare = result[6].accRewardPerShare
-            t.rewardPerBlock = result[6].rewardPerBlock            
+            t.rewardPerBlock = result[6].rewardPerBlock
             t.lockDuration = Number(result[6].lockDuration)
             t.endTime = Number(result[6].endTime)
-            t.isEndedStaking = result[3]            
+            t.isEndedStaking = result[3]
             t.rewardRemaining = result[2]
             t.rewardRemainingUSD = getValueUSDFromAmount(result[2], t.rewardTokenPrice, t.rewardToken.decimals)
         }).catch(error => {
             console.log(error)
-        })       
+        })
         return t
     }
 
@@ -887,7 +887,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             // if (pagedLivePools.length === 0) {
             //     setPagedLivePools(temp)
             // } else {
-                setQueueLivePools({ pagedProps: prePagedProps, data: temp })
+            setQueueLivePools({ pagedProps: prePagedProps, data: temp })
             // }
         } catch (error) {
             console.log(error)
@@ -921,7 +921,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             // if (pagedExpiredPools.length === 0) {
             //     setPagedExpiredPools(temp)
             // } else {
-                setQueueExpiredPools({ pagedProps: prePagedProps, data: temp })
+            setQueueExpiredPools({ pagedProps: prePagedProps, data: temp })
             // }
         } catch (error) {
             console.log(error)
