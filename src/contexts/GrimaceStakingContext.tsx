@@ -180,23 +180,21 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         updateTotalStakedValue()
     }, [slowRefresh, allLivePools, allExpiredPools])
 
-    useEffect(() => {
-        if (pagedProps) {
-            if (isLiveSelected) {
-                setIsLoadingPools(true)
-                // setPagedLivePools([])
-                updatePagedLivePools()
-            } else {
-                setIsLoadingPools(true)
-                // setPagedExpiredPools([])
-                updatePagedExpiredPools()
-            }
-        }
-    }, [pagedProps])
-
-    useEffect(() => {
+    useEffect(() => {        
         setPagedProps(`${account}_${rowsPerPage}_${page}_${isLiveSelected}`)
-    }, [account, rowsPerPage, page, isLiveSelected, allLivePools, allExpiredPools])
+    }, [account, rowsPerPage, page, isLiveSelected])
+
+    useEffect(() => {                
+        if (isLiveSelected) {
+            setIsLoadingPools(true)
+            setPagedLivePools([])            
+            if (allLivePools.length>0) updatePagedLivePools()
+        } else {
+            setIsLoadingPools(true)
+            setPagedExpiredPools([])
+            if (allExpiredPools.length>0) updatePagedExpiredPools()
+        }
+    }, [pagedProps, allLivePools, allExpiredPools])
 
     useEffect(() => {
         if (!isLoadingPools) {
@@ -518,8 +516,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         const chainId = getChainIdFromName(blockchain);
         const factoryContract: Contract = getContract(GrimaceClubAddress, grimaceFactoryAbi, RpcProviders[chainId], account ? account : undefined)
         const owner = await factoryContract.owner()
-        setGrimaceClubOwner(owner)
-
+        setGrimaceClubOwner(owner)        
         fetchClubMapPoolInfo(factoryContract).then(async result => {
             if (account) {
                 try {
@@ -557,7 +554,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 setAllLivePools([])
                 setAllExpiredPools([])
                 setAllDisabledPools([])
-            }
+            }            
         }).catch(error => {
             console.log(error)
         })
@@ -578,7 +575,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         }
         await fetchPoolStatus(poolContract).then(async result => {
             t.stakingToken = { address: result[4].tokenAddress, name: result[4].name, symbol: result[4].symbol, decimals: Number(result[4].decimals), logoURI: result[6].stakeTokenLogo }
-            t.rewardToken = { address: result[5].tokenAddress, name: result[5].name, symbol: result[5].symbol, decimals: Number(result[5].decimals), logoURI: result[6].rewardTokenLogo }
+            t.rewardToken = { address: result[5].tokenAddress, name: result[5].name, symbol: result[5].symbol, decimals: Number(result[5].decimals), logoURI: result[6].rewardTokenLogo }            
             t.websiteURL = result[6].websiteURL
             await fetch(`/api/tokenPriceFromPCS?baseCurrency=${result.stakingToken}`)
                 .then((res) => res.json())
@@ -865,6 +862,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         if (queueLivePools.data) {
             if (queueLivePools.pagedProps === pagedProps) {
                 setPagedLivePools(queueLivePools.data)
+                setIsLoadingPools(false)
             }
         }
     }, [queueLivePools])
@@ -891,14 +889,14 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             // }
         } catch (error) {
             console.log(error)
-        }
-        setIsLoadingPools(false)
+        }        
     }
 
     useEffect(() => {
         if (queueExpiredPools.data) {
             if (queueExpiredPools.pagedProps === pagedProps) {
                 setPagedExpiredPools(queueExpiredPools.data)
+                setIsLoadingPools(false)
             }
         }
     }, [queueExpiredPools])
@@ -925,8 +923,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             // }
         } catch (error) {
             console.log(error)
-        }
-        setIsLoadingPools(false)
+        }        
     }
 
     return (
