@@ -180,7 +180,7 @@ export default function Form3_Content() {
                     <InfoSVG width={"15"} height={"16"} />
                 </div>
                 <div className="text-[13px] md:text-[15px] text-app-purple">
-                    {`Reward Amount / Supply are total amount of `}<span className="font-bold">{rewardToken ? rewardToken.symbol : ''}</span>{` that you are going to send to your Dojo Pool as reward for staking.`}
+                    {`Reward Amount / Supply are total amount of `}<span className="font-bold">{rewardToken ? rewardToken.symbol : ''}</span>{` that you are going to send to your Grimace Staking Club as reward for staking.`}
                 </div>
             </div>
             <RewardSupplyInput id={ID_REWARD_SUPPLY} onChange={onRewardSupplyChange} />

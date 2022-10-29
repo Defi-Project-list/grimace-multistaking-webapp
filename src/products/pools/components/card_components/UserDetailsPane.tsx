@@ -166,7 +166,7 @@ export default function UserDetailsPane({ isDetailed, poolInfo, poolIndex, onSta
                 </div>
                 <div className="text-[14px] md:text-[15px] text-app-purple font-semibold ">
                     <div>
-                        {`Whenever you wanna do Emergency Unstake, please make sure you claim your reward first, otherwise, you will lose you unclaimed reward #${poolInfo.poolAndUserInfo.rewardToken.address}`}
+                        {`Please claim rewards from staking pool before removing staked tokens, otherwise rewards will be lost.`}
                     </div>
                     {/* {chainId && <a target="_SEJ" rel="noreferrer" href={getEtherscanLink(chainId, poolInfo.poolAndUserInfo.rewardToken.address, 'address')}>
                             <span className='text-[12px] underline'>

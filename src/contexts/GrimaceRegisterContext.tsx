@@ -218,7 +218,11 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
     }, [rewardToken, rewardTokenLogo])
 
     useEffect(() => {
-        if (rewardSupply.gt(rewardPerBlock.mul(stakerLockTime.div(BigNumber.from(BSC_BLOCKTIME))))
+        // if (rewardSupply.gt(rewardPerBlock.mul(stakerLockTime.div(BigNumber.from(BSC_BLOCKTIME))))
+        //     && rewardPerBlock.gt(0) && Number(endTime) > ((new Date()).getTime() / 1000)
+        //     && stakerLockTime.gt(0) && validator.isURL(websiteURL) && telegramContact.length >= 3) setIsPassableForm3(true)
+        // else setIsPassableForm3(false)
+        if (rewardSupply.gt(0)
             && rewardPerBlock.gt(0) && Number(endTime) > ((new Date()).getTime() / 1000)
             && stakerLockTime.gt(0) && validator.isURL(websiteURL) && telegramContact.length >= 3) setIsPassableForm3(true)
         else setIsPassableForm3(false)
