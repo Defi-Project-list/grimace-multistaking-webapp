@@ -3,14 +3,16 @@ import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import InputAdornment from '@mui/material/InputAdornment'
-import { FormControlLabel, RadioGroup } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import PoolSelectOption from './PoolSelectOption'
+import { useGrimaceStakingClub } from '@app/contexts'
 
 export default function PoolsBar({ isLiveSelected, handleSelectShowPools }: { isLiveSelected, handleSelectShowPools: (isLive: boolean) => void }) {
     const [isFocused, setIsFocused] = useState(false)
-    const handleChange = (value: string) => {
-
+    const {setSearchAddress} = useGrimaceStakingClub()
+    
+    const handleChange = (value: string) => {        
+        setSearchAddress(value)
     }
 
     const handleFocus = () => {

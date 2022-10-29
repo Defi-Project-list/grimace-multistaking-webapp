@@ -149,6 +149,16 @@
 						"type": "uint256"
 					},
 					{
+						"internalType": "address",
+						"name": "stakingToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "rewardToken",
+						"type": "address"
+					},
+					{
 						"internalType": "bool",
 						"name": "isUsable",
 						"type": "bool"
@@ -181,6 +191,16 @@
 						"type": "uint256"
 					},
 					{
+						"internalType": "address",
+						"name": "stakingToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "rewardToken",
+						"type": "address"
+					},
+					{
 						"internalType": "bool",
 						"name": "isUsable",
 						"type": "bool"
@@ -211,6 +231,16 @@
 						"internalType": "uint256",
 						"name": "endTime",
 						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "stakingToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "rewardToken",
+						"type": "address"
 					},
 					{
 						"internalType": "bool",
@@ -314,6 +344,16 @@
 				"internalType": "uint256",
 				"name": "endTime",
 				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "stakingToken",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "rewardToken",
+				"type": "address"
 			},
 			{
 				"internalType": "bool",

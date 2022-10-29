@@ -3,7 +3,7 @@ import React, { useEffect, useContext, useState } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
 import { useEthers } from "@usedapp/core";
-import { getContract, calculateGasMargin, isWrappedEther, isAddress, ONEDAY_SECS, BSC_BLOCKTIME, isToken } from '@app/utils/utils'
+import { getContract, calculateGasMargin, isWrappedEther, isAddress, ONEDAY_SECS, BSC_BLOCKTIME, isToken, isInAddresses } from '@app/utils/utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { RpcProviders, GrimaceClubAddress, AppTokenAddress, ZERO_ADDRESS } from "src/constants/AppConstants"
 import useRefresh from 'src/hooks/useRefresh'
@@ -62,16 +62,18 @@ export interface IPoolAndUserInfo {
 
 export interface IClubMapPoolInfo {
     poolAddress: string
-    poolAndUserInfo: IPoolAndUserInfo
+    poolAndUserInfo: IPoolAndUserInfo    
     owner: string
+    stakingToken: string
+    rewardToken: string
     createdAt: number
 }
 
 export interface IGrimaceStakingContext {
     bnbBalance: BigNumber
-    allLivePools: IClubMapPoolInfo[]
-    allExpiredPools: IClubMapPoolInfo[]
-    allDisabledPools: IClubMapPoolInfo[]
+    filteredLivePools: IClubMapPoolInfo[]
+    filteredExpiredPools: IClubMapPoolInfo[]
+    filteredDisabledPools: IClubMapPoolInfo[]
     pagedLivePools: IClubMapPoolInfo[]
     pagedExpiredPools: IClubMapPoolInfo[]
     grimaceClubOwner: string
@@ -111,6 +113,7 @@ export interface IGrimaceStakingContext {
     updateAdminChangedPool: (poolIndex: number) => void
     updateTotalStakedValue: () => void
     setUserInfo_Approved: (poolIndex: number) => void
+    setSearchAddress: (searchText: string) => void
 }
 
 const GrimaceStakingContext = React.createContext<Maybe<IGrimaceStakingContext>>(null)
@@ -126,6 +129,10 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     const [allLivePools, setAllLivePools] = useState<IClubMapPoolInfo[]>([])
     const [allExpiredPools, setAllExpiredPools] = useState<IClubMapPoolInfo[]>([])
     const [allDisabledPools, setAllDisabledPools] = useState<IClubMapPoolInfo[]>([])
+
+    const [filteredLivePools, setFilteredLivePools] = useState<IClubMapPoolInfo[]>([])
+    const [filteredExpiredPools, setFilteredExpiredPools] = useState<IClubMapPoolInfo[]>([])
+    const [filteredDisabledPools, setFilteredDisabledPools] = useState<IClubMapPoolInfo[]>([])
 
     const [pagedLivePools, setPagedLivePools] = useState<IClubMapPoolInfo[]>([])
     const [pagedExpiredPools, setPagedExpiredPools] = useState<IClubMapPoolInfo[]>([])
@@ -152,17 +159,19 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
 
     const [pagedProps, setPagedProps] = useState('')
 
+    const [searchAddress, setSearchAddress] = useState('')
+
     useEffect(() => {
         if (isLiveSelected) {
-            if (allLivePools) setPageCount(rowsPerPage > 0 ? Math.ceil(allLivePools.length / rowsPerPage) : 0)
+            if (filteredLivePools) setPageCount(rowsPerPage > 0 ? Math.ceil(filteredLivePools.length / rowsPerPage) : 0)
             else setPageCount(0)
             setPage(1)
         } else {
-            if (allExpiredPools) setPageCount(rowsPerPage > 0 ? Math.ceil(allExpiredPools.length / rowsPerPage) : 0)
+            if (filteredExpiredPools) setPageCount(rowsPerPage > 0 ? Math.ceil(filteredExpiredPools.length / rowsPerPage) : 0)
             else setPageCount(0)
             setPage(1)
         }
-    }, [rowsPerPage, isLiveSelected, allLivePools, allExpiredPools])
+    }, [rowsPerPage, isLiveSelected, filteredLivePools, filteredExpiredPools])
 
     useEffect(() => {
         if (nativeBalance) {
@@ -177,24 +186,54 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
     }, [account])
 
     useEffect(() => {
+        if (isAddress(searchAddress)) {
+            let filtered: IClubMapPoolInfo[] = allLivePools.filter((item) => isInAddresses([item.poolAddress, item.stakingToken, item.rewardToken], searchAddress))
+            setFilteredLivePools([...filtered])
+        } else {
+            if (searchAddress.length <= 0) {
+                setFilteredLivePools([...allLivePools])
+            } else {
+                setFilteredLivePools([])
+            }
+        }
+    }, [searchAddress, allLivePools])
+
+    useEffect(() => {
+        if (isAddress(searchAddress)) {
+            let filtered: IClubMapPoolInfo[] = allExpiredPools.filter((item) => isInAddresses([item.poolAddress, item.stakingToken, item.rewardToken], searchAddress))
+            setFilteredExpiredPools([...filtered])
+        } else {
+            if (searchAddress.length <= 0) {
+                setFilteredExpiredPools([...allExpiredPools])
+            } else {
+                setFilteredExpiredPools([])
+            }
+        }
+    }, [searchAddress, allExpiredPools])
+
+    useEffect(() => {
         updateTotalStakedValue()
     }, [slowRefresh, allLivePools, allExpiredPools])
 
-    useEffect(() => {        
-        setPagedProps(`${account}_${rowsPerPage}_${page}_${isLiveSelected}`)
+    useEffect(() => {
+        setPagedProps(`${account ? account.toLowerCase() : ''}_${rowsPerPage}_${page}_${isLiveSelected}_${searchAddress.toLowerCase()}`)
     }, [account, rowsPerPage, page, isLiveSelected])
 
-    useEffect(() => {                
+    useEffect(() => {
         if (isLiveSelected) {
             setIsLoadingPools(true)
-            setPagedLivePools([])            
-            if (allLivePools.length>0) updatePagedLivePools()
-        } else {
+            setPagedLivePools([])
+            if (filteredLivePools.length > 0) updatePagedLivePools()
+        }
+    }, [pagedProps, filteredLivePools])
+
+    useEffect(() => {
+        if (!isLiveSelected) {
             setIsLoadingPools(true)
             setPagedExpiredPools([])
-            if (allExpiredPools.length>0) updatePagedExpiredPools()
+            if (filteredExpiredPools.length > 0) updatePagedExpiredPools()
         }
-    }, [pagedProps, allLivePools, allExpiredPools])
+    }, [pagedProps, filteredExpiredPools])
 
     useEffect(() => {
         if (!isLoadingPools) {
@@ -516,7 +555,8 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         const chainId = getChainIdFromName(blockchain);
         const factoryContract: Contract = getContract(GrimaceClubAddress, grimaceFactoryAbi, RpcProviders[chainId], account ? account : undefined)
         const owner = await factoryContract.owner()
-        setGrimaceClubOwner(owner)        
+        setGrimaceClubOwner(owner)
+
         fetchClubMapPoolInfo(factoryContract).then(async result => {
             if (account) {
                 try {
@@ -531,22 +571,23 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 let livePools = result[0]
                 let expiredPools = result[1]
                 let disabledPools = result[2]
+
                 livePools.map(async (item) => {
-                    temp.push({ poolAddress: item.poolAddress, poolAndUserInfo: undefined, owner: item.owner, createdAt: Number(item.createdAt) })
+                    temp.push({ poolAddress: item.poolAddress, poolAndUserInfo: undefined, owner: item.owner, stakingToken: item.stakingToken, rewardToken: item.rewardToken, createdAt: Number(item.createdAt) })
                 })
                 temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
                 setAllLivePools(temp)
                 temp = []
 
                 expiredPools.map(async (item) => {
-                    temp.push({ poolAddress: item.poolAddress, poolAndUserInfo: undefined, owner: item.owner, createdAt: Number(item.createdAt) })
+                    temp.push({ poolAddress: item.poolAddress, poolAndUserInfo: undefined, owner: item.owner, stakingToken: item.stakingToken, rewardToken: item.rewardToken, createdAt: Number(item.createdAt) })
                 })
                 temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
                 setAllExpiredPools(temp)
                 temp = []
 
                 disabledPools.map(async (item) => {
-                    temp.push({ poolAddress: item.poolAddress, poolAndUserInfo: undefined, owner: item.owner, createdAt: Number(item.createdAt) })
+                    temp.push({ poolAddress: item.poolAddress, poolAndUserInfo: undefined, owner: item.owner, stakingToken: item.stakingToken, rewardToken: item.rewardToken, createdAt: Number(item.createdAt) })
                 })
                 temp.sort((a: IClubMapPoolInfo, b: IClubMapPoolInfo) => a.createdAt - b.createdAt)
                 setAllDisabledPools(temp)
@@ -554,7 +595,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 setAllLivePools([])
                 setAllExpiredPools([])
                 setAllDisabledPools([])
-            }            
+            }
         }).catch(error => {
             console.log(error)
         })
@@ -575,7 +616,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
         }
         await fetchPoolStatus(poolContract).then(async result => {
             t.stakingToken = { address: result[4].tokenAddress, name: result[4].name, symbol: result[4].symbol, decimals: Number(result[4].decimals), logoURI: result[6].stakeTokenLogo }
-            t.rewardToken = { address: result[5].tokenAddress, name: result[5].name, symbol: result[5].symbol, decimals: Number(result[5].decimals), logoURI: result[6].rewardTokenLogo }            
+            t.rewardToken = { address: result[5].tokenAddress, name: result[5].name, symbol: result[5].symbol, decimals: Number(result[5].decimals), logoURI: result[6].rewardTokenLogo }
             t.websiteURL = result[6].websiteURL
             await fetch(`/api/tokenPriceFromPCS?baseCurrency=${result.stakingToken}`)
                 .then((res) => res.json())
@@ -634,7 +675,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             }).catch(error => {
                 console.log(error)
             })
-            
+
             await fetchAllowance(t.stakingToken.address, item.poolAddress).then(async allowance => {
                 if (allowance.gt(parseUnits("1", t.stakingToken.decimals))) t.isApprovedForMax = true
                 else t.isApprovedForMax = false
@@ -873,7 +914,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             let prePagedProps = pagedProps
             if (pagedLivePools.length === 0) setIsLoadingPools(true)
             await Promise.all(
-                allLivePools.slice(rowsPerPage > 0 ? (page - 1) * rowsPerPage : 0, rowsPerPage > 0 ? Math.min(page * rowsPerPage, allLivePools.length) : allLivePools.length)
+                filteredLivePools.slice(rowsPerPage > 0 ? (page - 1) * rowsPerPage : 0, rowsPerPage > 0 ? Math.min(page * rowsPerPage, allLivePools.length) : allLivePools.length)
                     .map(async (item: IClubMapPoolInfo, index: number) => {
                         const chainId = getChainIdFromName(blockchain);
                         const poolContract: Contract = getContract(item.poolAddress, poolAbi, RpcProviders[chainId], account ? account : undefined)
@@ -889,7 +930,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             // }
         } catch (error) {
             console.log(error)
-        }        
+        }
     }
 
     useEffect(() => {
@@ -907,7 +948,7 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             let prePagedProps = pagedProps
             if (pagedExpiredPools.length === 0) setIsLoadingPools(true)
             await Promise.all(
-                allExpiredPools.slice(rowsPerPage > 0 ? (page - 1) * rowsPerPage : 0, rowsPerPage > 0 ? Math.min(page * rowsPerPage, allExpiredPools.length) : allExpiredPools.length)
+                filteredExpiredPools.slice(rowsPerPage > 0 ? (page - 1) * rowsPerPage : 0, rowsPerPage > 0 ? Math.min(page * rowsPerPage, allExpiredPools.length) : allExpiredPools.length)
                     .map(async (item: IClubMapPoolInfo, index: number) => {
                         const chainId = getChainIdFromName(blockchain);
                         const poolContract: Contract = getContract(item.poolAddress, poolAbi, RpcProviders[chainId], account ? account : undefined)
@@ -923,16 +964,16 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             // }
         } catch (error) {
             console.log(error)
-        }        
+        }
     }
 
     return (
         <GrimaceStakingContext.Provider
             value={{
                 bnbBalance,
-                allLivePools,
-                allExpiredPools,
-                allDisabledPools,
+                filteredLivePools,
+                filteredExpiredPools,
+                filteredDisabledPools,
                 pagedLivePools,
                 pagedExpiredPools,
                 grimaceClubOwner,
@@ -971,7 +1012,8 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                 updateChangedPoolAndUserInfo,
                 updateAdminChangedPool,
                 updateTotalStakedValue,
-                setUserInfo_Approved
+                setUserInfo_Approved,
+                setSearchAddress
             }}
         >
             {children}

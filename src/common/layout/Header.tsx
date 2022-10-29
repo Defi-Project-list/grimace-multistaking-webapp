@@ -12,14 +12,15 @@ import BSCIcon from "../svgs/BSCIcon"
 import ETHIcon from "../svgs/ETHIcon"
 import POLYGONIcon from "../svgs/POLYGONIcon"
 import { ChainId, useEthers } from "@usedapp/core"
+import { useMediaQuery } from "@mui/material"
 
 export default function Header() {
   const { chainId } = useEthers()
   const router = useRouter()
-  // const matchesDesktop = useMediaQuery(`(min-width: 1024px)`)
+  const matchesXSMobile = useMediaQuery(`(max-width: 390px)`)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const wrapperRef = useRef(null)
-  
+
   const routeMatch = (path: string) => {
     return router.pathname === path
   }
@@ -68,18 +69,20 @@ export default function Header() {
 
   return (
     <div className="w-full bg-[#341461]/[.8] fixed" style={{ zIndex: 2 }}>
-      <div className="w-full flex justify-center md:justify-between py-2 px-4">
-        <div className="hidden md:block w-full max-w-[220px]">
+      <div className={`w-full flex ${matchesXSMobile ? 'flex-col' : 'flex-row justify-between gap-4'}  py-2 px-4`}>
+        <div className="hidden sm:block w-full max-w-[220px]">
           <img src='./images/Logo_GrimaceCoin_White.png' width="100%" />
         </div>
-        <div className="flex gap-3 md:gap-4 items-center md:pr-4">
+        <div className="w-full sm:w-auto flex justify-between sm:justify-start gap-3 sm:gap-4 items-center sm:pr-4">
           <div className="flex gap-2 items-center">
             <div className="bg-white w-[28px] h-[28px] flex justify-center items-center" style={{ borderRadius: '50%' }}>
               <ChainIcon chainId={chainId} width="24px" height="24px" />
             </div>
             <span className="text-white text-[18px] md:text-[20px]">BSC</span>
           </div>
-          <Wallet />
+          <div className={`${matchesXSMobile ? 'hidden' : 'block'}`}>
+            <Wallet />
+          </div>
           <div className="relative text-white text-[18px] md:text-[20px] flex gap-1 cursor-pointer items-center"
             onClick={() => setIsMenuOpen((val: boolean) => !val)}
             ref={wrapperRef}>
@@ -103,6 +106,9 @@ export default function Header() {
               })}
             </div>
           </div>
+        </div>
+        <div className={`${matchesXSMobile ? 'w-full block mt-2' : 'hidden'}`}>
+          <Wallet />
         </div>
       </div>
     </div>

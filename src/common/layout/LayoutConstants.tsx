@@ -9,6 +9,6 @@ export const SIDEBAR_ROUTES = {
 }
 
 export const SIDEBAR_ITEMS = {  
-  [SidebarItem.POOLS]: "pools",
-  [SidebarItem.REGISTER]: "register"
+  [SidebarItem.POOLS]: "Stake",
+  [SidebarItem.REGISTER]: "Register"
 }

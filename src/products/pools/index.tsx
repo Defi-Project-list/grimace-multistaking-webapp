@@ -22,8 +22,8 @@ export default function Pools() {
         pagedLivePools,
         pagedExpiredPools,
         isLoadingPools,
-        allLivePools,
-        allExpiredPools,
+        filteredLivePools,
+        filteredExpiredPools,
         totalStakedValue,
         setPage,
         setRowsPerPage,
@@ -109,7 +109,7 @@ export default function Pools() {
                         <>
                             {isLoadingPools ?
                                 <>
-                                    {allLivePools.slice(rowsPerPage > 0 ? (page - 1) * rowsPerPage : 0, rowsPerPage > 0 ? Math.min(page * rowsPerPage, allLivePools.length) : allLivePools.length).map((_, index: number) => {
+                                    {filteredLivePools.slice(rowsPerPage > 0 ? (page - 1) * rowsPerPage : 0, rowsPerPage > 0 ? Math.min(page * rowsPerPage, filteredLivePools.length) : filteredLivePools.length).map((_, index: number) => {
                                         return (
                                             <LoadingPoolCard key={index} />
                                         )
@@ -127,7 +127,7 @@ export default function Pools() {
                         <>
                             {isLoadingPools ?
                                 <>
-                                    {pagedExpiredPools.slice(rowsPerPage > 0 ? (page - 1) * rowsPerPage : 0, rowsPerPage > 0 ? Math.min(page * rowsPerPage, pagedExpiredPools.length) : pagedExpiredPools.length).map((_, index: number) => {
+                                    {filteredExpiredPools.slice(rowsPerPage > 0 ? (page - 1) * rowsPerPage : 0, rowsPerPage > 0 ? Math.min(page * rowsPerPage, filteredExpiredPools.length) : filteredExpiredPools.length).map((_, index: number) => {
                                         return (
                                             <LoadingPoolCard key={index} />
                                         )
