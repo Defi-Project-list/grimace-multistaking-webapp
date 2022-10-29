@@ -59,7 +59,7 @@ export default function Pools() {
             {modalInfo && <StakeModal isOpen={isOpenStakeModal} poolInfo={modalInfo} handleClose={() => setIsOpenStakeModal(false)} />}
             {modalInfo && <UnstakeModal isOpen={isOpenUnstakeModal} poolInfo={modalInfo} handleClose={() => setIsOpenUnstakeModal(false)} />}
             <div className={`w-full flex justify-center items-center h-screen lg:min-h-[480px] lg:h-auto bg-[#FFFFFF] bg-[url('splash.png')] bg-center bg-cover bg-no-repeat`}>
-                <div className='w-full px-5 md:px-6 xl:px-8 flex gap-8 flex-col lg:flex-row lg:justify-between items-center'>
+                <div className='w-full px-5 md:px-6 xl:px-8 flex gap-4 lg:gap-8 flex-col lg:flex-row lg:justify-between items-center pt-[52px] lg:pt-0'>
                     <div className='w-full flex flex-col lg:flex-row gap-2 lg:gap-4 xl:gap-8 items-center'>
                         <div className='logo-size'>
                             <img src='./images/Logomark_GrimaceCoin.png' width="100%" />
