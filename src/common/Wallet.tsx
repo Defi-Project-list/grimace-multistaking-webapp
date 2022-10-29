@@ -37,7 +37,7 @@ function AccountAndDisconnect() {
     return (
         <>
 
-            <div className="w-full flex gap-2 items-center cursor-pointer" onClick={handleDisconnect}>
+            <div className="w-full flex gap-2 items-center justify-center cursor-pointer" onClick={handleDisconnect}>
                 <img src='./images/wallet.png' width={'30px'} />
                 <span className="text-white text-[18px] md:text-[20px]">
                     {shortenAddress(account, 4)}
@@ -53,13 +53,13 @@ export default function Wallet() {
     const isConnected = !!account
 
     return (
-        <div className="flex justify-center">
+        <div className="w-full sm:w-auto min-w-[170px] flex justify-center">
             {!isConnected && (
                 <Button
                     variant="contained"
                     color="primary"
                     onClick={activateProvider}
-                    sx={{ borderRadius: "12px", fontFamily: 'Inter', width: '180px', height: '36px' }}
+                    sx={{ borderRadius: "12px", width:'100%', fontFamily: 'Inter', height: '36px' }}
                 >
                     <span className="text-[16px] md:text-[18px]">Connect</span>
                 </Button>

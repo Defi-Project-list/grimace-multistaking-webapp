@@ -260,6 +260,14 @@ export const isToken = (token: string, address: string): boolean => {
     if (token.toLowerCase() === address.toLowerCase()) return true
     return false
 }
+
+export const isInAddresses = (groups: any[], address: string): boolean => {    
+    for (let i = 0; i < groups.length; i++) {
+        if (groups[i].toLowerCase() === address.toLowerCase()) return true
+    }
+    return false
+}
+
 export const unknownToken_Icon = './images/token_logos/unknown.svg'
 
 export const SWAP_INPUTBOX_WRAP = 400

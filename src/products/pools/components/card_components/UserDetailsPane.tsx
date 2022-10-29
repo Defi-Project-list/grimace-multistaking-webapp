@@ -130,7 +130,7 @@ export default function UserDetailsPane({ isDetailed, poolInfo, poolIndex, onSta
                                 {`${formatFixedNumber_Optimized(poolInfo.poolAndUserInfo.userAvailableRewardUSD, 2, true)} USD`}
                             </span>
                         </div>
-                        <div className='w-full sm:w-auto flex flex-col gap-1 items-center min-w-[210px]'>
+                        <div className='w-full sm:w-auto flex flex-col gap-1 items-center md:min-w-[210px]'>
                             <LoadingButton
                                 loading={isClaiming}
                                 loadingPosition="center"
