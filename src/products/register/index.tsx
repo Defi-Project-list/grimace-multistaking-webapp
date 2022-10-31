@@ -37,7 +37,10 @@ export default function Register() {
                         Apply for Grimace Staking Club
                     </div>
                     <div className='text-[18px] md:text-[20px] text-app-primary mt-4'>
-                        Apply a Grimace Staking Club for your project, so that your investors are able to stake the Token and earn Rewards. Grimace Staking Club registration is very simple, you just have to follow the form below to apply for your Grimace Pool.
+                        {`Apply a Grimace Staking Club for your project, so that your investors are able to stake the Token and earn Rewards. Grimace Staking Club registration is very simple, you just have to follow the form below to apply for your Staking Pool. If you have any questions or seek more information, please join `}
+                        <a target="_SEJ" rel="noreferrer" href="https://t.me/grimacestakingclub">
+                            <span className='text-app-purple'>t.me/grimacestakingclub</span>
+                        </a>
                     </div>
                     <FormProgress step={step} />
                     {step === 1 && <Form1_Content />}
