@@ -23,12 +23,12 @@ export const USDTTokenAddress = "0x55d398326f99059fF775485246999027B3197955"
 export const USDCTokenAddress = "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"
 
 // mainnet
-// export const AppTokenAddress = "0xC6759a4Fc56B3ce9734035a56B36e8637c45b77E"
-// export const GrimaceClubAddress = ""
+export const AppTokenAddress = "0xC6759a4Fc56B3ce9734035a56B36e8637c45b77E"
+export const GrimaceClubAddress = "0x89997CA79DEb8e8393AE64BB63598a50Ad92F817"
 
 // testnet
-export const AppTokenAddress = "0xd0C3268af45780ADf2CbeC83524800e74b06236F"
-export const GrimaceClubAddress = "0x7F92E220bA3333D5daA5dc758a20aA17D62b5cB7"
+// export const AppTokenAddress = "0xd0C3268af45780ADf2CbeC83524800e74b06236F"
+// export const GrimaceClubAddress = "0x7F92E220bA3333D5daA5dc758a20aA17D62b5cB7"
 
 export const CHAIN_ID_MAP: { [key: ChainId | number]: string } = {
     1: "Ethereum Mainnet",
