@@ -70,9 +70,9 @@ export const Web3ModalButton = () => {
     }
   }, [chainId, provider, account])
 
-  const switchNetwork = async () => {
+  const switchNetwork = async () => {    
     if (provider) {
-      const hexChainId = '0x' + Number(process.env.network).toString(16)
+      const hexChainId = '0x' + getChainIdFromName('bsc').toString(16)
       try {
         await provider.request({
           method: "wallet_switchEthereumChain",
@@ -87,10 +87,10 @@ export const Web3ModalButton = () => {
               params: [
                 {
                   chainId: hexChainId,
-                  chainName: CHAIN_ID_NAME_MAP[Number(process.env.network)],
-                  nativeCurrency: Native_Currencies[Number(process.env.network)],
-                  rpcUrls: [Rpc_URLS[Number(process.env.network)]],
-                  blockExplorerUrls: [BlockExplorer_URLS[Number(process.env.network)]],
+                  chainName: CHAIN_ID_NAME_MAP[getChainIdFromName('bsc')],
+                  nativeCurrency: Native_Currencies[getChainIdFromName('bsc')],
+                  rpcUrls: [Rpc_URLS[getChainIdFromName('bsc')]],
+                  blockExplorerUrls: [BlockExplorer_URLS[getChainIdFromName('bsc')]],
                 },
               ],
             });
