@@ -165,14 +165,14 @@ export const GrimaceRegisterProvider = ({ children = null as any }) => {
 
             if (account) {
                 await fetchAllowance(token.address, GrimaceClubAddress).then(async allowance => {
-                    if (allowance.gte(payamount.gt(0) ? payamount : parseUnits("1", token.decimals))) setIsAllowedPayToken(true)
+                    if (allowance.gte(payamount.gt(0) ? payamount : parseUnits("1", token.decimals)) || isWrappedEther(blockchain, token.address)) setIsAllowedPayToken(true)
                     else setIsAllowedPayToken(false)
                 }).catch(error => {
                     console.log(error)
                 })
                 if (rewardToken) {
                     await fetchAllowance(rewardToken.address, GrimaceClubAddress).then(async allowance => {
-                        if (allowance.gte(rewardSupply.gt(0) ? rewardSupply : parseUnits("1", rewardToken.decimals))) setIsAllowedRewardToken(true)
+                        if (allowance.gte(rewardSupply.gt(0) ? rewardSupply : parseUnits("1", rewardToken.decimals)) || isWrappedEther(blockchain, rewardToken.address)) setIsAllowedRewardToken(true)
                         else setIsAllowedRewardToken(false)
                     }).catch(error => {
                         console.log(error)
