@@ -6,14 +6,14 @@ export default function Register() {
     const { payTokenForRegister, payAmountForRegister} = useGrimaceRegister()
     return (
         <div className='xl:basis-1/3 w-full flex flex-col gap-6'>
-            <div className='w-full rounded-md bg-app-warning p-4'>
+            {/* <div className='w-full rounded-md bg-app-warning p-4'>
                 <div className='text-[18px] md:text-[20px] font-bold text-app-primary my-1'>
                     KYC Verification
                 </div>
                 <div className="text-[16px] md:text-[18px] text-app-primary font-normal">
                     Once you complete your registration, you will need to submit your KYC information into our telegram support, once we verify your submission your Staking Pool will be published.                    
                 </div>
-            </div>
+            </div> */}
             <div className='w-full rounded-md bg-app-warning p-4'>
                 <div className='text-[18px] md:text-[20px] font-bold text-app-primary my-1'>
                     Aditional Setting
