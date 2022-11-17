@@ -62,7 +62,7 @@ export const Rpc_URLS: { [chainId in ChainId]?: string } = {
     [ChainId.Mainnet]: 'https://mainnet.infura.io/v3/b6a2f439eeb57f2c3c4334a6/eth/mainnet',
     [ChainId.Rinkeby]: 'https://rinkeby.infura.io/v3/b6a2f439eeb57f2c3c4334a6/eth/rinkeby',
     [ChainId.Goerli]: 'https://goerli.infura.io/v3/b6a2f439eeb57f2c3c4334a6/eth/rinkeby',
-    [ChainId.BSC]: 'https://bsc-dataseed2.ninicoin.io/',
+    [ChainId.BSC]: 'https://bscrpc.com',
     [ChainId.BSCTestnet]: 'https://data-seed-prebsc-1-s1.binance.org:8545',
     [ChainId.Polygon]: 'https://polygon-rpc.com/'
 }

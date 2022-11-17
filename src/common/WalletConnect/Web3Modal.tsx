@@ -36,7 +36,6 @@ export const Web3ModalButton = () => {
   const { account, activate, deactivate, chainId, connector } = useEthers()
   const [activateError, setActivateError] = useState('')
   const { error } = useEthers()
-  const [web3Modal, setWeb3Modal] = useState(null)
   const [provider, setProvider] = useState(null)
 
   useEffect(() => {
@@ -46,23 +45,6 @@ export const Web3ModalButton = () => {
   }, [error])
 
   useEffect(() => {
-    const newWeb3Modal = new Web3Modal({
-      cacheProvider: true,
-      providerOptions,
-      theme: "dark"
-    });
-
-    setWeb3Modal(newWeb3Modal)
-  }, [])
-
-  useEffect(() => {
-    // connect automatically and without a popup if user is already connected
-    if (web3Modal && web3Modal.cachedProvider) {
-      connectWallet()
-    }
-  }, [web3Modal])
-
-  useEffect(() => {
     if (account) {
       if (getChainIdFromName('bsc') !== chainId) {
         switchNetwork()
@@ -70,7 +52,7 @@ export const Web3ModalButton = () => {
     }
   }, [chainId, provider, account])
 
-  const switchNetwork = async () => {    
+  const switchNetwork = async () => {
     if (provider) {
       const hexChainId = '0x' + getChainIdFromName('bsc').toString(16)
       try {
@@ -109,6 +91,11 @@ export const Web3ModalButton = () => {
   }
 
   const connectWallet = async () => {
+    const web3Modal = new Web3Modal({
+      cacheProvider: true,
+      providerOptions,
+      theme: "dark"
+    });
     try {
       const provider = await web3Modal.connect()
       setProvider(provider)
@@ -120,9 +107,7 @@ export const Web3ModalButton = () => {
   }
 
   const activateProvider = async () => {
-    if (web3Modal) {
-      connectWallet()
-    }
+    connectWallet()
   }
 
   return activateProvider
