@@ -11,9 +11,10 @@ import { IClubMapPoolInfo, IPoolAndUserInfo, useGrimaceStakingClub } from '@app/
 import LoadingPoolCard from './components/LoadingPoolCard'
 import UnstakeModal from './components/card_components/UnstakeModal'
 import { formatFixedNumber_Optimized } from '@app/utils/utils'
-
+import { useTokenPrice } from "@app/hooks/useTokenPrice"
 export default function Pools() {
     const router = useRouter()
+    const {getTokenPrice} = useTokenPrice()
     const {
         isLiveSelected,
         rowsPerPage,
@@ -33,6 +34,14 @@ export default function Pools() {
     const [isOpenStakeModal, setIsOpenStakeModal] = useState(false)
     const [isOpenUnstakeModal, setIsOpenUnstakeModal] = useState(false)
     const [modalInfo, setModalInfo] = useState<IClubMapPoolInfo>()
+
+    useEffect(() => {
+        const fetch = async () => {
+            let k = await getTokenPrice({tokenAddress: '0xC6759a4Fc56B3ce9734035a56B36e8637c45b77E', decimals: 18})
+            console.log(k)
+        }
+        fetch()
+    },[])
 
     const onSelectPage = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value)

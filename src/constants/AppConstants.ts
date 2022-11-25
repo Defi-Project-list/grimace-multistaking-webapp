@@ -21,6 +21,7 @@ export const BTCTokenAddress = "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c"
 export const BUSDTokenAddress = "0xe9e7cea3dedca5984780bafc599bd69add087d56"
 export const USDTTokenAddress = "0x55d398326f99059fF775485246999027B3197955"
 export const USDCTokenAddress = "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"
+export const PCSRouterV2Address = "0x10ED43C718714eb63d5aA57B78B54704E256024E"
 
 // mainnet
 export const AppTokenAddress = "0xC6759a4Fc56B3ce9734035a56B36e8637c45b77E"

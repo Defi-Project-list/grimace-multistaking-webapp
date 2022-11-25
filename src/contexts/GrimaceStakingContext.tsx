@@ -13,6 +13,7 @@ import poolAbi from '@app/constants/contracts/abis/grimaceStakingPool.json'
 import ERC20_ABI from '@app/constants/contracts/abis/erc20.json'
 import { useNativeTokenBalance, useTokenBalanceCallback } from 'src/hooks/hooks'
 import { formatUnits, parseEther, parseUnits } from '@ethersproject/units';
+import { useTokenPrice } from "@app/hooks/useTokenPrice"
 
 declare type Maybe<T> = T | null | undefined
 
@@ -62,7 +63,7 @@ export interface IPoolAndUserInfo {
 
 export interface IClubMapPoolInfo {
     poolAddress: string
-    poolAndUserInfo: IPoolAndUserInfo    
+    poolAndUserInfo: IPoolAndUserInfo
     owner: string
     stakingToken: string
     rewardToken: string
@@ -161,6 +162,8 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
 
     const [searchAddress, setSearchAddress] = useState('')
 
+    const { getTokenPrice } = useTokenPrice()
+    
     useEffect(() => {
         if (isLiveSelected) {
             if (filteredLivePools) setPageCount(rowsPerPage > 0 ? Math.ceil(filteredLivePools.length / rowsPerPage) : 0)
@@ -181,8 +184,8 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
 
     useEffect(() => {
         try {
-            updateClubMapPoolInfo()
-        } catch (e) { }
+            updateClubMapPoolInfo()            
+        } catch (e) { }        
     }, [account])
 
     useEffect(() => {
@@ -618,17 +621,20 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             t.stakingToken = { address: result[4].tokenAddress, name: result[4].name, symbol: result[4].symbol, decimals: Number(result[4].decimals), logoURI: result[6].stakeTokenLogo }
             t.rewardToken = { address: result[5].tokenAddress, name: result[5].name, symbol: result[5].symbol, decimals: Number(result[5].decimals), logoURI: result[6].rewardTokenLogo }
             t.websiteURL = result[6].websiteURL
-            await fetch(`/api/tokenPriceFromPCS?baseCurrency=${result.stakingToken}`)
-                .then((res) => res.json())
-                .then((res) => {
-                    t.stakingTokenPrice = Number(res.price)
-                }).catch(error => { })
-
-            await fetch(`/api/tokenPriceFromPCS?baseCurrency=${result.rewardToken}`)
-                .then((res) => res.json())
-                .then((res) => {
-                    t.rewardTokenPrice = Number(res.price)
-                }).catch(error => { })
+            let res = await getTokenPrice({ tokenAddress: t.stakingToken.address, decimals: t.stakingToken.decimals })
+            t.stakingTokenPrice = Number(res.price)
+            // await fetch(`/api/tokenPriceFromPCS?baseCurrency=${t.stakingToken.address}`)
+            //     .then((res) => res.json())
+            //     .then((res) => {
+            //         t.stakingTokenPrice = Number(res.price)
+            //     }).catch(error => { })
+            res = await getTokenPrice({ tokenAddress: t.rewardToken.address, decimals: t.rewardToken.decimals })
+            t.rewardTokenPrice = Number(res.price)
+            // await fetch(`/api/tokenPriceFromPCS?baseCurrency=${t.rewardToken.address}`)
+            //     .then((res) => res.json())
+            //     .then((res) => {
+            //         t.rewardTokenPrice = Number(res.price)
+            //     }).catch(error => { })
             t.lastRewardBlock = Number(result[6].lastRewardBlock)
             t.accRewardPerShare = result[6].accRewardPerShare
             t.rewardPerBlock = result[6].rewardPerBlock
@@ -715,12 +721,15 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
                     if (i >= 0) {
                         price = prices[i].price
                     } else {
-                        await fetch(`/api/tokenPriceFromPCS?baseCurrency=${stakingToken}`)
-                            .then((res) => res.json())
-                            .then((res) => {
-                                price = Number(res.price)
-                                prices.push({ token: stakingToken, price: price })
-                            }).catch(error => { })
+                        let res = await getTokenPrice({ tokenAddress: stakingToken, decimals: Number(result[4].decimals) })
+                        price = Number(res.price)
+                        prices.push({ token: stakingToken, price: price })
+                        // await fetch(`/api/tokenPriceFromPCS?baseCurrency=${stakingToken}`)
+                        //     .then((res) => res.json())
+                        //     .then((res) => {
+                        //         price = Number(res.price)
+                        //         prices.push({ token: stakingToken, price: price })
+                        //     }).catch(error => { })
                     }
                     totalUSD += getValueUSDFromAmount(result[0], price, Number(result[4].decimals))
                 })
