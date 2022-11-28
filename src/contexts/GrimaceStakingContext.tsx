@@ -14,6 +14,7 @@ import ERC20_ABI from '@app/constants/contracts/abis/erc20.json'
 import { useNativeTokenBalance, useTokenBalanceCallback } from 'src/hooks/hooks'
 import { formatUnits, parseEther, parseUnits } from '@ethersproject/units';
 import { useTokenPrice } from "@app/hooks/useTokenPrice"
+import { replace_logo_urls} from "@app/constants/AppConstants"
 
 declare type Maybe<T> = T | null | undefined
 
@@ -618,8 +619,14 @@ export const GrimaceStakingClubProvider = ({ children = null as any }) => {
             totalClaimed: BigNumber.from(0), totalClaimedUSD: 0, rewardRemaining: BigNumber.from(0), rewardRemainingUSD: 0, isEndedStaking: false, apr: 0
         }
         await fetchPoolStatus(poolContract).then(async result => {
-            t.stakingToken = { address: result[4].tokenAddress, name: result[4].name, symbol: result[4].symbol, decimals: Number(result[4].decimals), logoURI: result[6].stakeTokenLogo }
-            t.rewardToken = { address: result[5].tokenAddress, name: result[5].name, symbol: result[5].symbol, decimals: Number(result[5].decimals), logoURI: result[6].rewardTokenLogo }
+            let stakeTokenLogo = result[6].stakeTokenLogo
+            let rewardTokenLogo = result[6].rewardTokenLogo
+            let index = replace_logo_urls.findIndex((item) => item.slogo == stakeTokenLogo)
+            if (index>=0) stakeTokenLogo = replace_logo_urls[index].dlogo
+            index = replace_logo_urls.findIndex((item) => item.slogo == rewardTokenLogo)
+            if (index>=0) rewardTokenLogo = replace_logo_urls[index].dlogo
+            t.stakingToken = { address: result[4].tokenAddress, name: result[4].name, symbol: result[4].symbol, decimals: Number(result[4].decimals), logoURI: stakeTokenLogo }
+            t.rewardToken = { address: result[5].tokenAddress, name: result[5].name, symbol: result[5].symbol, decimals: Number(result[5].decimals), logoURI: rewardTokenLogo }
             t.websiteURL = result[6].websiteURL
             let res = await getTokenPrice({ tokenAddress: t.stakingToken.address, decimals: t.stakingToken.decimals })
             t.stakingTokenPrice = Number(res.price)

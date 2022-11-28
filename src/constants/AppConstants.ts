@@ -92,3 +92,7 @@ export const RpcProviders: { [chainId in ChainId]?: JsonRpcProvider } = {
     [ChainId.BSC]: new ethers.providers.JsonRpcProvider(Rpc_URLS[ChainId.BSC]),
     [ChainId.BSCTestnet]: new ethers.providers.JsonRpcProvider(Rpc_URLS[ChainId.BSCTestnet])
 }
+
+export const replace_logo_urls = [
+    {slogo:'https://ibb.co/ssqNHKD', dlogo:'https://i.ibb.co/wp4PsSb/IMG-c274fc2286c05e68f2d6c57d8244cf47-V.png'}
+]
