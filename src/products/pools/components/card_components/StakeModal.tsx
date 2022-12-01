@@ -328,7 +328,7 @@ export default function StakeModal({ isOpen, poolInfo, handleClose }: ModalProps
                                     <div className='text-[14px] text-white text-center underline'>{hash.slice(0, 10) + '...' + hash.slice(56, 65)}</div>
                                     {chainId && (
                                         <a className='text-[16px] mt-4 text-white underline text-center' target="_SEJ" rel="noreferrer" href={getEtherscanLink(chainId, hash, 'transaction')}>
-                                            {chainId && `View on ${CHAIN_ID_NAME_MAP[97]}`}
+                                            {chainId && `View on ${CHAIN_ID_NAME_MAP[chainId]}`}
                                         </a>
                                     )}
                                 </div>
