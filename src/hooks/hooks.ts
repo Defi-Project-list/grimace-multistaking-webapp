@@ -8,6 +8,7 @@ import { getChainIdFromName } from '@app/utils/utils'
 import useRefresh from './useRefresh'
 import { TransactionResponse } from '@ethersproject/providers'
 import { getContract, parseEther, getProviderOrSigner } from '@app/utils/utils'
+import { MaxUint256 } from '@ethersproject/constants'
 
 export function useNativeTokenBalance(blockchain: string): BigNumber {
   const { account } = useEthers()
@@ -152,7 +153,8 @@ export function useApproveCallback(): {
     const tokenContract: Contract = getContract(tokenContractAddress, ERC20_ABI, library, account ? account : undefined)
     if (!account || !library) return
     const provider = getProviderOrSigner(library, account) as any
-    return tokenContract.connect(provider).approve(recvAddress, tokenContract.totalSupply()).then((response: TransactionResponse) => {
+    // const totalSupply = await tokenContract.totalSupply()
+    return tokenContract.connect(provider).approve(recvAddress, MaxUint256).then(async (response: TransactionResponse) => {
       return response.wait().then((_: any) => {
         return response.hash
       })
