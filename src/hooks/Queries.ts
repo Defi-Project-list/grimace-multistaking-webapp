@@ -39,8 +39,8 @@ query getBars(
 	$from: ISO8601DateTime!
 	$to: ISO8601DateTime!
 	$limit: Int!
-	$quoteCurrency: String!
-	$baseCurrency: String!
+	$quoteCurrency: string!
+	$baseCurrency: string!
 	$network: EthereumNetwork!
 	$interval: Int!
 ) {
@@ -71,7 +71,7 @@ query getBars(
 `
 
 export const queryGetBUSDPriceOf = `
-  query BUSDPriceOf($baseCurrency: String!, $from: ISO8601DateTime) {
+  query BUSDPriceOf($baseCurrency: string!, $from: ISO8601DateTime) {
     ethereum(network: bsc) {
       dexTrades(
         options: {limit: 24, asc: "timeInterval.minute"}
@@ -99,7 +99,7 @@ export const queryGetBUSDPriceOf = `
 `
 
 export const queryGetBNBPriceOf = `
-  query BNBPriceOf($baseCurrency: String!, $from: ISO8601DateTime) {
+  query BNBPriceOf($baseCurrency: string!, $from: ISO8601DateTime) {
     ethereum(network: bsc) {
       dexTrades(
         options: {limit: 48, asc: "timeInterval.minute"}
@@ -127,7 +127,7 @@ export const queryGetBNBPriceOf = `
 `
 
 export const queryPriceInBNB = `
-  query getPriceInBNB($baseCurrency: String!, $to: ISO8601DateTime) {
+  query getPriceInBNB($baseCurrency: string!, $to: ISO8601DateTime) {
     ethereum(network: bsc) {
       dexTrades(
         options: {limit: 1, desc: "timeInterval.minute"}
@@ -146,7 +146,7 @@ export const queryPriceInBNB = `
 `
 
 export const queryPriceInBUSD = `
-  query getPriceInBUSD($baseCurrency: String!, $to: ISO8601DateTime) {
+  query getPriceInBUSD($baseCurrency: string!, $to: ISO8601DateTime) {
     ethereum(network: bsc) {
       dexTrades(
         options: {limit: 1, desc: "timeInterval.minute"}
@@ -165,7 +165,7 @@ export const queryPriceInBUSD = `
 `
 
 export const queryBNBInBusd_TokenInBNB = `
-  query getPriceInBUSD($baseCurrency: String!, $to: ISO8601DateTime) {
+  query getPriceInBUSD($baseCurrency: string!, $to: ISO8601DateTime) {
     ethereum(network: bsc) {
       dexTrades(
         any: [{exchangeName: {in: ["Pancake", "Pancake v2", "Uniswap"]}, baseCurrency: {is: $baseCurrency}, quoteCurrency: {is: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"}}, {baseCurrency: {is: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"}, quoteCurrency: {is: "0xe9e7cea3dedca5984780bafc599bd69add087d56"}}]
@@ -191,7 +191,7 @@ export const queryBNBInBusd_TokenInBNB = `
 `
 
 export const queryWalletBalances = `
-query getBalancesByAddress($address: String!) {
+query getBalancesByAddress($address: string!) {
   ethereum(network: bsc) {
     address(address: {is: $address}) {
       balances {
@@ -212,8 +212,8 @@ export const getSubscriptionId = `
   subscription (
     $network: EthereumNetwork!
     $from: ISO8601DateTime
-    $baseAddress: String
-    $quoteAddress: String
+    $baseAddress: string
+    $quoteAddress: string
   ) {
     ethereum(network: $network) {
       dexTrades(
@@ -300,8 +300,8 @@ export const queryGetBarsWithoutFrom = `
   query getBars(
     $to: ISO8601DateTime!
     $limit: Int!
-    $quoteCurrency: String!
-    $baseCurrency: String!
+    $quoteCurrency: string!
+    $baseCurrency: string!
     $network: EthereumNetwork!
     $interval: Int!
   ) {
